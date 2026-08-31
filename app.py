@@ -40,12 +40,17 @@ from speech import (
     synthesize,
 )
 
+import importlib
+import profile_store
+importlib.reload(profile_store)
+
 from profile_store import (
     load_profiles,
     get_profile,
     save_profile,
     list_profiles,
     generate_beneficiary_id,
+    update_profile_slots,
 )
 
 from resume_generator import (
