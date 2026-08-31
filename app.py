@@ -73,6 +73,13 @@ from conversation_manager import (
     STEP_LABELS,
 )
 
+from stitch_theme import (
+    inject_stitch_theme,
+    calculate_profile_completion,
+    render_stitch_breadcrumb,
+    render_stitch_completion_card,
+)
+
 
 # ---------------------------------------------------------------------------
 # PAGE
@@ -83,6 +90,9 @@ st.set_page_config(
     page_icon="🎙️",
     layout="centered",
 )
+
+# Inject Google Stitch Material 3 CSS & Typography
+inject_stitch_theme()
 
 
 DISTRICTS = [
@@ -624,13 +634,28 @@ elif page == "🎙️ Voice Recommendation":
 
 
 # ===========================================================================
-# PAGE 2: BENEFICIARY PROFILE (FEATURE 1)
+# PAGE 2: BENEFICIARY PROFILE (STITCH UI DESIGN - PHASE 4A)
 # ===========================================================================
 
 elif page == "👤 Beneficiary Profile":
 
-    st.title("👤 Beneficiary Profile")
-    st.caption("Manage persistent beneficiary records stored locally in data/profiles.json.")
+    render_stitch_breadcrumb("Beneficiary Profile")
+
+    # Top Header
+    st.markdown(
+        """
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C6C5D4; padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+                <h2 style="font-size: 26px; font-weight: 700; color: #000666; margin: 0;">Beneficiary Profile</h2>
+                <p style="font-size: 14px; color: #454652; margin: 4px 0 0 0;">Manage personal background, education, and skills to unlock targeted NSQF pathways.</p>
+            </div>
+            <div>
+                <span class="stitch-demo-badge">Demo Mode</span>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     profiles = load_profiles()
 
@@ -650,7 +675,7 @@ elif page == "👤 Beneficiary Profile":
                 f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
                 for p in profiles
             }
-            selected_label = st.selectbox("Select Beneficiary", list(profile_options.keys()))
+            selected_label = st.selectbox("Select Beneficiary to View/Edit", list(profile_options.keys()))
             selected_id = profile_options[selected_label]
             selected_profile = get_profile(selected_id)
 
@@ -690,72 +715,100 @@ elif page == "👤 Beneficiary Profile":
         def_status = "Not Started"
         def_trade = ""
 
-    st.subheader(f"Profile: {current_id}")
+    # Dynamic Profile Completion Card (Calculated from actual data)
+    completion_pct = calculate_profile_completion(selected_profile or {
+        "name": def_name, "age": def_age, "district": def_district, "education_level": def_edu,
+        "current_livelihood": def_live, "previous_work_experience": def_prev_exp,
+        "skills": def_skills, "interests": def_interests, "employment_preference": def_emp,
+        "mobility_constraints": def_mobility
+    })
+    render_stitch_completion_card(completion_pct)
 
+    # Stitch Profile Form Card
     with st.form("beneficiary_profile_form"):
+        # Section 1: Personal Information
+        st.markdown("<h3 style='font-size: 18px; color: #000666; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 12px;'>📌 Personal Information</h3>", unsafe_allow_html=True)
         col1, col2 = st.columns(2)
 
         with col1:
-            name = st.text_input("Full Name", value=def_name)
-            age = st.number_input("Age", min_value=14, max_value=75, value=def_age)
+            st.text_input("Beneficiary ID (System Generated)", value=current_id, disabled=True, help="Unique identifier assigned to each citizen.")
+            name = st.text_input("Full Legal Name", value=def_name, placeholder="e.g. Ramesh Kumar")
+            age = st.number_input("Age", min_value=14, max_value=85, value=def_age)
+
+        with col2:
             gender = st.selectbox(
                 "Gender",
                 ["Male", "Female", "Other", "Prefer not to say"],
                 index=["Male", "Female", "Other", "Prefer not to say"].index(def_gender) if def_gender in ["Male", "Female", "Other", "Prefer not to say"] else 0,
             )
             district = st.selectbox(
-                "District",
+                "District / Location",
                 ["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"],
                 index=["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"].index(def_district) if def_district in ["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"] else 0,
             )
             language = st.selectbox(
-                "Preferred Language",
+                "Preferred Language for Skilling",
                 list(LANGUAGES.keys()),
                 index=list(LANGUAGES.keys()).index(def_lang) if def_lang in LANGUAGES else 0,
             )
+
+        # Section 2: Education & Experience
+        st.markdown("<h3 style='font-size: 18px; color: #000666; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-top: 18px; margin-bottom: 12px;'>🎓 Education & Work Experience</h3>", unsafe_allow_html=True)
+        col3, col4 = st.columns(2)
+
+        with col3:
             education_level = st.selectbox(
-                "Education Level",
+                "Highest Education Level",
                 ["No formal education", "5th Pass", "8th Pass", "10th Pass", "12th Pass", "ITI / Diploma", "Graduate", "Post Graduate"],
                 index=["No formal education", "5th Pass", "8th Pass", "10th Pass", "12th Pass", "ITI / Diploma", "Graduate", "Post Graduate"].index(def_edu) if def_edu in ["No formal education", "5th Pass", "8th Pass", "10th Pass", "12th Pass", "ITI / Diploma", "Graduate", "Post Graduate"] else 3,
             )
+            current_livelihood = st.text_input("Current Livelihood / Occupation", value=def_live, placeholder="e.g. Daily wage helper, farm labour")
 
-        with col2:
-            family_occupation = st.text_input("Family Occupation / Background", value=def_fam)
-            current_livelihood = st.text_input("Current Livelihood / Occupation", value=def_live)
-            previous_work_experience = st.text_input("Previous Work Experience", value=def_prev_exp)
+        with col4:
+            family_occupation = st.text_input("Family Background / Occupation", value=def_fam, placeholder="e.g. Traditional weaving, farming")
+            previous_work_experience = st.text_input("Previous Work Experience Details", value=def_prev_exp, placeholder="e.g. 2 years electrical wiring assistant")
+
+        # Section 3: Skills & Preferences
+        st.markdown("<h3 style='font-size: 18px; color: #000666; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-top: 18px; margin-bottom: 12px;'>💡 Skills & Learning Preferences</h3>", unsafe_allow_html=True)
+        skills = st.text_area(
+            "Current Skills & Practical Abilities",
+            value=def_skills,
+            placeholder="e.g. electrical wiring, switch repair, plumbing, pipe fitting",
+            help="Enter key skills or practical abilities.",
+        )
+        interests = st.text_area(
+            "Areas of Interest for Training",
+            value=def_interests,
+            placeholder="e.g. solar panel installation, machine maintenance, motor repair",
+            help="Enter trades or skills the beneficiary wishes to learn.",
+        )
+
+        col5, col6 = st.columns(2)
+        with col5:
             mobility_constraints = st.selectbox(
-                "Mobility Constraints",
+                "Work / Mobility Preference",
                 ["Local only (within district)", "Willing to relocate within state", "Willing to relocate anywhere in India"],
                 index=["Local only (within district)", "Willing to relocate within state", "Willing to relocate anywhere in India"].index(def_mobility) if def_mobility in ["Local only (within district)", "Willing to relocate within state", "Willing to relocate anywhere in India"] else 0,
-            )
-            employment_preference = st.selectbox(
-                "Employment Preference",
-                ["Wage Employment (Job)", "Self Employment (Entrepreneurship / Micro-enterprise)", "Either / Any"],
-                index=["Wage Employment (Job)", "Self Employment (Entrepreneurship / Micro-enterprise)", "Either / Any"].index(def_emp) if def_emp in ["Wage Employment (Job)", "Self Employment (Entrepreneurship / Micro-enterprise)", "Either / Any"] else 0,
             )
             training_status = st.selectbox(
                 "Training Status",
                 ["Not Started", "In Progress", "Completed"],
                 index=["Not Started", "In Progress", "Completed"].index(def_status) if def_status in ["Not Started", "In Progress", "Completed"] else 0,
             )
-            recommended_trade = st.text_input("Recommended Trade (if assigned)", value=def_trade)
 
-        skills = st.text_area(
-            "Skills & Practical Experience (e.g. electrical wiring, switch repair, plumbing, driving)",
-            value=def_skills,
-            help="Enter key skills or practical abilities.",
-        )
-        interests = st.text_area(
-            "Interests & Learning Aspirations (e.g. solar panel installation, machine maintenance)",
-            value=def_interests,
-            help="Enter trades or skills the beneficiary is interested in learning.",
-        )
+        with col6:
+            employment_preference = st.selectbox(
+                "Employment Preference",
+                ["Wage Employment (Job)", "Self Employment (Entrepreneurship / Micro-enterprise)", "Either / Any"],
+                index=["Wage Employment (Job)", "Self Employment (Entrepreneurship / Micro-enterprise)", "Either / Any"].index(def_emp) if def_emp in ["Wage Employment (Job)", "Self Employment (Entrepreneurship / Micro-enterprise)", "Either / Any"] else 0,
+            )
+            recommended_trade = st.text_input("Assigned / Recommended Trade (Optional)", value=def_trade)
 
-        submitted = st.form_submit_button("Save / Update Profile", type="primary")
+        submitted = st.form_submit_button("💾 Save / Update Profile", type="primary")
 
         if submitted:
             if not name.strip():
-                st.warning("Please enter a name for the beneficiary.")
+                st.warning("Please enter a valid name for the beneficiary.")
             else:
                 profile_payload = {
                     "beneficiary_id": current_id,
@@ -779,25 +832,25 @@ elif page == "👤 Beneficiary Profile":
                     "created_at": selected_profile.get("created_at") if selected_profile else None,
                 }
                 saved = save_profile(profile_payload)
-                st.success(f"Profile for {saved['name']} ({saved['beneficiary_id']}) saved successfully!")
+                st.success(f"Profile for {saved['name']} ({saved['beneficiary_id']}) saved successfully to storage!")
 
-    # Display active profile summary
+    # Display active profile summary card
     active_profile = get_profile(current_id)
     if active_profile:
         st.divider()
-        st.subheader(f"Current Profile Record: {active_profile.get('beneficiary_id')}")
+        st.subheader(f"Active Profile: {active_profile.get('beneficiary_id')}")
         with st.container(border=True):
             col_a, col_b = st.columns(2)
             with col_a:
-                st.write(f"**Name:** {active_profile.get('name')}")
-                st.write(f"**Age / Gender:** {active_profile.get('age')} / {active_profile.get('gender')}")
+                st.write(f"**Full Name:** {active_profile.get('name')}")
+                st.write(f"**Age / Gender:** {active_profile.get('age')} yrs / {active_profile.get('gender')}")
                 st.write(f"**District:** {active_profile.get('district')}")
                 st.write(f"**Education:** {active_profile.get('education_level')}")
                 st.write(f"**Language:** {active_profile.get('language')}")
             with col_b:
                 st.write(f"**Current Livelihood:** {active_profile.get('current_livelihood') or 'None specified'}")
                 st.write(f"**Previous Experience:** {active_profile.get('previous_work_experience') or 'None specified'}")
-                st.write(f"**Family Occupation:** {active_profile.get('family_occupation') or 'None specified'}")
+                st.write(f"**Family Background:** {active_profile.get('family_occupation') or 'None specified'}")
                 st.write(f"**Mobility:** {active_profile.get('mobility_constraints')}")
                 st.write(f"**Employment Pref:** {active_profile.get('employment_preference')}")
                 st.write(f"**Training Status:** {active_profile.get('training_status')}")
