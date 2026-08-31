@@ -1,0 +1,60 @@
+[
+  {
+    "followup_id": "FOL-BEN2026001-30-day",
+    "beneficiary_id": "BEN-2026-001",
+    "trade_name": "Electrician (Domestic)",
+    "milestone": "30-day",
+    "milestone_days": 30,
+    "demo_seconds": 30,
+    "completion_date": "2026-09-01T02:24:17.578785",
+    "due_date_real": "2026-10-01T02:24:17.578785",
+    "due_date_demo": "2026-09-01T02:24:47.578785",
+    "status": "Completed",
+    "survey_response": {
+      "is_working": "No",
+      "work_related_to_training": "No",
+      "monthly_income_inr": 0,
+      "wants_new_recommendation": "Yes",
+      "submitted_at": "2026-09-01T02:25:00.403456"
+    }
+  },
+  {
+    "followup_id": "FOL-BEN2026001-30-day",
+    "beneficiary_id": "BEN-2026-001",
+    "trade_name": "Electrician (Domestic)",
+    "milestone": "30-day",
+    "milestone_days": 30,
+    "demo_seconds": 30,
+    "completion_date": "2026-09-01T02:25:00.401685",
+    "due_date_real": "2026-10-01T02:25:00.401685",
+    "due_date_demo": "2026-09-01T02:25:30.401685",
+    "status": "Pending",
+    "survey_response": null
+  },
+  {
+    "followup_id": "FOL-BEN2026001-60-day",
+    "beneficiary_id": "BEN-2026-001",
+    "trade_name": "Electrician (Domestic)",
+    "milestone": "60-day",
+    "milestone_days": 60,
+    "demo_seconds": 60,
+    "completion_date": "2026-09-01T02:25:00.401685",
+    "due_date_real": "2026-10-31T02:25:00.401685",
+    "due_date_demo": "2026-09-01T02:26:00.401685",
+    "status": "Pending",
+    "survey_response": null
+  },
+  {
+    "followup_id": "FOL-BEN2026001-180-day",
+    "beneficiary_id": "BEN-2026-001",
+    "trade_name": "Electrician (Domestic)",
+    "milestone": "180-day",
+    "milestone_days": 180,
+    "demo_seconds": 180,
+    "completion_date": "2026-09-01T02:25:00.401685",
+    "due_date_real": "2027-02-28T02:25:00.401685",
+    "due_date_demo": "2026-09-01T02:28:00.401685",
+    "status": "Pending",
+    "survey_response": null
+  }
+]

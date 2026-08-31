@@ -53,6 +53,14 @@ from resume_generator import (
     generate_resume_preview_text,
 )
 
+from followup_store import (
+    load_followups,
+    get_beneficiary_followups,
+    mark_training_complete,
+    record_survey_response,
+    get_milestone_timing,
+)
+
 
 # ---------------------------------------------------------------------------
 # PAGE
@@ -120,6 +128,7 @@ with st.sidebar:
             "🎙️ Voice Recommendation",
             "👤 Beneficiary Profile",
             "📄 Resume",
+            "📅 Training Follow-up",
         ],
         index=0,
     )
@@ -729,3 +738,176 @@ elif page == "📄 Resume":
                 st.write(f"**Current Status:** {profile.get('training_status', 'Not Started')}")
                 if profile.get("recommended_trade"):
                     st.write(f"**Assigned Trade:** {profile.get('recommended_trade')}")
+
+
+# ===========================================================================
+# PAGE 4: TRAINING FOLLOW-UP (FEATURE 4)
+# ===========================================================================
+
+elif page == "📅 Training Follow-up":
+
+    st.title("📅 Post-Training Livelihood Follow-up")
+    st.info(
+        "⚠️ **DEMO / PROTOTYPE**: Automated post-training milestone simulation for Smart India Hackathon. "
+        "Simulates 30-day, 60-day, and 180-day retention calls without external IVR/telecom dependencies."
+    )
+
+    demo_mode = st.toggle(
+        "⚡ DEMO MODE (Accelerate timeline: 30s / 60s / 180s instead of days)",
+        value=True,
+        help="When enabled, milestones become active in seconds rather than months for live judging demonstration.",
+    )
+
+    profiles = load_profiles()
+
+    if not profiles:
+        st.info("No beneficiary profiles found. Please create a profile in the 'Beneficiary Profile' section first.")
+    else:
+        profile_options = {
+            f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
+            for p in profiles
+        }
+        selected_label = st.selectbox("Select Beneficiary to Monitor", list(profile_options.keys()))
+        selected_id = profile_options[selected_label]
+        profile = get_profile(selected_id)
+
+        if profile:
+            st.divider()
+            col_t1, col_t2 = st.columns(2)
+            with col_t1:
+                st.write(f"**Beneficiary:** {profile.get('name')} (`{profile.get('beneficiary_id')}`)")
+                st.write(f"**District / Language:** {profile.get('district')} / {profile.get('language')}")
+                st.write(f"**Assigned Trade:** {profile.get('recommended_trade') or 'Electrician (Domestic)'}")
+            with col_t2:
+                status = profile.get("training_status", "Not Started")
+                st.write(f"**Current Status:** `{status}`")
+                comp_date = profile.get("training_completion_date")
+                if comp_date:
+                    st.write(f"**Completed On:** {comp_date[:19].replace('T', ' ')}")
+
+            # Action: Mark Training Complete
+            if status != "Completed":
+                st.warning("Training is currently in progress or not started. Mark training complete to activate follow-up milestones.")
+                trade_to_assign = profile.get("recommended_trade") or "Electrician (Domestic)"
+                trade_input = st.text_input("Trade Completed", value=trade_to_assign)
+                if st.button("✅ Mark Training Complete", type="primary"):
+                    mark_training_complete(selected_id, trade_input)
+                    st.success(f"Training marked complete for {profile.get('name')}! Milestones generated.")
+                    st.rerun()
+            else:
+                st.subheader("Post-Training Milestones")
+                milestones = get_beneficiary_followups(selected_id)
+
+                if not milestones:
+                    # Initialize milestones if not present
+                    milestones = mark_training_complete(selected_id, profile.get("recommended_trade"))
+
+                for idx, m in enumerate(milestones, 1):
+                    timing = get_milestone_timing(m, demo_mode=demo_mode)
+                    is_completed = m.get("status") == "Completed"
+                    is_due = timing["is_due"]
+
+                    with st.container(border=True):
+                        st.markdown(f"### Milestone {idx}: {m.get('milestone')} Check-in")
+                        st.caption(f"Status: **{timing['status_label']}**")
+
+                        if is_completed:
+                            st.success("✅ Survey response recorded:")
+                            resp = m.get("survey_response", {})
+                            c1, c2 = st.columns(2)
+                            with c1:
+                                st.write(f"• **Currently Working:** {resp.get('is_working')}")
+                                st.write(f"• **Work Related to Training:** {resp.get('work_related_to_training')}")
+                            with c2:
+                                st.write(f"• **Monthly Income:** ₹{resp.get('monthly_income_inr', 0):,}")
+                                st.write(f"• **Wants New Recommendation:** {resp.get('wants_new_recommendation')}")
+
+                            # Outcome Action: If not working, trigger re-recommendation
+                            if resp.get("is_working") == "No" or resp.get("wants_new_recommendation") == "Yes":
+                                st.warning("⚠️ **Outcome Alert:** Previous recommendation did not result in employment.")
+                                st.markdown("#### Next Best Skilling Pathways:")
+                                trades_df = get_trades_df()
+                                new_matches = match_profile(
+                                    profile,
+                                    trades_df=trades_df,
+                                    district=profile.get("district", "Nagpur"),
+                                    top_n=3,
+                                )
+                                # Filter out previously trained trade if possible to show alternatives
+                                alt_matches = [
+                                    nm for nm in new_matches
+                                    if nm["trade_name"].lower() != str(m.get("trade_name", "")).lower()
+                                ]
+                                display_matches = alt_matches if alt_matches else new_matches
+
+                                for r_i, r_m in enumerate(display_matches[:2], 1):
+                                    st.info(
+                                        f"**Alternative {r_i}: {r_m['trade_name']}** "
+                                        f"(NSQF Level {r_m['nsqf_level']} · {r_m['sector']})\n\n"
+                                        f"• Local Demand: {r_m['demand_score']:.0f}/10 | Avg Wage: ₹{r_m['avg_monthly_wage_inr']:,}\n\n"
+                                        f"• Reason: {r_m['explanation_text'].replace(chr(10), ' | ')}"
+                                    )
+                        else:
+                            st.write("Record the beneficiary's answers to the follow-up questions:")
+                            with st.form(f"survey_form_{m.get('followup_id')}"):
+                                q1 = st.radio(
+                                    "1. Are you currently working?",
+                                    ["Yes", "No"],
+                                    horizontal=True,
+                                    key=f"q1_{m.get('followup_id')}",
+                                )
+                                q2 = st.radio(
+                                    "2. Is your work related to your training?",
+                                    ["Yes", "Somewhat", "No"],
+                                    horizontal=True,
+                                    key=f"q2_{m.get('followup_id')}",
+                                )
+                                q3 = st.number_input(
+                                    "3. What is your approximate monthly income (₹)?",
+                                    min_value=0,
+                                    max_value=200000,
+                                    value=12000 if q1 == "Yes" else 0,
+                                    step=500,
+                                    key=f"q3_{m.get('followup_id')}",
+                                )
+                                q4 = st.radio(
+                                    "4. Would you like another recommendation?",
+                                    ["No", "Yes"],
+                                    horizontal=True,
+                                    key=f"q4_{m.get('followup_id')}",
+                                )
+
+                                submit_survey = st.form_submit_button(
+                                    f"Submit {m.get('milestone')} Response",
+                                    type="primary",
+                                )
+
+                                if submit_survey:
+                                    response_data = {
+                                        "is_working": q1,
+                                        "work_related_to_training": q2,
+                                        "monthly_income_inr": int(q3),
+                                        "wants_new_recommendation": q4,
+                                    }
+                                    record_survey_response(m.get("followup_id"), response_data)
+                                    st.success("Follow-up survey response saved successfully!")
+                                    st.rerun()
+
+                # Table of all follow-ups
+                st.divider()
+                st.subheader("All Follow-up Tracking Records")
+                all_followups = load_followups()
+                if all_followups:
+                    summary_fol = [
+                        {
+                            "ID": f.get("followup_id"),
+                            "Beneficiary": f.get("beneficiary_id"),
+                            "Trade": f.get("trade_name"),
+                            "Milestone": f.get("milestone"),
+                            "Status": f.get("status"),
+                            "Working?": f.get("survey_response", {}).get("is_working", "Pending") if f.get("survey_response") else "Pending",
+                            "Income": f"₹{f.get('survey_response', {}).get('monthly_income_inr', 0):,}" if f.get("survey_response") else "-",
+                        }
+                        for f in all_followups
+                    ]
+                    st.dataframe(summary_fol, use_container_width=True)
