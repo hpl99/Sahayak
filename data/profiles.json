@@ -1,0 +1,42 @@
+[
+  {
+    "beneficiary_id": "BEN-2026-001",
+    "name": "Ramesh Kumar",
+    "age": 25,
+    "gender": "Other",
+    "district": "Nagpur",
+    "education_level": "10th Pass",
+    "family_occupation": "",
+    "current_livelihood": "",
+    "skills": "electrician, wiring",
+    "interests": "",
+    "mobility_constraints": "Local only (within district)",
+    "employment_preference": "Wage Employment (Job)",
+    "language": "Hindi",
+    "training_status": "Not Started",
+    "training_start_date": null,
+    "training_completion_date": null,
+    "recommended_trade": null,
+    "created_at": "2026-09-01T02:15:24.623645"
+  },
+  {
+    "beneficiary_id": "BEN-2026-002",
+    "name": "Pooja Sharma",
+    "age": 22,
+    "gender": "Female",
+    "district": "Nagpur",
+    "education_level": "12th Pass",
+    "family_occupation": "",
+    "current_livelihood": "Home tailor",
+    "skills": "tailoring, stitching, sewing machine",
+    "interests": "fashion design, boutique",
+    "mobility_constraints": "Local only (within district)",
+    "employment_preference": "Self Employment (Entrepreneurship / Micro-enterprise)",
+    "language": "Marathi",
+    "training_status": "Not Started",
+    "training_start_date": null,
+    "training_completion_date": null,
+    "recommended_trade": null,
+    "created_at": "2026-09-01T02:18:16.208814"
+  }
+]
