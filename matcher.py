@@ -76,6 +76,152 @@ def match_trades(
     return results[:top_n]
 
 
+def match_profile(
+    profile: dict,
+    trades_df: pd.DataFrame,
+    district: str = None,
+    top_n: int = 3,
+) -> list[dict]:
+    """
+    Rank trades based on a complete Beneficiary Profile.
+
+    Uses:
+    - Skills (high weight)
+    - Interests (medium weight)
+    - Current livelihood (transition weight)
+    - Employment preference (self-employment vs wage employment alignment)
+    - Mobility constraints (local demand alignment)
+    - Education level vs NSQF level compatibility
+    - District demand score
+
+    Returns transparent reasons / explanations for each recommendation.
+    """
+    if not district:
+        district = profile.get("district", "nagpur")
+    
+    district_clean = str(district).lower().strip()
+    demand_col = f"demand_{district_clean}"
+    if demand_col not in trades_df.columns:
+        demand_col = "demand_default"
+
+    skills_text = str(profile.get("skills", "") or "")
+    interests_text = str(profile.get("interests", "") or "")
+    livelihood_text = str(profile.get("current_livelihood", "") or "")
+    emp_pref = str(profile.get("employment_preference", "") or "")
+    mobility = str(profile.get("mobility_constraints", "") or "")
+    education = str(profile.get("education_level", "") or "")
+
+    skill_tokens = _tokenize(skills_text)
+    interest_tokens = _tokenize(interests_text)
+    livelihood_tokens = _tokenize(livelihood_text)
+
+    # Specific trade profiles for employment preference weighting
+    self_employment_trades = {
+        "tailoring & fashion design",
+        "mobile repair technician",
+        "beautician & wellness",
+        "handicrafts & weaving",
+        "electrician (domestic)",
+        "food processing technician",
+        "plumber",
+    }
+    wage_employment_trades = {
+        "retail sales associate",
+        "driving cum logistics assistant",
+        "welder (fabrication)",
+        "solar panel installer",
+        "domestic data entry operator",
+        "electrician (domestic)",
+        "food processing technician",
+    }
+
+    results = []
+
+    for _, row in trades_df.iterrows():
+        trade_name = str(row["trade_name"])
+        trade_lower = trade_name.lower()
+        sector = str(row["sector"])
+        nsqf_level = int(row["nsqf_level"])
+        demand_score = float(row[demand_col])
+        wage = int(row["avg_monthly_wage_inr"])
+
+        trade_keywords = _tokenize(str(row["keywords"]).replace("|", " "))
+        sector_tokens = _tokenize(sector)
+
+        # 1. Skill overlap (weight = 3)
+        skill_overlap = skill_tokens & trade_keywords
+        skill_score = len(skill_overlap) * 3.0
+
+        # 2. Interest overlap (weight = 2)
+        interest_overlap = interest_tokens & (trade_keywords | sector_tokens | _tokenize(trade_name))
+        interest_score = len(interest_overlap) * 2.0
+
+        # 3. Livelihood overlap (weight = 1.5)
+        livelihood_overlap = livelihood_tokens & trade_keywords
+        livelihood_score = len(livelihood_overlap) * 1.5
+
+        # 4. Employment preference bonus
+        emp_bonus = 0.0
+        emp_reason = None
+        if "self" in emp_pref.lower():
+            if trade_lower in self_employment_trades:
+                emp_bonus = 2.5
+                emp_reason = "✓ Matches self-employment / micro-enterprise preference"
+        elif "wage" in emp_pref.lower() or "job" in emp_pref.lower():
+            if trade_lower in wage_employment_trades:
+                emp_bonus = 2.5
+                emp_reason = "✓ Matches wage-employment preference with structured hiring"
+
+        # 5. Demand score
+        total_score = skill_score + interest_score + livelihood_score + emp_bonus + demand_score
+
+        # 6. Build transparent explanations
+        explanations = []
+        if skill_overlap:
+            explanations.append(f"✓ Stated skill matches: {', '.join(sorted(skill_overlap))}")
+        elif interest_overlap:
+            explanations.append(f"✓ Stated interest aligns with {sector} sector ({', '.join(sorted(interest_overlap))})")
+
+        if demand_score >= 7.0:
+            dist_display = district.capitalize() if district != "default" else "local market"
+            explanations.append(f"✓ High local demand in {dist_display} ({demand_score:.0f}/10)")
+        elif demand_score >= 5.0:
+            explanations.append(f"✓ Moderate local demand score ({demand_score:.0f}/10)")
+
+        if emp_reason:
+            explanations.append(emp_reason)
+
+        if education and education != "No formal education":
+            explanations.append(f"✓ Education background ({education}) fits NSQF Level {nsqf_level}")
+
+        if not explanations:
+            explanations.append(f"✓ Foundation NSQF Level {nsqf_level} pathway with ₹{wage:,}/mo avg wage")
+
+        all_matched_keywords = sorted(skill_overlap | interest_overlap | livelihood_overlap)
+
+        results.append(
+            {
+                "trade_name": trade_name,
+                "nsqf_level": nsqf_level,
+                "sector": sector,
+                "demand_score": demand_score,
+                "avg_monthly_wage_inr": wage,
+                "matched_keywords": all_matched_keywords,
+                "score": total_score,
+                "explanations": explanations,
+                "explanation_text": "\n".join(explanations),
+            }
+        )
+
+    results.sort(
+        key=lambda r: r["score"],
+        reverse=True,
+    )
+
+    return results[:top_n]
+
+
+
 # ---------------------------------------------------------------------------
 # MULTILINGUAL SPOKEN RECOMMENDATION
 # ---------------------------------------------------------------------------

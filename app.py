@@ -28,6 +28,7 @@ import streamlit as st
 from matcher import (
     load_trades,
     match_trades,
+    match_profile,
     build_recommendation_text,
 )
 
@@ -584,6 +585,32 @@ elif page == "👤 Beneficiary Profile":
             st.write(f"**Interests:** {active_profile.get('interests') or 'None entered'}")
             if active_profile.get("recommended_trade"):
                 st.info(f"**Assigned / Recommended Trade:** {active_profile.get('recommended_trade')}")
+
+        # Profile-Based Trade Recommendations
+        st.subheader("🎯 Profile-Based Skilling Recommendations")
+        trades_df = get_trades_df()
+        profile_matches = match_profile(
+            active_profile,
+            trades_df=trades_df,
+            district=active_profile.get("district", "Nagpur"),
+            top_n=3,
+        )
+
+        for i, m in enumerate(profile_matches, start=1):
+            with st.container(border=True):
+                st.markdown(
+                    f"**{i}. {m['trade_name']}** · "
+                    f"NSQF Level {m['nsqf_level']} · "
+                    f"{m['sector']}"
+                )
+                cols = st.columns(3)
+                cols[0].metric("Local demand score", f"{m['demand_score']:.0f}/10")
+                cols[1].metric("Avg monthly wage", f"₹{m['avg_monthly_wage_inr']:,}")
+                cols[2].metric("Match score", f"{m['score']:.1f}")
+
+                st.markdown("**Recommended because:**")
+                for exp in m["explanations"]:
+                    st.write(exp)
 
     # Display list of all registered beneficiaries
     all_profiles = list_profiles()
