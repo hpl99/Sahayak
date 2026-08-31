@@ -1,0 +1,310 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Sahayak - Voice Assistant</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Design System Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "on-secondary-container": "#626567",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "tertiary-fixed-dim": "#ffb77a",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f6f3f2",
+                    "surface": "#fbf9f8",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#343d96",
+                    "surface-container-highest": "#e4e2e1",
+                    "background": "#fbf9f8",
+                    "on-secondary-fixed-variant": "#444749",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#4c56af",
+                    "on-surface-variant": "#454652",
+                    "primary": "#000666",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#f0eded",
+                    "surface-variant": "#e4e2e1",
+                    "outline-variant": "#c6c5d4",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#e0e0ff",
+                    "inverse-primary": "#bdc2ff",
+                    "inverse-on-surface": "#f3f0f0",
+                    "surface-container-high": "#eae8e7",
+                    "tertiary": "#2d1500",
+                    "on-tertiary-container": "#df8017",
+                    "surface-bright": "#fbf9f8",
+                    "on-primary-container": "#8690ee",
+                    "tertiary-container": "#4c2600",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-primary-fixed": "#000767",
+                    "tertiary-fixed": "#ffdcc2",
+                    "on-error": "#ffffff",
+                    "secondary": "#5c5f61",
+                    "outline": "#767683",
+                    "on-tertiary-fixed-variant": "#6d3a00",
+                    "primary-container": "#1a237e",
+                    "on-surface": "#1b1c1c",
+                    "on-background": "#1b1c1c",
+                    "on-tertiary-fixed": "#2e1500",
+                    "secondary-fixed": "#e0e3e5",
+                    "on-tertiary": "#ffffff",
+                    "inverse-surface": "#303030",
+                    "surface-dim": "#dcd9d9",
+                    "secondary-container": "#e0e3e5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "unit": "8px",
+                    "container-max": "1200px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "body-md": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "label-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md flex h-screen overflow-hidden antialiased">
+<!-- JSON Component: SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline fixed left-0 top-0 h-full flex flex-col p-stack-md z-40 w-64 hidden md:flex">
+<div class="mb-stack-lg px-2">
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Voice for Livelihood</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Livelihood &amp; Skill Development</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<!-- Active -->
+<a class="flex items-center gap-stack-md bg-primary text-on-primary rounded-xl px-4 py-3 scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mic</span>
+<span class="font-label-lg text-label-lg">Voice Assistant</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-lg text-label-lg">Beneficiary Profile</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">moving</span>
+<span class="font-label-lg text-label-lg">Skill Pathways</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-lg text-label-lg">Training</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="font-label-lg text-label-lg">Follow-up</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-lg text-label-lg">Attendance</span>
+</a>
+<!-- Inactive -->
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-lg text-label-lg">Resume</span>
+</a>
+</nav>
+<div class="mt-auto pt-stack-md">
+<button class="w-full bg-primary text-on-primary font-label-lg text-label-lg py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-colors">
+<span class="material-symbols-outlined">mic</span>
+                Start Voice Assistant
+            </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col md:ml-64 h-full relative">
+<!-- JSON Component: TopNavBar -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline w-full z-30 sticky top-0">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
+<div class="md:hidden flex items-center">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">Voice for Livelihood</span>
+</div>
+<!-- Desktop breadcrumb/title area (empty as per json, but keeps flex space) -->
+<div class="hidden md:block">
+<span class="font-label-sm text-label-sm text-error bg-error-container px-2 py-1 rounded">Prototype / Demonstration</span>
+</div>
+<div class="flex items-center gap-stack-md">
+<span class="font-label-lg text-label-lg text-on-surface-variant dark:text-on-secondary-container">Demo Mode</span>
+<div class="flex gap-2 text-primary dark:text-primary-fixed">
+<button class="p-2 hover:bg-surface-container-high transition-colors rounded-full opacity-80 transition-all">
+<span class="material-symbols-outlined">language</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high transition-colors rounded-full opacity-80 transition-all">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Main Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop w-full max-w-container-max mx-auto pb-stack-lg">
+<!-- Header Section -->
+<section class="mb-stack-lg">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-stack-sm">
+                    Tell us about your work, skills and interests.
+                </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-md">
+                    We'll help you find suitable skill pathways.
+                </p>
+<!-- Status Indicators -->
+<div class="flex flex-wrap gap-stack-sm">
+<div class="inline-flex items-center gap-2 bg-surface-container border border-outline-variant px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[18px] text-secondary">language</span>
+<span class="font-label-sm text-label-sm text-on-surface">Language (Hindi)</span>
+</div>
+<div class="inline-flex items-center gap-2 bg-surface-container border border-outline-variant px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[18px] text-secondary">location_on</span>
+<span class="font-label-sm text-label-sm text-on-surface">District (Nagpur)</span>
+</div>
+<div class="inline-flex items-center gap-2 bg-surface-container border border-outline-variant px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[18px] text-secondary">person</span>
+<span class="font-label-sm text-label-sm text-on-surface">Profile (New)</span>
+</div>
+</div>
+</section>
+<!-- Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Voice Interaction (8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md md:p-stack-lg h-full flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-stack-lg border-b border-outline-variant pb-2">
+                            Let's understand your livelihood
+                        </h3>
+<!-- Assistant Message Bubble -->
+<div class="flex w-full mb-stack-lg">
+<div class="bg-primary-container text-on-primary-container p-4 rounded-2xl rounded-tl-sm max-w-[90%] md:max-w-[75%] border border-primary/20 shadow-sm">
+<p class="font-body-lg text-body-lg leading-relaxed">
+                                    "नमस्ते! मैं आपके अनुभव और रुचियों के आधार पर सही कौशल प्रशिक्षण खोजने में आपकी मदद करूंगा।"
+                                </p>
+</div>
+</div>
+<!-- Spacer to push mic down -->
+<div class="flex-grow"></div>
+<!-- Active Microphone Component -->
+<div class="flex flex-col items-center justify-center py-stack-lg">
+<div class="relative flex items-center justify-center w-40 h-40 mb-stack-md">
+<!-- Outer Pulsing Ring (Saffron) -->
+<div class="absolute inset-0 border-[4px] border-[#FF9933] rounded-full animate-ping opacity-60"></div>
+<div class="absolute inset-4 border-[4px] border-[#FF9933] rounded-full animate-pulse opacity-80"></div>
+<!-- Core Button -->
+<button class="relative z-10 w-24 h-24 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-[0_4px_14px_rgba(0,6,102,0.25)] hover:bg-primary-container hover:text-on-primary-container transition-colors duration-300">
+<span class="material-symbols-outlined text-[40px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-lg text-label-lg">
+<span class="w-3 h-3 bg-[#FF9933] rounded-full animate-pulse"></span>
+                                🎙 Start speaking
+                            </div>
+</div>
+</div>
+</div>
+<!-- Right Column: Context & Extraction (4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Conversation Log -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex flex-col max-h-[300px]">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-2 mb-stack-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">forum</span>
+<h4 class="font-label-lg text-label-lg text-on-surface">Recent Dialogue</h4>
+</div>
+<div class="flex-1 overflow-y-auto flex flex-col gap-stack-sm pr-2">
+<!-- Assistant -->
+<div class="self-start max-w-[85%] bg-surface-container text-on-surface p-3 rounded-lg rounded-tl-none">
+<p class="font-body-md text-body-md text-sm">आपने पहले कौन सा काम किया है?</p>
+</div>
+<!-- User -->
+<div class="self-end max-w-[85%] bg-surface-variant text-on-surface p-3 rounded-lg rounded-tr-none border border-outline-variant/50">
+<p class="font-body-md text-body-md text-sm">मैं अपने पिता के साथ बिजली का काम करता हूं।</p>
+</div>
+</div>
+</div>
+<!-- Extracted Chips -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex-1">
+<div class="flex items-center gap-2 border-b border-outline-variant pb-2 mb-stack-md">
+<span class="material-symbols-outlined text-primary text-[20px]">memory</span>
+<h4 class="font-label-lg text-label-lg text-on-surface">Extracted Information</h4>
+</div>
+<p class="font-body-md text-body-md text-sm text-on-surface-variant mb-stack-sm">Identified Context:</p>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface-variant px-3 py-1.5 rounded font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">bolt</span> Electrical work
+                            </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface-variant px-3 py-1.5 rounded font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">cable</span> Wiring
+                            </span>
+<span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface-variant px-3 py-1.5 rounded font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-[14px]">group</span> Family business
+                            </span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- JSON Component: Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant w-full py-stack-md px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-stack-sm mt-auto z-30">
+<div class="font-label-lg text-label-lg font-bold text-secondary dark:text-secondary-fixed-dim text-center md:text-left">© 2024 Sahayak | Official Prototype</div>
+<div class="flex gap-stack-md">
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Accessibility</a>
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+</div>
+
+
+</body></html>

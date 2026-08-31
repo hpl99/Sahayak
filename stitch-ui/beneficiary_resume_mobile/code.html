@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Beneficiary Resume - Voice for Livelihood</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-surface": "#1b1c1c",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb77a",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary": "#000666",
+                        "on-surface-variant": "#454652",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "surface": "#fbf9f8",
+                        "surface-bright": "#fbf9f8",
+                        "secondary-container": "#e0e3e5",
+                        "tertiary": "#2d1500",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-tertiary-fixed-variant": "#6d3a00",
+                        "primary-container": "#1a237e",
+                        "inverse-primary": "#bdc2ff",
+                        "inverse-on-surface": "#f3f0f0",
+                        "on-tertiary-fixed": "#2e1500",
+                        "on-primary-container": "#8690ee",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#626567",
+                        "inverse-surface": "#303030",
+                        "on-tertiary-container": "#df8017",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "outline": "#767683",
+                        "tertiary-fixed": "#ffdcc2",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-fixed-variant": "#444749",
+                        "surface-container-high": "#eae8e7",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed-variant": "#343d96",
+                        "tertiary-container": "#4c2600",
+                        "on-background": "#1b1c1c",
+                        "secondary": "#5c5f61",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c6c5d4",
+                        "surface-tint": "#4c56af",
+                        "on-primary-fixed": "#000767",
+                        "primary-fixed": "#e0e0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "container-max": "1200px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "16px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "label-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- Header (Navigation suppressed for focused task intent based on instructions, but breadcrumb provided for escape) -->
+<header class="bg-surface border-b border-outline-variant w-full px-margin-mobile py-stack-md flex items-center justify-between sticky top-0 z-10 shadow-sm">
+<div class="flex items-center gap-stack-sm">
+<button aria-label="Go back" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary">Resume</h1>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button aria-label="Help" class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile py-stack-lg flex flex-col gap-stack-lg pb-[100px]">
+<!-- Action Bar (Top) -->
+<section class="flex flex-col gap-stack-md bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-start justify-between">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Manage Document</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Last updated: Today, 09:41 AM</p>
+</div>
+</div>
+<div class="flex flex-col gap-stack-sm w-full mt-2">
+<button class="w-full min-h-[56px] bg-primary text-on-primary font-label-lg text-label-lg rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-sm active:opacity-80">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">download</span>
+                    Download Resume PDF
+                </button>
+<button class="w-full min-h-[56px] border-2 border-primary text-primary font-label-lg text-label-lg rounded-lg flex items-center justify-center gap-2 hover:bg-surface-container-low transition-colors active:opacity-80">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">autorenew</span>
+                    Regenerate Resume
+                </button>
+</div>
+</section>
+<!-- Resume Preview Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Simulated Page Header -->
+<div class="bg-surface-container p-stack-md flex justify-between items-center border-b border-outline-variant">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Preview - Page 1 of 1</span>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">visibility</span>
+</div>
+<!-- Resume Content Area (Simplified for mobile vertical scrolling) -->
+<div class="p-stack-md md:p-stack-lg flex flex-col gap-stack-lg bg-white">
+<!-- Personal Info -->
+<div class="text-center border-b border-outline-variant pb-stack-md">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">Rajesh Kumar</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">rajesh.k@example.com | +91 98765 43210</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Bangalore, Karnataka, India</p>
+</div>
+<!-- Professional Summary -->
+<div>
+<h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider mb-stack-sm border-b border-outline-variant pb-2">Professional Summary</h4>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+                        Dedicated and detail-oriented professional with 3+ years of experience in customer support and data entry operations. Proven ability to handle high-volume inquiries and maintain accurate records within fast-paced environments. Seeking to leverage skills in a challenging administrative role.
+                    </p>
+</div>
+<!-- Experience -->
+<div>
+<h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider mb-stack-sm border-b border-outline-variant pb-2">Experience</h4>
+<div class="mb-stack-md">
+<div class="flex flex-col md:flex-row md:justify-between md:items-baseline mb-1">
+<h5 class="font-headline-md text-headline-md text-on-surface text-[18px]">Customer Support Executive</h5>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Jan 2021 - Present</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">TechSolve Solutions, Bangalore</p>
+<ul class="list-disc list-outside ml-4 font-body-md text-body-md text-on-surface flex flex-col gap-2">
+<li>Resolved average of 50+ customer tickets daily via phone and email.</li>
+<li>Maintained a 95% customer satisfaction rating over 12 months.</li>
+<li>Assisted in training 3 new team members on CRM software.</li>
+</ul>
+</div>
+<div>
+<div class="flex flex-col md:flex-row md:justify-between md:items-baseline mb-1">
+<h5 class="font-headline-md text-headline-md text-on-surface text-[18px]">Data Entry Clerk</h5>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Jun 2019 - Dec 2020</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Global Logistics Corp, Chennai</p>
+<ul class="list-disc list-outside ml-4 font-body-md text-body-md text-on-surface flex flex-col gap-2">
+<li>Accurately inputted shipment data into proprietary database system.</li>
+<li>Identified and corrected 100+ data entry errors per month.</li>
+</ul>
+</div>
+</div>
+<!-- Skills -->
+<div>
+<h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider mb-stack-sm border-b border-outline-variant pb-2">Skills</h4>
+<div class="flex flex-wrap gap-2">
+<span class="bg-surface-container-low border border-outline-variant px-3 py-1 rounded-full font-label-sm text-label-sm text-on-surface">Customer Service</span>
+<span class="bg-surface-container-low border border-outline-variant px-3 py-1 rounded-full font-label-sm text-label-sm text-on-surface">Data Entry</span>
+<span class="bg-surface-container-low border border-outline-variant px-3 py-1 rounded-full font-label-sm text-label-sm text-on-surface">MS Office Suite</span>
+<span class="bg-surface-container-low border border-outline-variant px-3 py-1 rounded-full font-label-sm text-label-sm text-on-surface">Communication</span>
+<span class="bg-surface-container-low border border-outline-variant px-3 py-1 rounded-full font-label-sm text-label-sm text-on-surface">CRM Software</span>
+</div>
+</div>
+<!-- Education -->
+<div>
+<h4 class="font-label-lg text-label-lg text-primary uppercase tracking-wider mb-stack-sm border-b border-outline-variant pb-2">Education</h4>
+<div>
+<div class="flex flex-col md:flex-row md:justify-between md:items-baseline mb-1">
+<h5 class="font-headline-md text-headline-md text-on-surface text-[18px]">Bachelor of Commerce (B.Com)</h5>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2016 - 2019</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface">University of Madras, Chennai</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Action Area (Mobile specific pinning) -->
+<div class="fixed bottom-0 left-0 w-full p-margin-mobile bg-surface/90 backdrop-blur-md border-t border-outline-variant md:hidden z-20 flex flex-col gap-stack-sm shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+<button class="w-full min-h-[56px] bg-primary text-on-primary font-label-lg text-label-lg rounded-lg flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">share</span>
+            Share Resume Link
+        </button>
+</div>
+</body></html>

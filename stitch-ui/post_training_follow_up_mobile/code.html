@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Post-Training Follow-up - Voice for Livelihood</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error": "#ffffff",
+                    "secondary-fixed": "#e0e3e5",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "on-surface": "#1b1c1c",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb77a",
+                    "surface-container-highest": "#e4e2e1",
+                    "primary": "#000666",
+                    "on-surface-variant": "#454652",
+                    "on-tertiary": "#ffffff",
+                    "background": "#fbf9f8",
+                    "surface-dim": "#dcd9d9",
+                    "error": "#ba1a1a",
+                    "error-container": "#ffdad6",
+                    "surface": "#fbf9f8",
+                    "surface-bright": "#fbf9f8",
+                    "secondary-container": "#e0e3e5",
+                    "tertiary": "#2d1500",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-tertiary-fixed-variant": "#6d3a00",
+                    "primary-container": "#1a237e",
+                    "inverse-primary": "#bdc2ff",
+                    "inverse-on-surface": "#f3f0f0",
+                    "on-tertiary-fixed": "#2e1500",
+                    "on-primary-container": "#8690ee",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#626567",
+                    "inverse-surface": "#303030",
+                    "on-tertiary-container": "#df8017",
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "outline": "#767683",
+                    "tertiary-fixed": "#ffdcc2",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-variant": "#e4e2e1",
+                    "on-secondary-fixed-variant": "#444749",
+                    "surface-container-high": "#eae8e7",
+                    "surface-container": "#f0eded",
+                    "on-primary-fixed-variant": "#343d96",
+                    "tertiary-container": "#4c2600",
+                    "on-background": "#1b1c1c",
+                    "secondary": "#5c5f61",
+                    "on-error-container": "#93000a",
+                    "outline-variant": "#c6c5d4",
+                    "surface-tint": "#4c56af",
+                    "on-primary-fixed": "#000767",
+                    "primary-fixed": "#e0e0ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "margin-desktop": "40px",
+                    "gutter": "24px",
+                    "container-max": "1200px",
+                    "stack-sm": "8px",
+                    "margin-mobile": "16px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "label-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "label-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar (Mobile Adaptation) -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center w-full px-margin-mobile h-16 sticky top-0 z-50">
+<div class="flex items-center gap-stack-md">
+<button aria-label="Go back" class="text-primary p-2 -ml-2">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-headline-md font-headline-md font-bold text-primary">Voice for Livelihood</h1>
+</div>
+<div class="flex items-center gap-stack-sm">
+<button aria-label="Language" class="text-primary p-2">
+<span class="material-symbols-outlined">language</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full px-margin-mobile py-stack-lg max-w-[600px] mx-auto">
+<!-- Breadcrumbs & Header -->
+<div class="mb-stack-lg">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-label-sm font-label-sm text-secondary mb-stack-sm">
+<span>Dashboard</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary font-bold">Follow-up</span>
+</nav>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-stack-sm">60-Day Check-in</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Please complete this brief survey to help us understand your progress after completing the training module.</p>
+</div>
+<!-- Feedback Banner (Example of conditional display) -->
+<div class="hidden bg-error-container text-on-error-container p-stack-md rounded-lg mb-stack-lg border border-error flex items-start gap-stack-sm" id="error-banner" role="alert">
+<span class="material-symbols-outlined text-error">error</span>
+<span class="font-body-md text-body-md">Please answer all required questions before submitting.</span>
+</div>
+<!-- Form Layout -->
+<form action="#" class="space-y-stack-lg flex flex-col" method="POST">
+<!-- Question 1: Employment Status -->
+<div class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant">
+<fieldset>
+<legend class="font-label-lg text-label-lg text-on-surface mb-stack-sm">1. What is your current employment status? <span class="text-error">*</span></legend>
+<div class="space-y-stack-sm mt-stack-md">
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="emp_status" type="radio" value="employed"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Employed (Full-time)</span>
+</label>
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="emp_status" type="radio" value="part-time"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Employed (Part-time / Contract)</span>
+</label>
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="emp_status" type="radio" value="self-employed"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Self-Employed</span>
+</label>
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="emp_status" type="radio" value="unemployed"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Currently Seeking Employment</span>
+</label>
+</div>
+</fieldset>
+</div>
+<!-- Question 2: Skill Application -->
+<div class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant">
+<fieldset>
+<legend class="font-label-lg text-label-lg text-on-surface mb-stack-sm">2. How often do you use the skills learned in the training program? <span class="text-error">*</span></legend>
+<div class="space-y-stack-sm mt-stack-md">
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="skill_usage" type="radio" value="daily"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Daily</span>
+</label>
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="skill_usage" type="radio" value="weekly"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Weekly</span>
+</label>
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="skill_usage" type="radio" value="rarely"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Rarely</span>
+</label>
+<label class="flex items-center p-stack-sm border-2 border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer touch-target-48">
+<input class="w-6 h-6 text-primary border-outline focus:ring-primary" name="skill_usage" type="radio" value="never"/>
+<span class="ml-stack-md font-body-md text-body-md text-on-surface">Never</span>
+</label>
+</div>
+</fieldset>
+</div>
+<!-- Question 3: Income Change -->
+<div class="bg-surface-container-lowest p-stack-md rounded-xl border border-outline-variant">
+<label class="block font-label-lg text-label-lg text-on-surface mb-stack-sm" for="income_change">3. Describe any changes in your income since completing the training. (Optional)</label>
+<textarea class="w-full mt-stack-sm p-stack-sm border-2 border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md text-on-surface resize-none bg-surface-container-low" id="income_change" name="income_change" placeholder="E.g., Secured a higher paying role, started a small business..." rows="4"></textarea>
+</div>
+<!-- Voice Control Integration Hook -->
+<div class="flex justify-center my-stack-lg">
+<button aria-label="Start Voice Input" class="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-md hover:bg-primary-container transition-colors relative group" type="button">
+<span class="material-symbols-outlined text-white text-4xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">mic</span>
+<!-- Pulse ring for active state simulation -->
+<div class="absolute inset-0 rounded-full border-4 border-[#FF9933] opacity-0 group-active:animate-ping"></div>
+</button>
+</div>
+<!-- Actions -->
+<div class="flex flex-col gap-stack-md mt-stack-lg border-t border-outline-variant pt-stack-lg">
+<button class="w-full min-h-[56px] bg-primary text-white font-label-lg text-label-lg rounded-lg flex items-center justify-center gap-stack-sm hover:bg-primary-container transition-colors shadow-sm" type="submit">
+                    Submit Follow-up
+                </button>
+<button class="w-full min-h-[56px] bg-transparent border-2 border-primary text-primary font-label-lg text-label-lg rounded-lg flex items-center justify-center gap-stack-sm hover:bg-surface-container-low transition-colors" type="button">
+                    Save Draft
+                </button>
+</div>
+</form>
+</main>
+<style>
+        .touch-target-48 {
+            min-height: 48px;
+        }
+        /* Fix for Tailwind Forms radio button alignment if needed */
+        input[type="radio"] {
+            margin-top: 2px;
+        }
+    </style>
+<script>
+        // Simple visual interaction for radio buttons to highlight the selected row
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const name = e.target.name;
+                // Reset all in group
+                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                    r.closest('label').classList.remove('bg-primary-fixed', 'border-primary');
+                    r.closest('label').classList.add('border-outline-variant');
+                });
+                // Highlight selected
+                if(e.target.checked) {
+                    e.target.closest('label').classList.remove('border-outline-variant');
+                    e.target.closest('label').classList.add('bg-primary-fixed', 'border-primary');
+                }
+            });
+        });
+    </script>
+</body></html>

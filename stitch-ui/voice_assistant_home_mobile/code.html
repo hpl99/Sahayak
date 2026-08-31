@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voice for Livelihood - Voice Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-surface": "#1b1c1c",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb77a",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary": "#000666",
+                        "on-surface-variant": "#454652",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "surface": "#fbf9f8",
+                        "surface-bright": "#fbf9f8",
+                        "secondary-container": "#e0e3e5",
+                        "tertiary": "#2d1500",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-tertiary-fixed-variant": "#6d3a00",
+                        "primary-container": "#1a237e",
+                        "inverse-primary": "#bdc2ff",
+                        "inverse-on-surface": "#f3f0f0",
+                        "on-tertiary-fixed": "#2e1500",
+                        "on-primary-container": "#8690ee",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#626567",
+                        "inverse-surface": "#303030",
+                        "on-tertiary-container": "#df8017",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "outline": "#767683",
+                        "tertiary-fixed": "#ffdcc2",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-fixed-variant": "#444749",
+                        "surface-container-high": "#eae8e7",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed-variant": "#343d96",
+                        "tertiary-container": "#4c2600",
+                        "on-background": "#1b1c1c",
+                        "secondary": "#5c5f61",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c6c5d4",
+                        "surface-tint": "#4c56af",
+                        "on-primary-fixed": "#000767",
+                        "primary-fixed": "#e0e0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "container-max": "1200px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "16px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "label-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pulse-ring {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .5; transform: scale(1.1); box-shadow: 0 0 0 20px rgba(255, 153, 51, 0.4); }
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) - Mobile Adaptation -->
+<header class="bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center w-full px-margin-mobile h-16 max-w-container-max mx-auto top-0 z-50">
+<div class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">
+            Voice for Livelihood
+        </div>
+<div class="flex items-center gap-stack-sm">
+<button class="text-primary dark:text-primary-fixed hover:bg-surface-container-high transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</button>
+<button class="text-primary dark:text-primary-fixed hover:bg-surface-container-high transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col items-center justify-between px-margin-mobile py-stack-lg relative overflow-hidden">
+<!-- Language Switcher / Status -->
+<div class="w-full max-w-md bg-surface-container-low border border-outline-variant rounded-xl p-4 flex justify-between items-center z-10 shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Current Language</span>
+<span class="font-label-lg text-label-lg text-on-surface">English (India)</span>
+</div>
+<button class="font-label-sm text-label-sm text-primary border border-primary px-4 py-2 rounded-lg hover:bg-primary hover:text-on-primary transition-colors">
+                Change
+            </button>
+</div>
+<!-- Conversation History Area (Simplified for Home) -->
+<div class="w-full max-w-md flex-grow flex flex-col justify-end mb-stack-lg space-y-4 z-10">
+<!-- Assistant Bubble -->
+<div class="bg-surface-container-highest rounded-2xl rounded-bl-none p-4 max-w-[85%] self-start border border-outline-variant">
+<p class="font-body-md text-body-md text-on-surface">Hello! I am your Sahayak. How can I help you with your livelihood and skill development today?</p>
+</div>
+<!-- Example Suggestion Chips -->
+<div class="flex flex-wrap gap-2 mt-2">
+<button class="font-label-sm text-label-sm bg-surface-container border border-outline-variant text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-surface-container-high transition-colors">Find a job</button>
+<button class="font-label-sm text-label-sm bg-surface-container border border-outline-variant text-on-surface-variant px-3 py-1.5 rounded-full hover:bg-surface-container-high transition-colors">Learn a new skill</button>
+</div>
+</div>
+<!-- Central Microphone Control -->
+<div class="w-full flex justify-center items-center z-10 mb-stack-lg relative">
+<!-- Decorative rings for inactive state -->
+<div class="absolute inset-0 m-auto w-32 h-32 rounded-full border border-outline-variant opacity-50"></div>
+<div class="absolute inset-0 m-auto w-40 h-40 rounded-full border border-outline-variant opacity-25"></div>
+<button class="w-24 h-24 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-primary-container z-20" id="mic-button">
+<span class="material-symbols-outlined text-4xl" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface-variant text-center z-10">Tap to speak</p>
+</main>
+<!-- SideNavBar (Suppressed for Mobile Destination View, using Bottom Nav conceptually if this was a full app shell, but prompt requested Home screen focus. We will omit the side nav completely for mobile as per rules.) -->
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-container-highest dark:bg-surface-dim border-t border-outline-variant w-full py-stack-md px-margin-mobile flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left mt-auto">
+<div class="font-label-sm text-label-sm text-secondary dark:text-secondary-fixed-dim">
+            © 2024 Voice for Livelihood | Official Prototype
+        </div>
+<div class="flex gap-4">
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Accessibility</a>
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+<script>
+        // Simple interaction for the mic button
+        const micBtn = document.getElementById('mic-button');
+        let isListening = false;
+
+        micBtn.addEventListener('click', () => {
+            isListening = !isListening;
+            if (isListening) {
+                micBtn.classList.add('pulse-ring');
+                micBtn.classList.remove('bg-primary');
+                micBtn.classList.add('bg-tertiary-container'); // Indicating active state
+                micBtn.querySelector('span').style.color = '#FF9933'; // Saffron accent requested in guidance
+            } else {
+                micBtn.classList.remove('pulse-ring');
+                micBtn.classList.add('bg-primary');
+                micBtn.classList.remove('bg-tertiary-container');
+                micBtn.querySelector('span').style.color = '';
+            }
+        });
+    </script>
+</body></html>

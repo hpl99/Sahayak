@@ -1,0 +1,333 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Training Journey - Sahayak</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#2d1500",
+                      "primary-fixed": "#e0e0ff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed": "#2e1500",
+                      "primary": "#000666",
+                      "on-tertiary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed": "#000767",
+                      "on-error": "#ffffff",
+                      "secondary-fixed-dim": "#c4c7c9",
+                      "secondary-fixed": "#e0e3e5",
+                      "error": "#ba1a1a",
+                      "surface-variant": "#e4e2e1",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#c6c5d4",
+                      "primary-fixed-dim": "#bdc2ff",
+                      "tertiary-fixed": "#ffdcc2",
+                      "surface-container-high": "#eae8e7",
+                      "on-background": "#1b1c1c",
+                      "on-secondary-fixed": "#191c1e",
+                      "background": "#fbf9f8",
+                      "surface-container-highest": "#e4e2e1",
+                      "on-surface-variant": "#454652",
+                      "surface-dim": "#dcd9d9",
+                      "secondary-container": "#e0e3e5",
+                      "inverse-surface": "#303030",
+                      "on-secondary-container": "#626567",
+                      "surface-bright": "#fbf9f8",
+                      "on-secondary-fixed-variant": "#444749",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb77a",
+                      "inverse-primary": "#bdc2ff",
+                      "outline": "#767683",
+                      "inverse-on-surface": "#f3f0f0",
+                      "surface-container-low": "#f6f3f2",
+                      "surface-tint": "#4c56af",
+                      "error-container": "#ffdad6",
+                      "surface-container": "#f0eded",
+                      "surface": "#fbf9f8",
+                      "primary-container": "#1a237e",
+                      "tertiary-container": "#4c2600",
+                      "on-primary-container": "#8690ee",
+                      "on-tertiary-fixed-variant": "#6d3a00",
+                      "on-primary-fixed-variant": "#343d96",
+                      "on-tertiary-container": "#df8017",
+                      "on-surface": "#1b1c1c",
+                      "secondary": "#5c5f61"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "stack-lg": "32px",
+                      "unit": "8px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "40px",
+                      "stack-sm": "8px",
+                      "gutter": "24px",
+                      "container-max": "1200px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "display": ["Inter"],
+                      "label-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                      "label-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "body-md": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar (Web only) -->
+<header class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed border-b border-outline-variant dark:border-outline hidden md:flex justify-between items-center w-full px-margin-desktop h-16 max-w-container-max mx-auto z-50">
+<div class="flex items-center gap-4">
+<span class="text-headline-md font-headline-md font-bold text-primary dark:text-primary-fixed">Sahayak</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-2 py-1 rounded text-xs font-bold tracking-wider uppercase ml-4">Prototype / Demonstration</span>
+</div>
+<div class="flex gap-4 items-center">
+<button class="font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-high transition-colors px-3 py-2 rounded-lg">Demo Mode</button>
+<button class="hover:bg-surface-container-high transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+</button>
+<button class="hover:bg-surface-container-high transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed border-r border-outline-variant dark:border-outline w-64 h-full p-stack-md z-40 fixed left-0 top-16 bottom-0 overflow-y-auto">
+<div class="mb-stack-lg">
+<h2 class="font-headline-md text-headline-md text-primary font-bold">Sahayak</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Livelihood &amp; Skill Development</p>
+</div>
+<div class="flex flex-col gap-2 flex-1">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+                    Voice Assistant
+                </a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                    Beneficiary Profile
+                </a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="moving">moving</span>
+                    Skill Pathways
+                </a>
+<a class="flex items-center gap-stack-md bg-primary text-on-primary rounded-xl px-4 py-3 font-label-lg text-label-lg opacity-80 transition-all scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+                    Training
+                </a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+                    Follow-up
+                </a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+                    Attendance
+                </a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                    Resume
+                </a>
+</div>
+<button class="mt-auto w-full bg-primary text-on-primary rounded-xl px-4 py-4 font-label-lg text-label-lg hover:bg-primary-container transition-colors flex justify-center items-center gap-2 min-h-[56px]">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+                Start Voice Assistant
+            </button>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full md:ml-64 bg-surface-container-lowest p-margin-mobile md:p-margin-desktop overflow-y-auto">
+<!-- Breadcrumbs -->
+<nav class="flex items-center text-on-surface-variant font-label-sm text-label-sm mb-stack-md">
+<a class="hover:text-primary underline" href="#">Home</a>
+<span class="material-symbols-outlined mx-2 text-sm" data-icon="chevron_right">chevron_right</span>
+<span class="text-on-background">Training Journey</span>
+</nav>
+<header class="mb-stack-lg border-b border-outline-variant pb-stack-md">
+<h1 class="font-headline-lg text-headline-lg md:font-display md:text-display text-primary mb-2">Training Journey</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Track your progress and upcoming milestones.</p>
+</header>
+<div class="max-w-4xl mx-auto space-y-stack-lg">
+<!-- Timeline Section -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg shadow-sm">
+<h2 class="font-headline-md text-headline-md text-on-background mb-stack-lg border-b border-surface-variant pb-stack-sm">Current Progress</h2>
+<div class="relative">
+<!-- Connecting Line -->
+<div class="absolute left-6 top-8 bottom-8 w-1 bg-surface-variant z-0"></div>
+<!-- Active Line Progress -->
+<div class="absolute left-6 top-8 h-1/2 w-1 bg-primary z-0"></div>
+<div class="space-y-stack-md relative z-10">
+<!-- Step 1: Recommended -->
+<div class="flex gap-4 items-start">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center border-4 border-surface-container-lowest shadow-sm">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Recommended</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Based on your skills assessment.</p>
+<span class="text-sm text-outline mt-1 block">Completed on Oct 12, 2023</span>
+</div>
+</div>
+<!-- Step 2: Enrolled -->
+<div class="flex gap-4 items-start">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary text-on-primary flex items-center justify-center border-4 border-surface-container-lowest shadow-sm">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Enrolled</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Registration confirmed for NSQF Level 4.</p>
+<span class="text-sm text-outline mt-1 block">Completed on Oct 15, 2023</span>
+</div>
+</div>
+<!-- Step 3: Training in Progress (Current) -->
+<div class="flex gap-4 items-start">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant flex items-center justify-center border-4 border-surface-container-lowest shadow-sm ring-2 ring-tertiary-fixed ring-offset-2">
+<span class="material-symbols-outlined" data-icon="school" data-weight="fill" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<div class="pt-2 flex-1 bg-surface-container-low p-4 rounded-lg border border-outline-variant">
+<h3 class="font-label-lg text-label-lg text-primary font-bold">Training in Progress</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-2">Currently completing core modules.</p>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-variant rounded-full h-2 mb-1">
+<div class="bg-primary h-2 rounded-full" style="width: 45%"></div>
+</div>
+<div class="flex justify-between text-xs text-outline font-label-sm">
+<span class="">45% Completed</span>
+<span class="">Est. Completion: Dec 2023</span>
+</div>
+</div>
+</div>
+<!-- Step 4: Assessment -->
+<div class="flex gap-4 items-start opacity-60">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Assessment</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Final practical and theory exams.</p>
+</div>
+</div>
+<!-- Step 5: Completed -->
+<div class="flex gap-4 items-start opacity-60">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined" data-icon="workspace_premium">workspace_premium</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Completed</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Certification awarded.</p>
+</div>
+</div>
+<!-- Step 6: Employment Follow-up -->
+<div class="flex gap-4 items-start opacity-60">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center border-4 border-surface-container-lowest">
+<span class="material-symbols-outlined" data-icon="work">work</span>
+</div>
+<div class="pt-2 flex-1">
+<h3 class="font-label-lg text-label-lg text-on-background">Employment Follow-up</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Placement assistance and tracking.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Detailed Training Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm flex flex-col md:flex-row">
+<div class="md:w-1/3 bg-surface-container h-48 md:h-auto relative">
+<img class="w-full h-full object-cover absolute inset-0" data-alt="A brightly lit, modern industrial training center showing an instructor demonstrating electrical wiring on a specialized training board to a focused student. High contrast light mode aesthetic, clean environment, conveying skill building and reliable government training programs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFjyv8UYxlpqdv7yP5UAgCcKt1GPczRVaVWgZdje6tXnpAP7Qg-v_bf3qxyEy654IXBTG69MxKcrhN4PpOD8o8FeuDnqaZRCEBKrFMMCBUMEicK-ppiQdPIIkql_TE5G7Da6dRHC43hZyrRgvB6wavxGTYNnN2SHKX2yUoSbE9rbsBef5iaI05D8DhjNZeVTnEo8PIKzD3MoUrf_oeOKbiMEaPGxN4pAW0x6iZHVPXaAZ5aufODBW9">
+</div>
+<div class="p-stack-lg md:w-2/3 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-sm text-label-sm uppercase tracking-wide">Active Enrollment</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span> 3 Months left
+                                </span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-background mb-1">Electrician — NSQF Level 4</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-md">Advanced vocational training covering domestic and industrial wiring, fault finding, and safety protocols adhering to national standards.</p>
+<div class="grid grid-cols-2 gap-4 mb-stack-md">
+<div>
+<span class="block text-outline font-label-sm text-label-sm">Training Center</span>
+<span class="font-body-md text-body-md text-on-background">National Skill Training Institute, Delhi</span>
+</div>
+<div>
+<span class="block text-outline font-label-sm text-label-sm">Next Class</span>
+<span class="font-body-md text-body-md text-on-background">Tomorrow, 10:00 AM</span>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant flex flex-col sm:flex-row gap-4">
+<button class="bg-primary text-on-primary font-label-lg text-label-lg rounded-lg px-6 py-3 min-h-[56px] flex-1 flex justify-center items-center hover:bg-primary-fixed-variant hover:text-on-primary-fixed-variant transition-colors shadow-sm hover:shadow-md">
+                                View Training Pathway
+                            </button>
+<button class="border-2 border-primary text-primary font-label-lg text-label-lg rounded-lg px-6 py-3 min-h-[56px] flex-1 flex justify-center items-center hover:bg-primary-fixed transition-colors">
+                                Download Syllabus
+                            </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Spacer for mobile nav -->
+<div class="h-24 md:hidden"></div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-dim text-secondary dark:text-secondary-fixed-dim border-t border-outline-variant w-full py-stack-md px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-4 z-50 md:relative fixed bottom-0 hidden md:flex">
+<div class="font-label-lg text-label-lg font-bold">© 2024 Sahayak | Official Prototype</div>
+<div class="flex gap-4 font-label-sm text-label-sm">
+<a class="text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Accessibility</a>
+<a class="text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+<!-- Bottom Nav for Mobile -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-outline-variant flex justify-around items-center h-16 z-50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-primary border-t-2 border-primary" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="text-[10px] font-bold mt-1">Training</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+<span class="text-[10px] font-medium mt-1">Voice</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-medium mt-1">Profile</span>
+</a>
+</nav>
+
+
+</body></html>

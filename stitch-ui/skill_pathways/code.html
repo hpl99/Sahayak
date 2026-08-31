@@ -1,0 +1,288 @@
+<!DOCTYPE html><html class="h-full" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Sahayak - Skill Pathways</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "on-secondary-container": "#626567",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "tertiary-fixed-dim": "#ffb77a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface": "#fbf9f8",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed-variant": "#343d96",
+                        "surface-container-highest": "#e4e2e1",
+                        "background": "#fbf9f8",
+                        "on-secondary-fixed-variant": "#444749",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#4c56af",
+                        "on-surface-variant": "#454652",
+                        "primary": "#000666",
+                        "on-secondary": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "surface-variant": "#e4e2e1",
+                        "outline-variant": "#c6c5d4",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#e0e0ff",
+                        "inverse-primary": "#bdc2ff",
+                        "inverse-on-surface": "#f3f0f0",
+                        "surface-container-high": "#eae8e7",
+                        "tertiary": "#2d1500",
+                        "on-tertiary-container": "#df8017",
+                        "surface-bright": "#fbf9f8",
+                        "on-primary-container": "#8690ee",
+                        "tertiary-container": "#4c2600",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-primary-fixed": "#000767",
+                        "tertiary-fixed": "#ffdcc2",
+                        "on-error": "#ffffff",
+                        "secondary": "#5c5f61",
+                        "outline": "#767683",
+                        "on-tertiary-fixed-variant": "#6d3a00",
+                        "primary-container": "#1a237e",
+                        "on-surface": "#1b1c1c",
+                        "on-background": "#1b1c1c",
+                        "on-tertiary-fixed": "#2e1500",
+                        "secondary-fixed": "#e0e3e5",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#303030",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-container": "#e0e3e5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "40px",
+                        "stack-sm": "8px",
+                        "gutter": "24px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "unit": "8px",
+                        "container-max": "1200px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "body-md": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "label-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-full flex flex-col md:flex-row overflow-hidden">
+<!-- TopNavBar (Mobile Only) -->
+<header class="md:hidden flex justify-between items-center w-full px-margin-mobile h-16 bg-surface border-b border-outline-variant z-50 shrink-0">
+<div class="font-headline-md text-headline-md font-bold text-primary truncate">Voice for Livelihood</div>
+<div class="flex gap-stack-sm items-center">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high transition-colors p-2 rounded-full">language</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high transition-colors p-2 rounded-full">info</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant ml-2 whitespace-nowrap">Demo Mode</span>
+</div>
+</header>
+<!-- SideNavBar (Desktop) / Hidden Mobile -->
+<aside class="hidden md:flex fixed left-0 top-0 h-full flex-col p-stack-md z-40 w-64 bg-surface-container-low border-r border-outline-variant shrink-0">
+<div class="mb-stack-lg px-2">
+<h1 class="font-headline-md text-headline-md text-primary font-bold">Voice for Livelihood</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Livelihood &amp; Skill Development</p>
+</div>
+<nav class="flex-1 overflow-y-auto flex flex-col gap-unit">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">mic</span>
+<span class="">Voice Assistant</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="">Beneficiary Profile</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-stack-md bg-primary text-on-primary rounded-xl px-4 py-3 font-label-lg text-label-lg scale-95 duration-150 shadow-[0_4px_14px_0_rgba(0,6,102,0.2)]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">moving</span>
+<span class="">Skill Pathways</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="">Training</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">history_edu</span>
+<span class="">Follow-up</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="">Attendance</span>
+</a>
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-xl px-4 py-3 font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="">Resume</span>
+</a>
+</nav>
+<div class="mt-auto pt-stack-lg">
+<button class="w-full bg-primary text-on-primary font-label-lg text-label-lg py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-2 h-[56px]">
+<span class="material-symbols-outlined">mic</span>
+                Start Voice Assistant
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col h-full overflow-hidden bg-background relative">
+<!-- TopAppBar (Desktop) -->
+<header class="hidden md:flex justify-between items-center w-full px-margin-desktop h-16 max-w-container-max mx-auto bg-surface border-b border-outline-variant shrink-0 z-30">
+<div class="font-headline-md text-headline-md font-bold text-primary">Skill Pathways</div>
+<div class="flex gap-stack-md items-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant px-3 py-1 bg-surface-container-high rounded-full">Demo Mode</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high transition-colors p-2 rounded-full">language</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-container-high transition-colors p-2 rounded-full">info</span>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<div class="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop w-full max-w-container-max mx-auto">
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit">Recommended Skill Pathways</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">Recommendations are based on your stated skills, interests, education and local demand.</p>
+</div>
+<!-- Bento Grid Layout for Cards -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-stack-lg">
+<!-- Primary Recommendation Card (Large) -->
+<article class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-gutter hover:shadow-[0_4px_20px_rgba(0,6,102,0.05)] transition-shadow group flex flex-col relative overflow-hidden">
+<!-- Subtle accent bar -->
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<div class="flex justify-between items-start mb-stack-md">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-1">Electrician (Domestic)</h3>
+<div class="flex flex-wrap gap-2 items-center font-label-sm text-label-sm text-on-surface-variant">
+<span class="bg-surface-container-high px-2 py-1 rounded">NSQF Level 4</span>
+<span class="bg-surface-container-high px-2 py-1 rounded">Power Sector</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-4xl opacity-20">bolt</span>
+</div>
+<div class="grid grid-cols-2 gap-stack-md mb-stack-lg bg-surface-container-low p-stack-md rounded-lg">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Local Demand</p>
+<p class="font-body-lg text-body-lg font-semibold text-[#16a34a] flex items-center gap-1">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">trending_up</span> HIGH
+                            </p>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Avg. Monthly Earning</p>
+<p class="font-body-lg text-body-lg font-semibold text-on-surface">₹14,000</p>
+</div>
+</div>
+<div class="mb-stack-lg flex-1">
+<p class="font-label-lg text-label-lg text-on-surface mb-stack-sm">Why this match?</p>
+<ul class="space-y-2">
+<li class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Matches your electrical experience
+                            </li>
+<li class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Relevant to your interests
+                            </li>
+<li class="flex items-start gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-primary text-[20px] mt-1" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                                Strong local demand
+                            </li>
+</ul>
+</div>
+<div class="mt-auto">
+<button class="bg-primary text-on-primary font-label-lg text-label-lg px-6 py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center justify-center gap-2 h-[56px] w-full sm:w-auto">
+                            View pathway
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Secondary Cards Column -->
+<div class="flex flex-col gap-gutter">
+<!-- Secondary Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-[0_4px_20px_rgba(0,6,102,0.05)] transition-shadow flex flex-col h-full">
+<h4 class="font-headline-md text-headline-md text-on-surface mb-2">Driving cum Logistics Assistant</h4>
+<div class="flex gap-2 items-center font-label-sm text-label-sm text-on-surface-variant mb-stack-md">
+<span class="bg-surface-container-high px-2 py-1 rounded">NSQF Level 3</span>
+</div>
+<div class="mt-auto pt-stack-md border-t border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-1 text-[#16a34a] font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> Medium Demand
+                            </div>
+<button class="text-primary font-label-lg text-label-lg hover:underline flex items-center">
+                                View
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</article>
+<!-- Secondary Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md hover:shadow-[0_4px_20px_rgba(0,6,102,0.05)] transition-shadow flex flex-col h-full">
+<h4 class="font-headline-md text-headline-md text-on-surface mb-2">Solar Panel Installer</h4>
+<div class="flex gap-2 items-center font-label-sm text-label-sm text-on-surface-variant mb-stack-md">
+<span class="bg-surface-container-high px-2 py-1 rounded">NSQF Level 4</span>
+</div>
+<div class="mt-auto pt-stack-md border-t border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-1 text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">eco</span> Emerging Sector
+                            </div>
+<button class="text-primary font-label-lg text-label-lg hover:underline flex items-center">
+                                View
+                                <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</article>
+</div>
+</div>
+<!-- Disclaimer -->
+<div class="bg-surface-container-high p-stack-md rounded-lg flex items-start gap-stack-sm mt-stack-lg">
+<span class="material-symbols-outlined text-on-surface-variant">info</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Prototype data / source information shown for demonstration.</p>
+</div>
+</div>
+<!-- Footer (Desktop) -->
+<footer class="hidden md:flex w-full py-stack-md px-margin-desktop bg-surface-container-highest border-t border-outline-variant justify-between items-center shrink-0">
+<span class="font-label-lg text-label-lg font-bold text-secondary">© 2024 Sahayak | Official Prototype</span>
+<div class="flex gap-gutter">
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Accessibility</a>
+<a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+
+
+</body></html>

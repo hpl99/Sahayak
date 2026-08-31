@@ -158,8 +158,8 @@ with st.sidebar:
         """
         <div style="margin-bottom: 20px; padding: 0 4px;">
             <div style="display: flex; align-items: center; gap: 8px; color: #000666;">
-                <span class="material-symbols-outlined" style="font-size: 26px;">mic</span>
-                <span style="font-size: 20px; font-weight: 700; color: #000666;">Voice for Livelihood</span>
+                <span style="font-size: 22px;">🎙️</span>
+                <span style="font-size: 19px; font-weight: 700; color: #000666;">Voice for Livelihood</span>
             </div>
             <p style="font-size: 13px; color: #454652; margin: 4px 0 0 0;">Livelihood &amp; Skill Development</p>
         </div>
@@ -199,29 +199,38 @@ with st.sidebar:
 
 
 # ===========================================================================
-# PAGE: VOICE ASSISTANT (EXACT STITCH UI DESIGN - PHASE 4C)
+# PAGE: VOICE ASSISTANT (UNIFIED STITCH UI DESIGN - PHASE 4C)
 # ===========================================================================
 
 if page == "Voice Assistant":
 
     render_stitch_breadcrumb("Voice Assistant")
 
-    with st.sidebar:
-        st.header("Assistant Settings")
+    render_stitch_header(
+        "Tell us about your work, skills and interests.",
+        "We'll help you find suitable NSQF skill pathways matched to local district demand.",
+        demo_mode=True,
+    )
+
+    # Inline Assistant Settings Bar (Single unified control strip)
+    col_lang, col_dist, col_reset = st.columns([3, 3, 2])
+    with col_lang:
         assistant_lang = st.selectbox(
             "Conversation Language",
             list(LANGUAGES.keys()),
             index=0,
             key="assistant_lang_select",
         )
+    with col_dist:
         assistant_district = st.selectbox(
             "District for Local Demand",
-            ["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"],
+            DISTRICTS,
             index=0,
             key="assistant_district_select",
         )
-
-        if st.button("🔄 Start New Conversation", type="secondary"):
+    with col_reset:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 New Chat", type="secondary", use_container_width=True):
             st.session_state.conv_session = ConversationSession(
                 language=assistant_lang,
                 district=assistant_district,
@@ -230,7 +239,7 @@ if page == "Voice Assistant":
             st.session_state.spoken_rec_audio = None
             st.rerun()
 
-    # Initialize session state if missing
+    # Initialize session state if missing or language changed
     if "conv_session" not in st.session_state or st.session_state.conv_session.language != assistant_lang:
         st.session_state.conv_session = ConversationSession(
             language=assistant_lang,
@@ -240,20 +249,13 @@ if page == "Voice Assistant":
     session: ConversationSession = st.session_state.conv_session
     session.district = assistant_district
 
-    # Stitch Top Header
-    render_stitch_header(
-        "Tell us about your work, skills and interests.",
-        "We'll help you find suitable skill pathways.",
-        demo_mode=True,
-    )
-
     # Status Pills
     st.markdown(
         f"""
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
-            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">language</span> Language ({assistant_lang})</span>
-            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">location_on</span> District ({assistant_district})</span>
-            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">person</span> Profile ({session.beneficiary_id})</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 18px 0;">
+            <span class="stitch-pill">🌐 Language: <b>{assistant_lang}</b></span>
+            <span class="stitch-pill">📍 District: <b>{assistant_district}</b></span>
+            <span class="stitch-pill">👤 ID: <b>{session.beneficiary_id}</b></span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -268,8 +270,16 @@ if page == "Voice Assistant":
             step_name = STEP_LABELS.get(session.current_step, session.current_step)
 
             with st.container(border=True):
-                st.markdown("<h3 style='font-size: 20px; font-weight: 700; color: #000666; margin-bottom: 12px; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px;'>Let's understand your livelihood</h3>", unsafe_allow_html=True)
-                
+                st.markdown(
+                    f"""
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px; margin-bottom: 12px;">
+                        <span style="font-size: 17px; font-weight: 700; color: #000666;">Let's understand your livelihood</span>
+                        <span style="font-size: 13px; font-weight: 600; color: #767683;">Step {session.current_step_idx + 1} of 5: {step_name}</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
                 # Assistant Message Bubble
                 st.markdown(
                     f"""
@@ -280,7 +290,7 @@ if page == "Voice Assistant":
                     unsafe_allow_html=True,
                 )
 
-                # Optional TTS button to hear current question
+                # Hear Question TTS button
                 if st.button("🔊 Hear Question (TTS)", key=f"speak_q_{session.current_step_idx}"):
                     with st.spinner("Synthesizing question audio..."):
                         tts_bundle = get_tts_bundle()
@@ -300,35 +310,37 @@ if page == "Voice Assistant":
                         <div class="stitch-mic-ring-outer"></div>
                         <div class="stitch-mic-ring-inner"></div>
                         <div class="stitch-mic-button-core">
-                            <span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">mic</span>
+                            <span style="font-size: 34px; line-height: 1;">🎙️</span>
                         </div>
                     </div>
-                    <div style="text-align: center; font-size: 15px; font-weight: 600; color: #454652; margin-bottom: 12px;">
-                        <span class="stitch-mic-dot"></span> 🎙️ Start speaking in <b>{assistant_lang}</b>
+                    <div style="text-align: center; font-size: 14px; font-weight: 600; color: #454652; margin-bottom: 10px;">
+                        <span class="stitch-mic-dot"></span> 🎙️ Speak naturally in <b>{assistant_lang}</b>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
-                # Voice input via audio_input or file upload
+                # Voice recording widget
                 audio_val = None
                 if hasattr(st, "audio_input"):
-                    audio_val = st.audio_input("Record your answer", key=f"mic_turn_{session.current_step_idx}")
+                    audio_val = st.audio_input("Record your answer", label_visibility="collapsed", key=f"mic_turn_{session.current_step_idx}")
 
-                upload_val = st.file_uploader(
-                    "Or upload an audio clip (WAV/MP3)",
-                    type=["wav", "mp3", "ogg", "flac"],
-                    key=f"file_turn_{session.current_step_idx}",
-                )
+                with st.expander("📁 Upload recorded audio file instead (WAV/MP3/FLAC)", expanded=False):
+                    upload_val = st.file_uploader(
+                        "Upload audio clip",
+                        type=["wav", "mp3", "ogg", "flac"],
+                        label_visibility="collapsed",
+                        key=f"file_turn_{session.current_step_idx}",
+                    )
 
                 audio_to_process = audio_val or upload_val
 
-                st.caption("🛠️ Debug / Manual text input fallback:")
-                text_turn = st.text_input("Type spoken response directly:", key=f"text_turn_{session.current_step_idx}")
+                c_sub, _ = st.columns([2, 3])
+                submit_audio = c_sub.button("🎙️ Submit Voice", type="primary", key=f"sub_audio_{session.current_step_idx}", disabled=(audio_to_process is None), use_container_width=True)
 
-                c1, c2 = st.columns([1, 4])
-                submit_audio = c1.button("🎙️ Submit Voice", type="primary", key=f"sub_audio_{session.current_step_idx}", disabled=(audio_to_process is None))
-                submit_text = c2.button("Submit Text", type="secondary", key=f"sub_text_{session.current_step_idx}", disabled=(not text_turn.strip()))
+                with st.expander("⌨️ Manual text input fallback (accessibility / debug)", expanded=False):
+                    text_turn = st.text_input("Type spoken response directly:", label_visibility="collapsed", key=f"text_turn_{session.current_step_idx}")
+                    submit_text = st.button("Submit Text", type="secondary", key=f"sub_text_{session.current_step_idx}", disabled=(not text_turn.strip()))
 
                 if submit_audio and audio_to_process:
                     with st.spinner("Transcribing with AI4Bharat Indic Conformer ASR..."):
@@ -373,9 +385,9 @@ if page == "Voice Assistant":
             with st.container(border=True):
                 st.markdown(
                     """
-                    <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px; margin-bottom: 12px;">
-                        <span class="material-symbols-outlined" style="color: #000666; font-size: 20px;">forum</span>
-                        <span style="font-size: 16px; font-weight: 700; color: #000666;">Recent Dialogue</span>
+                    <div style="display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 10px;">
+                        <span style="font-size: 16px;">💬</span>
+                        <span style="font-size: 15px; font-weight: 700; color: #000666;">Recent Dialogue</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -385,11 +397,11 @@ if page == "Voice Assistant":
                     for item in session.history[-3:]:
                         st.markdown(
                             f"""
-                            <div style="margin-bottom: 8px;">
-                                <div style="background-color: #EAE8E7; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #1B1C1C; margin-bottom: 4px;">
+                            <div style="margin-bottom: 6px;">
+                                <div style="background-color: #EAE8E7; padding: 6px 10px; border-radius: 6px; font-size: 12.5px; color: #1B1C1C; margin-bottom: 3px;">
                                     🤖 {item['question']}
                                 </div>
-                                <div style="background-color: #F6F3F2; border: 1px solid #C6C5D4; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #1B1C1C; text-align: right;">
+                                <div style="background-color: #F6F3F2; border: 1px solid #C6C5D4; padding: 6px 10px; border-radius: 6px; font-size: 12.5px; color: #1B1C1C; text-align: right;">
                                     🗣️ "{item['transcript']}"
                                 </div>
                             </div>
@@ -397,21 +409,22 @@ if page == "Voice Assistant":
                             unsafe_allow_html=True,
                         )
                 else:
-                    st.caption("Dialogue will appear as you speak.")
+                    st.caption("Dialogue history will appear as you speak.")
 
             # Card 2: Extracted Information & Progress
             with st.container(border=True):
                 st.markdown(
                     """
-                    <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px; margin-bottom: 12px;">
-                        <span class="material-symbols-outlined" style="color: #000666; font-size: 20px;">memory</span>
-                        <span style="font-size: 16px; font-weight: 700; color: #000666;">Extracted Information</span>
+                    <div style="display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 10px;">
+                        <span style="font-size: 16px;">📊</span>
+                        <span style="font-size: 15px; font-weight: 700; color: #000666;">Extracted Information</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
 
                 # Context chips
+                chip_emojis = {"work": "💼", "bolt": "⚡", "history": "📜", "group": "👥", "badge": "🎯"}
                 chips = []
                 if session.slots.get("current_livelihood"):
                     chips.append(("work", session.slots["current_livelihood"]))
@@ -425,8 +438,8 @@ if page == "Voice Assistant":
                     chips.append(("badge", session.slots["employment_preference"]))
 
                 if chips:
-                    chips_html = "".join([f'<span class="stitch-chip"><span class="material-symbols-outlined" style="font-size: 14px;">{icon}</span> {val}</span> ' for icon, val in chips])
-                    st.markdown(f"<div style='display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;'>{chips_html}</div>", unsafe_allow_html=True)
+                    chips_html = "".join([f'<span class="stitch-chip">{chip_emojis.get(icon, "•")} {val}</span> ' for icon, val in chips])
+                    st.markdown(f"<div style='display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;'>{chips_html}</div>", unsafe_allow_html=True)
 
                 prog = session.get_progress()
                 st.progress(prog, text=f"Progress: {int(prog * 100)}%")
@@ -434,9 +447,9 @@ if page == "Voice Assistant":
                 checklist = session.get_checklist()
                 for label, is_done, val in checklist:
                     if is_done:
-                        st.markdown(f"<div style='font-size: 13px; color: #006633; margin-bottom: 4px;'>✓ <b>{label}:</b> {val}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='font-size: 12.5px; color: #006633; margin-bottom: 3px;'>✓ <b>{label}:</b> {val}</div>", unsafe_allow_html=True)
                     else:
-                        st.markdown(f"<div style='font-size: 13px; color: #767683; margin-bottom: 4px;'>○ <b>{label}</b></div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='font-size: 12.5px; color: #767683; margin-bottom: 3px;'>○ <b>{label}</b></div>", unsafe_allow_html=True)
 
     # Conversation Completed -> Display Recommendation and Spoken Synthesis
     else:
@@ -770,14 +783,13 @@ elif page in ["Skill Pathways", "🎙️ Voice Recommendation"]:
 
 
 # ===========================================================================
-# PAGE 2: BENEFICIARY PROFILE (STITCH UI DESIGN - PHASE 4A)
+# PAGE 2: BENEFICIARY PROFILE (UNIFIED STITCH UI DESIGN - PHASE 4A/4C)
 # ===========================================================================
 
 elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
 
     render_stitch_breadcrumb("Beneficiary Profile")
 
-    # Top Header
     render_stitch_header(
         "Beneficiary Profile",
         "Manage personal background, education, and skills to unlock targeted NSQF pathways.",
@@ -854,7 +866,15 @@ elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
     # Stitch Profile Form Card
     with st.form("beneficiary_profile_form"):
         # Section 1: Personal Information
-        st.markdown("<h3 style='font-size: 18px; color: #000666; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 12px;'>📌 Personal Information</h3>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div style="display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 12px;">
+                <span style="font-size: 18px;">📌</span>
+                <span style="font-size: 16px; font-weight: 700; color: #000666;">Personal Information</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         col1, col2 = st.columns(2)
 
         with col1:
@@ -870,8 +890,8 @@ elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
             )
             district = st.selectbox(
                 "District / Location",
-                ["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"],
-                index=["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"].index(def_district) if def_district in ["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"] else 0,
+                DISTRICTS,
+                index=DISTRICTS.index(def_district) if def_district in DISTRICTS else 0,
             )
             language = st.selectbox(
                 "Preferred Language for Skilling",
@@ -880,7 +900,15 @@ elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
             )
 
         # Section 2: Education & Experience
-        st.markdown("<h3 style='font-size: 18px; color: #000666; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-top: 18px; margin-bottom: 12px;'>🎓 Education & Work Experience</h3>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div style="display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-top: 16px; margin-bottom: 12px;">
+                <span style="font-size: 18px;">🎓</span>
+                <span style="font-size: 16px; font-weight: 700; color: #000666;">Education &amp; Work Experience</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         col3, col4 = st.columns(2)
 
         with col3:
@@ -896,7 +924,15 @@ elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
             previous_work_experience = st.text_input("Previous Work Experience Details", value=def_prev_exp, placeholder="e.g. 2 years electrical wiring assistant")
 
         # Section 3: Skills & Preferences
-        st.markdown("<h3 style='font-size: 18px; color: #000666; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-top: 18px; margin-bottom: 12px;'>💡 Skills & Learning Preferences</h3>", unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div style="display: flex; align-items: center; gap: 6px; border-bottom: 2px solid #C6C5D4; padding-bottom: 6px; margin-top: 16px; margin-bottom: 12px;">
+                <span style="font-size: 18px;">💡</span>
+                <span style="font-size: 16px; font-weight: 700; color: #000666;">Skills &amp; Learning Preferences</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         skills = st.text_area(
             "Current Skills & Practical Abilities",
             value=def_skills,
@@ -931,7 +967,7 @@ elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
             )
             recommended_trade = st.text_input("Assigned / Recommended Trade (Optional)", value=def_trade)
 
-        submitted = st.form_submit_button("💾 Save / Update Profile", type="primary")
+        submitted = st.form_submit_button("💾 Save / Update Profile", type="primary", use_container_width=True)
 
         if submitted:
             if not name.strip():
@@ -1354,7 +1390,7 @@ elif page == "Attendance":
                 f"""
                 <div class="stitch-bento-card">
                     <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">person</span> Beneficiary
+                        👤 Beneficiary
                     </span>
                     <span style="font-size: 18px; font-weight: 700; color: #1B1C1C; margin-top: 6px;">{t_name}</span>
                     <span style="font-size: 12px; color: #454652; margin-top: 4px;">ID: {t_id}</span>
@@ -1367,7 +1403,7 @@ elif page == "Attendance":
                 f"""
                 <div class="stitch-bento-card">
                     <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">school</span> Training Module
+                        🎓 Training Module
                     </span>
                     <span style="font-size: 18px; font-weight: 700; color: #1B1C1C; margin-top: 6px;">{t_trade}</span>
                     <span style="font-size: 12px; color: #454652; margin-top: 4px;">Week 3 · Skill Practice</span>
@@ -1380,7 +1416,7 @@ elif page == "Attendance":
                 f"""
                 <div class="stitch-bento-card">
                     <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">calendar_today</span> Date
+                        📅 Date
                     </span>
                     <span style="font-size: 18px; font-weight: 700; color: #1B1C1C; margin-top: 6px;">Sep 1, 2026</span>
                     <span style="font-size: 12px; color: #454652; margin-top: 4px;">Session: 10:00 AM</span>
@@ -1393,10 +1429,10 @@ elif page == "Attendance":
                 f"""
                 <div class="stitch-bento-card">
                     <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">fact_check</span> Status
+                        📋 Status
                     </span>
                     <span style="font-size: 18px; font-weight: 700; color: #000666; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
-                        Pending <span class="material-symbols-outlined" style="font-size: 18px; color: #767683;">pending</span>
+                        ⏳ Pending
                     </span>
                     <span style="font-size: 12px; color: #454652; margin-top: 4px;">Awaiting spoken check</span>
                 </div>

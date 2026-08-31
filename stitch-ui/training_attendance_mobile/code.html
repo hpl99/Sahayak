@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Voice for Livelihood - Training Attendance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#e0e3e5",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#bdc2ff",
+                        "on-surface": "#1b1c1c",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb77a",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary": "#000666",
+                        "on-surface-variant": "#454652",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fbf9f8",
+                        "surface-dim": "#dcd9d9",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "surface": "#fbf9f8",
+                        "surface-bright": "#fbf9f8",
+                        "secondary-container": "#e0e3e5",
+                        "tertiary": "#2d1500",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-tertiary-fixed-variant": "#6d3a00",
+                        "primary-container": "#1a237e",
+                        "inverse-primary": "#bdc2ff",
+                        "inverse-on-surface": "#f3f0f0",
+                        "on-tertiary-fixed": "#2e1500",
+                        "on-primary-container": "#8690ee",
+                        "on-primary": "#ffffff",
+                        "on-secondary-container": "#626567",
+                        "inverse-surface": "#303030",
+                        "on-tertiary-container": "#df8017",
+                        "secondary-fixed-dim": "#c4c7c9",
+                        "outline": "#767683",
+                        "tertiary-fixed": "#ffdcc2",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-fixed-variant": "#444749",
+                        "surface-container-high": "#eae8e7",
+                        "surface-container": "#f0eded",
+                        "on-primary-fixed-variant": "#343d96",
+                        "tertiary-container": "#4c2600",
+                        "on-background": "#1b1c1c",
+                        "secondary": "#5c5f61",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c6c5d4",
+                        "surface-tint": "#4c56af",
+                        "on-primary-fixed": "#000767",
+                        "primary-fixed": "#e0e0ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "margin-desktop": "40px",
+                        "gutter": "24px",
+                        "container-max": "1200px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "16px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "label-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }],
+                        "body-lg": ["20px", { "lineHeight": "30px", "fontWeight": "400" }],
+                        "label-sm": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "display": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .pulse-ring {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: .5;
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full font-body-md antialiased md:hidden flex flex-col">
+<!-- Header (Suppressed main nav for transactional focused screen, basic header instead) -->
+<header class="w-full flex justify-between items-center px-margin-mobile py-stack-md bg-surface border-b border-outline-variant z-10 sticky top-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="arrow_back">arrow_back</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">Attendance</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-1 rounded">Demo Mode</span>
+</header>
+<!-- Main Content Area -->
+<main class="flex-grow flex flex-col items-center justify-center p-margin-mobile gap-stack-lg relative">
+<!-- Background Pattern -->
+<div class="absolute inset-0 opacity-5 pointer-events-none" style="background-image: radial-gradient(var(--tw-colors-primary) 1px, transparent 1px); background-size: 24px 24px;"></div>
+<!-- Instructional Text -->
+<div class="text-center max-w-[300px] z-10">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-stack-sm">Verify Presence</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Tap the microphone and read the numbers below clearly to confirm your attendance.</p>
+</div>
+<!-- Numeric Challenge -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-lg rounded-xl shadow-sm z-10 w-full flex justify-center">
+<div class="flex gap-4 items-center font-display text-display text-primary tracking-widest">
+<span>4</span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span>7</span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span>2</span>
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span>9</span>
+</div>
+</div>
+<!-- Voice Control -->
+<div class="relative flex justify-center items-center mt-stack-lg z-10">
+<!-- Pulsing outer ring -->
+<div class="absolute w-32 h-32 bg-tertiary-container opacity-20 rounded-full pulse-ring"></div>
+<!-- Microphone Button -->
+<button aria-label="Start recording" class="relative w-24 h-24 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 focus:outline-none focus:ring-4 focus:ring-primary-fixed-dim">
+<span class="material-symbols-outlined text-[48px]" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+<!-- Status Feedback (Simulated Success for Demo) -->
+<div class="mt-stack-lg w-full flex flex-col items-center gap-2 z-10">
+<div class="flex items-center gap-2 text-[#006633] bg-[#e6f4ea] px-4 py-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-lg text-label-lg">Attendance verified</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Session: Skill Pathways 101</span>
+</div>
+</main>
+<!-- Footer - Hidden on mobile transactional screen to focus on canvas -->
+</body></html>

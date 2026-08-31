@@ -1,0 +1,383 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Voice for Livelihood - Beneficiary Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#c4c7c9",
+                    "on-secondary-container": "#626567",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#bdc2ff",
+                    "tertiary-fixed-dim": "#ffb77a",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f6f3f2",
+                    "surface": "#fbf9f8",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#343d96",
+                    "surface-container-highest": "#e4e2e1",
+                    "background": "#fbf9f8",
+                    "on-secondary-fixed-variant": "#444749",
+                    "error": "#ba1a1a",
+                    "surface-tint": "#4c56af",
+                    "on-surface-variant": "#454652",
+                    "primary": "#000666",
+                    "on-secondary": "#ffffff",
+                    "surface-container": "#f0eded",
+                    "surface-variant": "#e4e2e1",
+                    "outline-variant": "#c6c5d4",
+                    "error-container": "#ffdad6",
+                    "primary-fixed": "#e0e0ff",
+                    "inverse-primary": "#bdc2ff",
+                    "inverse-on-surface": "#f3f0f0",
+                    "surface-container-high": "#eae8e7",
+                    "tertiary": "#2d1500",
+                    "on-tertiary-container": "#df8017",
+                    "surface-bright": "#fbf9f8",
+                    "on-primary-container": "#8690ee",
+                    "tertiary-container": "#4c2600",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-primary-fixed": "#000767",
+                    "tertiary-fixed": "#ffdcc2",
+                    "on-error": "#ffffff",
+                    "secondary": "#5c5f61",
+                    "outline": "#767683",
+                    "on-tertiary-fixed-variant": "#6d3a00",
+                    "primary-container": "#1a237e",
+                    "on-surface": "#1b1c1c",
+                    "on-background": "#1b1c1c",
+                    "on-tertiary-fixed": "#2e1500",
+                    "secondary-fixed": "#e0e3e5",
+                    "on-tertiary": "#ffffff",
+                    "inverse-surface": "#303030",
+                    "surface-dim": "#dcd9d9",
+                    "secondary-container": "#e0e3e5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "stack-md": "16px",
+                    "stack-lg": "32px",
+                    "unit": "8px",
+                    "container-max": "1200px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "display": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "body-md": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "label-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Modern form styles */
+        .gov-input {
+            width: 100%;
+            border: 2px solid #c6c5d4; /* outline-variant */
+            border-radius: 0.25rem;
+            padding: 12px 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 18px; /* body-md */
+            line-height: 28px;
+            color: #1b1c1c; /* on-surface */
+            background-color: #ffffff;
+            transition: all 0.2s ease-in-out;
+        }
+        .gov-input:focus {
+            outline: none;
+            border-color: #000666; /* primary */
+            box-shadow: 0 0 0 2px rgba(0, 6, 102, 0.1);
+        }
+        .gov-label {
+            display: block;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px; /* label-lg */
+            font-weight: 600;
+            color: #1b1c1c; /* on-surface */
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen flex flex-col md:flex-row">
+<!-- Mobile Top Navigation (Visible on mobile, hidden on md+) -->
+<header class="md:hidden bg-surface flex justify-between items-center w-full px-margin-mobile h-16 border-b border-outline-variant z-50 sticky top-0">
+<div class="font-headline-md font-bold text-primary">Voice for Livelihood</div>
+<div class="flex gap-stack-md">
+<span class="material-symbols-outlined text-primary text-2xl">language</span>
+<span class="material-symbols-outlined text-primary text-2xl">info</span>
+</div>
+</header>
+<!-- Desktop SideNavBar (Hidden on mobile, visible on md+) -->
+<nav class="hidden md:flex fixed left-0 top-0 h-full flex-col p-stack-md z-40 w-64 bg-surface-container-low border-r border-outline-variant">
+<div class="mb-stack-lg">
+<h1 class="font-headline-md text-primary font-bold">Voice for Livelihood</h1>
+<p class="font-label-sm text-on-surface-variant mt-stack-sm">Livelihood &amp; Skill Development</p>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-lg py-3 rounded-DEFAULT mb-stack-lg flex items-center justify-center gap-2 hover:bg-surface-tint transition-colors min-h-[56px]">
+<span class="material-symbols-outlined">mic</span> Start Voice Assistant
+        </button>
+<ul class="flex flex-col gap-2 flex-grow overflow-y-auto">
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="mic">mic</span> Voice Assistant
+                </a>
+</li>
+<li class="">
+<!-- ACTIVE TAB -->
+<a class="flex items-center gap-stack-md bg-primary text-on-primary rounded-xl px-4 py-3 font-label-lg scale-95 duration-150 shadow-[0_4px_12px_rgba(0,6,102,0.15)]" href="#">
+<span class="material-symbols-outlined fill-icon" data-icon="person" data-weight="fill">person</span> Beneficiary Profile
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="moving">moving</span> Skill Pathways
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span> Training
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span> Follow-up
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span> Attendance
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 font-label-lg transition-all hover:text-primary" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span> Resume
+                </a>
+</li>
+</ul>
+<div class="mt-auto pt-stack-md border-t border-outline-variant">
+<button class="flex items-center gap-stack-md text-on-surface-variant font-label-lg w-full px-4 py-3 rounded-xl hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">logout</span> Log Out
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow w-full md:ml-64 p-margin-mobile md:p-margin-desktop bg-surface max-w-container-max mx-auto">
+<!-- Desktop TopAppBar (Visible on md+) -->
+<header class="hidden md:flex justify-between items-center w-full mb-stack-lg border-b border-outline-variant pb-stack-md">
+<h2 class="font-headline-lg text-on-surface">Beneficiary Profile</h2>
+<div class="flex items-center gap-stack-md">
+<span class="font-label-lg text-primary mr-stack-sm">Demo Mode</span>
+<button aria-label="Language" class="p-2 rounded-full hover:bg-surface-container-high text-primary transition-colors">
+<span class="material-symbols-outlined">language</span>
+</button>
+<button aria-label="Info" class="p-2 rounded-full hover:bg-surface-container-high text-primary transition-colors">
+<span class="material-symbols-outlined">info</span>
+</button>
+</div>
+</header>
+<!-- Mobile Header (Visible on mobile) -->
+<div class="md:hidden mb-stack-lg mt-stack-md">
+<h2 class="font-headline-lg-mobile text-on-surface">Beneficiary Profile</h2>
+</div>
+<!-- Breadcrumbs -->
+<nav aria-label="Breadcrumb" class="mb-stack-lg">
+<ol class="flex items-center space-x-2 text-label-sm text-on-surface-variant">
+<li class=""><a class="hover:text-primary underline" href="#">Home</a></li>
+<li><span class="material-symbols-outlined text-[16px]">chevron_right</span></li>
+<li aria-current="page" class="font-semibold text-on-surface">Beneficiary Profile</li>
+</ol>
+</nav>
+<!-- Profile Completion Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-gutter mb-stack-lg shadow-sm">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-stack-md mb-stack-sm">
+<div>
+<h3 class="font-headline-md text-on-surface">Profile Completion</h3>
+<p class="font-body-md text-on-surface-variant mt-1">Complete your profile to unlock more targeted skill pathways.</p>
+</div>
+<div class="font-display text-primary">80%</div>
+</div>
+<!-- Progress Bar -->
+<div aria-valuemax="100" aria-valuemin="0" aria-valuenow="80" class="w-full bg-surface-container-high rounded-full h-4 mt-stack-md overflow-hidden" role="progressbar">
+<div class="bg-primary h-4 rounded-full" style="width: 80%"></div>
+</div>
+</section>
+<!-- Profile Form Card -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-gutter mb-stack-lg shadow-sm">
+<form action="#" method="POST">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-gutter gap-y-stack-md">
+<!-- Personal Information -->
+<div class="md:col-span-2 mb-stack-sm border-b border-outline-variant pb-stack-sm">
+<h3 class="font-headline-md text-primary">Personal Information</h3>
+</div>
+<div>
+<label class="gov-label" for="gov-id">Government ID Number (Aadhaar/PAN)</label>
+<input class="gov-input bg-surface-container-low" disabled="" id="gov-id" name="gov-id" type="text" value="XXXX-XXXX-1234">
+<p class="text-label-sm text-on-surface-variant mt-1">Verified via e-KYC</p>
+</div>
+<div>
+<label class="gov-label" for="full-name">Full Legal Name</label>
+<input class="gov-input" id="full-name" name="full-name" type="text" value="Ramesh Kumar">
+</div>
+<div>
+<label class="gov-label" for="age">Age</label>
+<input class="gov-input" id="age" name="age" type="number" value="28">
+</div>
+<div>
+<label class="gov-label" for="district">District/Location</label>
+<select class="gov-input" id="district" name="district">
+<option selected="" value="patna">Patna</option>
+<option value="gaya">Gaya</option>
+<option value="bhagalpur">Bhagalpur</option>
+<option value="muzaffarpur">Muzaffarpur</option>
+</select>
+</div>
+<!-- Education & Experience -->
+<div class="md:col-span-2 mt-stack-md mb-stack-sm border-b border-outline-variant pb-stack-sm">
+<h3 class="font-headline-md text-primary">Education &amp; Experience</h3>
+</div>
+<div>
+<label class="gov-label" for="education">Highest Education Level</label>
+<select class="gov-input" id="education" name="education">
+<option value="none">None</option>
+<option value="primary">Primary School</option>
+<option selected="" value="secondary">Secondary School (10th)</option>
+<option value="higher-secondary">Higher Secondary (12th)</option>
+<option value="diploma">Diploma/ITI</option>
+<option value="degree">Bachelor's Degree</option>
+</select>
+</div>
+<div>
+<label class="gov-label" for="current-livelihood">Current Livelihood Status</label>
+<select class="gov-input" id="current-livelihood" name="current-livelihood">
+<option value="unemployed">Unemployed</option>
+<option selected="" value="daily-wage">Daily Wage Laborer</option>
+<option value="self-employed">Self-Employed (Small Business)</option>
+<option value="salaried">Salaried Employee</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<label class="gov-label" for="experience">Work Experience Details</label>
+<textarea class="gov-input" id="experience" name="experience" rows="3">Worked as a construction helper for 3 years. Experienced in basic masonry and material handling.</textarea>
+</div>
+<!-- Skills & Preferences -->
+<div class="md:col-span-2 mt-stack-md mb-stack-sm border-b border-outline-variant pb-stack-sm">
+<h3 class="font-headline-md text-primary">Skills &amp; Preferences</h3>
+</div>
+<div>
+<label class="gov-label" for="skills">Current Skills</label>
+<input class="gov-input" id="skills" name="skills" type="text" value="Masonry, Basic Carpentry">
+<p class="text-label-sm text-on-surface-variant mt-1">Separate skills with a comma</p>
+</div>
+<div>
+<label class="gov-label" for="interests">Areas of Interest for Training</label>
+<input class="gov-input" id="interests" name="interests" type="text" value="Plumbing, Electrical Work">
+</div>
+<div>
+<label class="gov-label" for="language">Preferred Language for Training</label>
+<select class="gov-input" id="language" name="language">
+<option selected="" value="hindi">Hindi</option>
+<option value="english">English</option>
+<option value="bhojpuri">Bhojpuri</option>
+<option value="maithili">Maithili</option>
+</select>
+</div>
+<div>
+<label class="gov-label" for="preference">Work Preference</label>
+<select class="gov-input" id="preference" name="preference">
+<option selected="" value="local">Local District Only</option>
+<option value="state">Anywhere in State</option>
+<option value="national">Anywhere in India</option>
+</select>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="mt-stack-lg pt-stack-md border-t border-outline-variant flex flex-col sm:flex-row justify-end gap-stack-md">
+<button class="px-gutter py-3 min-h-[56px] border-2 border-primary text-primary font-label-lg rounded-DEFAULT hover:bg-surface-container-high transition-colors focus:ring-4 focus:ring-primary/20" type="button">
+                        Edit Profile
+                    </button>
+<button class="px-gutter py-3 min-h-[56px] bg-primary text-on-primary font-label-lg rounded-DEFAULT hover:bg-surface-tint transition-colors shadow-sm focus:ring-4 focus:ring-primary/20 flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined">save</span> Save Profile
+                    </button>
+</div>
+</form>
+</section>
+<!-- Footer Component -->
+<footer class="mt-stack-lg border-t border-outline-variant pt-stack-md pb-stack-lg flex flex-col md:flex-row justify-between items-center gap-stack-md text-label-sm text-on-secondary-fixed-variant">
+<div class="">© 2024 Sahayak | Official Prototype</div>
+<div class="flex gap-stack-md">
+<a class="hover:text-primary transition-colors underline" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors underline" href="#">Accessibility</a>
+<a class="hover:text-primary transition-colors underline" href="#">Terms of Service</a>
+</div>
+</footer>
+</main>
+<!-- Mobile Bottom Navigation Shell (Visible on mobile, hidden on md+) -->
+<!-- Suppressed in this context as per rules: User is in a deep "Details/Settings" view (Beneficiary Profile) which implies focus, though it's technically a main nav item, a profile form usually benefits from canvas space on mobile. We'll include it for structural consistency with the prompt requesting SideNav active state mapping, translating that to BottomNav for mobile. -->
+<nav class="md:hidden fixed bottom-0 w-full bg-surface-container-lowest border-t border-outline-variant flex justify-around items-center h-16 pb-safe z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<span class="text-[10px] font-medium mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">mic</span>
+<span class="text-[10px] font-medium mt-1">Voice</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-primary" href="#">
+<div class="bg-primary/10 px-4 py-1 rounded-full flex flex-col items-center">
+<span class="material-symbols-outlined fill-icon text-[24px]">person</span>
+</div>
+<span class="text-[10px] font-medium mt-1 font-bold">Profile</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-[24px]">moving</span>
+<span class="text-[10px] font-medium mt-1">Skills</span>
+</a>
+</nav>
+<!-- Mobile padding for fixed bottom nav -->
+<div class="h-16 md:hidden"></div>
+
+
+</body></html>
