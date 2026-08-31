@@ -56,5 +56,44 @@
     "due_date_demo": "2026-09-01T02:28:00.401685",
     "status": "Pending",
     "survey_response": null
+  },
+  {
+    "followup_id": "FOL-BEN2026999-30-day",
+    "beneficiary_id": "BEN-2026-999",
+    "trade_name": "Welder (Fabrication)",
+    "milestone": "30-day",
+    "milestone_days": 30,
+    "demo_seconds": 30,
+    "completion_date": "2026-09-01T02:30:12.922872",
+    "due_date_real": "2026-10-01T02:30:12.922872",
+    "due_date_demo": "2026-09-01T02:30:42.922872",
+    "status": "Pending",
+    "survey_response": null
+  },
+  {
+    "followup_id": "FOL-BEN2026999-60-day",
+    "beneficiary_id": "BEN-2026-999",
+    "trade_name": "Welder (Fabrication)",
+    "milestone": "60-day",
+    "milestone_days": 60,
+    "demo_seconds": 60,
+    "completion_date": "2026-09-01T02:30:12.922872",
+    "due_date_real": "2026-10-31T02:30:12.922872",
+    "due_date_demo": "2026-09-01T02:31:12.922872",
+    "status": "Pending",
+    "survey_response": null
+  },
+  {
+    "followup_id": "FOL-BEN2026999-180-day",
+    "beneficiary_id": "BEN-2026-999",
+    "trade_name": "Welder (Fabrication)",
+    "milestone": "180-day",
+    "milestone_days": 180,
+    "demo_seconds": 180,
+    "completion_date": "2026-09-01T02:30:12.922872",
+    "due_date_real": "2027-02-28T02:30:12.922872",
+    "due_date_demo": "2026-09-01T02:33:12.922872",
+    "status": "Pending",
+    "survey_response": null
   }
 ]

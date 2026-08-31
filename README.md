@@ -1,98 +1,156 @@
-# Voice for Livelihood — Prototype
+# Voice for Livelihood — Skilling & Retention Ecosystem
+**Smart India Hackathon — Problem Statement 26097**
 
-A minimal, end-to-end demo for Problem Statement 26097: speak your background
-and interests in a regional language, get an NSQF-aligned skilling
-recommendation matched to local job demand, spoken back to you.
+An end-to-end, voice-first livelihood support prototype tailored for rural and informal workers in India. Beneficiaries speak their background and interests in regional languages, receive NSQF-aligned skilling recommendations matched to local job demand with transparent reasoning, generate standardized resumes, complete anti-replay attendance check-ins, and track long-term employment retention over 30, 60, and 180 days.
 
-**Pipeline:** mic/audio input → IndicConformer (ASR) → keyword + local-demand
-matcher → NSQF trade recommendation → Indic Parler-TTS (spoken reply)
+---
 
-This is deliberately scoped to one complete loop, not the full production
-system (no IVR, no WhatsApp, no live labour-market feed) — see "Level up"
-below for what to add if you have time.
-
-## Project structure
+## 🏛️ System Architecture
 
 ```
-app.py              Streamlit UI — wires everything together
-speech.py           ASR + TTS wrapper functions (AI4Bharat models)
-matcher.py          Keyword-overlap + local-demand trade matching (no ML needed)
-data/nsqf_trades.csv  Sample trade database with bilingual keywords + mock demand scores
-requirements.txt
+[ Beneficiary Voice Input ]
+           │
+           ▼
+[ AI4Bharat Indic Conformer ASR (Offline/Open-Source) ]
+           │
+           ▼ (Transcript & Speech Tokens)
+ ┌─────────────────────────────────────────────────────────┐
+ │             Livelihood Intelligence Core                │
+ │  • Transcript Keyword & Local Demand Matcher            │
+ │  • Profile Multidimensional Matcher (Skills/Wage/Demand)│
+ │  • Explainable Rationale Engine ("Recommended because") │
+ └────────────────────────────┬────────────────────────────┘
+                              │
+          ┌───────────────────┼───────────────────┐
+          ▼                   ▼                   ▼
+[ NSQF Trade Path ]  [ 1-Page DOCX Resume ]  [ Post-Training Milestones ]
+          │                                  (30d / 60d / 180d Follow-up)
+          ▼                                       │
+[ Indic Parler-TTS ]                              ▼
+          │                                  [ Re-Skilling Trigger ]
+          ▼                                  (If not employed, suggest next trade)
+[ Spoken Response ]
 ```
 
-## Setup
+---
 
-Requires internet access to huggingface.co the first time you run it (to
-download model weights — a few GB total). After the first run, models are
-cached locally.
+## 📁 Project Structure
+
+```
+├── app.py                  Streamlit multi-page UI (6 modular views)
+├── speech.py               ASR + TTS wrappers (AI4Bharat Indic Conformer & Indic Parler-TTS) [PROTECTED]
+├── matcher.py              Keyword + profile matcher with transparent reasoning
+├── profile_store.py        Beneficiary profile manager with local JSON persistence
+├── resume_generator.py     One-page DOCX resume builder (python-docx)
+├── followup_store.py       Post-training 30/60/180-day retention tracker & Demo Mode
+├── attendance_store.py     Anti-replay dynamic phrase challenge verification
+├── DEMO_SCRIPT.md          5-minute Hackathon presentation guide
+├── requirements.txt        Python dependencies
+└── data/
+    ├── nsqf_trades.csv     NSQF trade database with keywords, wages & district demand scores
+    ├── profiles.json       Persistent beneficiary records
+    ├── followups.json      Post-training milestone check-ins & survey responses
+    └── attendance.json     Trainee attendance challenge check-in logs
+```
+
+---
+
+## 🚀 Installation & Setup
+
+### Prerequisites
+- Python 3.10 – 3.13
+- Internet access during initial run to cache Hugging Face model weights (~2 GB). Subsequent runs operate completely offline.
+
+### Quickstart
 
 ```bash
+# 1. Create and activate virtual environment
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+# On Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+# On Linux/macOS:
+source venv/bin/activate
 
+# 2. Install dependencies
 pip install -r requirements.txt
 pip install git+https://github.com/huggingface/parler-tts.git
 
+# 3. Launch the Streamlit application
 streamlit run app.py
 ```
 
-A GPU is not required but makes both ASR and TTS noticeably faster. On CPU,
-expect a few seconds per transcription and 10-20 seconds per TTS reply —
-fine for a live demo, just don't let judges watch a spinner for too long
-without narrating what's happening.
+---
 
-## Before your demo
+## 🌟 Feature Overview
 
-- **Run it once fully, end to end, the night before** — the first call to
-  each model downloads weights, which you don't want happening live.
-- **Pre-record 2-3 sample audio clips** in your target languages (use the
-  file uploader as a fallback if live mic recording is flaky on the venue's
-  wifi/laptop).
-- **Screen-record a full successful run** as a backup video. If the live
-  demo breaks, you switch to video and keep talking.
-- Try a few different sample sentences yourself against `matcher.py`
-  directly (`python matcher.py`) to get a feel for which keywords land —
-  it'll help you pick phrasing that demos well.
+### 1. 🎙️ Voice Recommendation (Core Engine)
+- Zero-friction audio recording or WAV clip upload.
+- **ASR**: High-accuracy transcription using `ai4bharat/indic-conformer-600m-multilingual`.
+- **Matching**: Matches transcripts against NSQF Level 3/4 trades weighted by local district demand (e.g., Nagpur).
+- **TTS**: Synthesizes spoken regional responses using `ai4bharat/indic-parler-tts` across Hindi, Marathi, Telugu, Tamil, Bengali, and Gujarati.
 
-## Testing the matcher without any ML dependencies
+### 2. 👤 Beneficiary Profile System
+- Local JSON storage in `data/profiles.json` (no external database required).
+- Tracks education level, family occupation, current livelihood, mobility constraints, employment preference (wage vs self-employment), and language.
+- Full CRUD interface: Create, search/lookup, edit, and view beneficiary records.
 
-```bash
-python matcher.py
-```
+### 3. 🎯 Profile-Based Matching & Explainable AI
+- Evaluates complete profile attributes against the NSQF database.
+- Provides transparent justifications for every recommendation:
+  ```
+  Recommended because:
+  ✓ Stated skill matches: bijli, wiring, switch
+  ✓ High local demand in Nagpur (9/10)
+  ✓ Matches wage-employment preference with structured hiring
+  ✓ Education background (10th Pass) fits NSQF Level 4
+  ```
 
-This runs a sample Hinglish transcript through the matcher and prints the
-top 3 trade matches — useful for tuning `data/nsqf_trades.csv` without
-waiting on model downloads.
+### 4. 📄 One-Page DOCX Livelihood Resume
+- Generates a single-page formatted `.docx` resume from profile data and top skilling pathways.
+- Downloadable for job applications and Skill India counseling centers.
 
-## Level up (if you have time before judging)
+### 5. 📅 Post-Training Follow-Up & Retention Tracking
+- Initializes **30-day**, **60-day**, and **180-day** milestones upon marking training complete.
+- **⚡ DEMO MODE**: Accelerates timeline (30s / 60s / 180s instead of days) for live hackathon judging.
+- 4-question outcome survey (employment status, training alignment, monthly wage, re-skilling interest).
+- **Dynamic Re-Skilling Trigger**: If a beneficiary reports not working, the system flags `⚠️ Previous recommendation did not result in employment` and automatically generates secondary recommendations.
 
-Roughly in order of effort-to-impact:
+### 6. 🛡️ Attendance Integrity Demo
+- Generates dynamic 4-digit challenge phrases per check-in (e.g., `"Eight Four One One" / "आठ चार एक एक"`).
+- Trainee speaks the phrase; verified using the existing on-device ASR model to prevent static audio replay attacks.
+- Explicit prototype disclaimer: *Voice identity verification is not implemented; challenge-response prevents replay.*
 
-1. **More trades / richer keywords** — the current CSV has 12 trades and
-   hand-picked keywords. Expanding this (and adding real district demand
-   data instead of mock scores) is the highest-leverage, lowest-effort win.
-2. **Semantic matching instead of keyword overlap** — swap `matcher.py`'s
-   keyword scoring for sentence-embedding similarity
-   (`sentence-transformers` with a multilingual model, e.g.
-   `paraphrase-multilingual-MiniLM-L12-v2`) so it still matches when the
-   beneficiary doesn't use your exact keywords.
-3. **Translation layer** — run the ASR transcript through IndicTrans2 into
-   English before matching, so you only maintain one English trade
-   database instead of bilingual keyword lists per trade.
-4. **Follow-up turn** — let the app ask one clarifying question ("Would you
-   prefer self-employment or a job?") before giving the final
-   recommendation, to show the "conversational, not a form" framing.
-5. **A second, mock "outcome check-in" screen** — a tiny second page that
-   simulates the 30/90/180-day follow-up call concept from the pitch deck.
+### 7. 📊 Livelihood Monitoring Dashboard
+- Program-wide visibility into total beneficiaries, training completion rates, employment outcomes, average wages, and attendance compliance.
 
-## Models used
+---
 
-| Task | Model | License |
+## ⚡ Demo Mode Guide
+
+1. In sidebar navigation, open **"📅 Training Follow-up"**.
+2. Ensure **"⚡ DEMO MODE"** is toggled ON.
+3. Mark training complete for any beneficiary.
+4. Watch the 30-second live countdown timer for Milestone 1.
+5. Submit a survey response with `"No"` for employment to demonstrate the automatic re-skilling workflow.
+
+---
+
+## ⚠️ Prototype Scope & Limitations
+
+| Feature | Prototype Status | Production Roadmap |
 |---|---|---|
-| ASR | `ai4bharat/indic-conformer-600m-multilingual` | MIT |
-| TTS | `ai4bharat/indic-parler-tts` | Apache-2.0 |
+| **Data Storage** | Local JSON (`data/*.json`) | SQLite / PostgreSQL |
+| **Follow-up Calls** | In-app simulated survey & countdown | Cloud IVR / Exotel / Twilio Webhook |
+| **Attendance** | Dynamic phrase anti-replay check | Voice biometric speaker verification |
+| **Demand Feed** | Local district score index (`nsqf_trades.csv`) | Real-time state labor market API feed |
 
-Both are open-source, from AI4Bharat, and run entirely offline once
-downloaded — no per-call API cost, which is worth mentioning to judges as
-a cost/scalability point for a government deployment.
+---
+
+## 🤖 Open-Source Models Used
+
+| Task | Model | Source | License |
+|---|---|---|---|
+| **ASR** | `ai4bharat/indic-conformer-600m-multilingual` | Hugging Face / AI4Bharat | MIT |
+| **TTS** | `ai4bharat/indic-parler-tts` | Hugging Face / AI4Bharat | Apache-2.0 |
+
+Both models run entirely offline once downloaded with zero per-query API fees.

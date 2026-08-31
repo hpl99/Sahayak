@@ -4,5 +4,8 @@ torchaudio
 transformers>=4.44
 pandas
 soundfile
+scipy
+python-docx
 # Indic Parler-TTS is not on PyPI under this name -- install from GitHub:
 # pip install git+https://github.com/huggingface/parler-tts.git
+
