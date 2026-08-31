@@ -48,6 +48,11 @@ from profile_store import (
     generate_beneficiary_id,
 )
 
+from resume_generator import (
+    generate_resume_docx,
+    generate_resume_preview_text,
+)
+
 
 # ---------------------------------------------------------------------------
 # PAGE
@@ -114,6 +119,7 @@ with st.sidebar:
         [
             "🎙️ Voice Recommendation",
             "👤 Beneficiary Profile",
+            "📄 Resume",
         ],
         index=0,
     )
@@ -630,3 +636,96 @@ elif page == "👤 Beneficiary Profile":
             for p in all_profiles
         ]
         st.dataframe(summary_table, use_container_width=True)
+
+
+# ===========================================================================
+# PAGE 3: RESUME (FEATURE 3)
+# ===========================================================================
+
+elif page == "📄 Resume":
+
+    st.title("📄 Beneficiary Resume Generator")
+    st.caption("Generate a structured one-page DOCX resume from the saved beneficiary profile and skilling recommendations.")
+
+    profiles = load_profiles()
+
+    if not profiles:
+        st.info("No beneficiary profiles found. Please create a profile in the 'Beneficiary Profile' section first.")
+    else:
+        profile_options = {
+            f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
+            for p in profiles
+        }
+        selected_label = st.selectbox("Select Beneficiary for Resume", list(profile_options.keys()))
+        selected_id = profile_options[selected_label]
+        profile = get_profile(selected_id)
+
+        if profile:
+            trades_df = get_trades_df()
+            recs = match_profile(
+                profile,
+                trades_df=trades_df,
+                district=profile.get("district", "Nagpur"),
+                top_n=3,
+            )
+
+            # Generate DOCX binary data
+            docx_data = generate_resume_docx(profile, recs)
+            safe_name = str(profile.get("name", "beneficiary")).replace(" ", "_")
+            file_name = f"Resume_{profile.get('beneficiary_id')}_{safe_name}.docx"
+
+            col_btn1, col_btn2 = st.columns([2, 3])
+            with col_btn1:
+                st.download_button(
+                    label="📥 Download Resume (.docx)",
+                    data=docx_data,
+                    file_name=file_name,
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    type="primary",
+                )
+
+            st.divider()
+            st.subheader("Resume Preview")
+
+            with st.container(border=True):
+                st.markdown(
+                    f"### SKILL INDIA — BENEFICIARY RESUME\n"
+                    f"**Beneficiary ID:** `{profile.get('beneficiary_id')}` | "
+                    f"**District:** {profile.get('district')} | "
+                    f"**Language:** {profile.get('language')}"
+                )
+                st.divider()
+
+                st.markdown("#### 1. Personal & Background Information")
+                col_r1, col_r2 = st.columns(2)
+                with col_r1:
+                    st.write(f"**Full Name:** {profile.get('name')}")
+                    st.write(f"**Age / Gender:** {profile.get('age')} / {profile.get('gender')}")
+                    st.write(f"**Education Level:** {profile.get('education_level')}")
+                with col_r2:
+                    st.write(f"**Current Livelihood:** {profile.get('current_livelihood') or 'None specified'}")
+                    st.write(f"**Family Occupation:** {profile.get('family_occupation') or 'None specified'}")
+                    st.write(f"**Mobility:** {profile.get('mobility_constraints')}")
+
+                st.write(f"**Employment Preference:** {profile.get('employment_preference')}")
+
+                st.divider()
+                st.markdown("#### 2. Skills & Aspirations")
+                st.write(f"• **Stated Skills & Experience:** {profile.get('skills') or 'None specified'}")
+                st.write(f"• **Learning Goals & Interests:** {profile.get('interests') or 'None specified'}")
+
+                st.divider()
+                st.markdown("#### 3. Recommended NSQF Skilling Pathways")
+                for i, r in enumerate(recs, 1):
+                    st.markdown(
+                        f"**{i}. {r['trade_name']}** (NSQF Level {r['nsqf_level']} · {r['sector']}) — "
+                        f"Avg Wage: ₹{r['avg_monthly_wage_inr']:,} | Demand: {r['demand_score']:.0f}/10"
+                    )
+                    for exp in r.get("explanations", []):
+                        st.caption(f"   {exp}")
+
+                st.divider()
+                st.markdown("#### 4. Training Status")
+                st.write(f"**Current Status:** {profile.get('training_status', 'Not Started')}")
+                if profile.get("recommended_trade"):
+                    st.write(f"**Assigned Trade:** {profile.get('recommended_trade')}")
