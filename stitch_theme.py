@@ -142,6 +142,77 @@ STITCH_CSS = """
         transition: width 0.3s ease;
     }
 
+    /* Status Badges & Pills */
+    .stitch-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background-color: #F0EDED;
+        border: 1px solid #C6C5D4;
+        padding: 0.35rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #1B1C1C;
+    }
+
+    /* Assistant Message Bubble */
+    .stitch-assistant-bubble {
+        background-color: #E0E0FF;
+        color: #000767;
+        border: 1px solid #BDC2FF;
+        border-radius: 1rem 1rem 1rem 0.125rem;
+        padding: 1.25rem 1.5rem;
+        font-size: 18px;
+        line-height: 1.6;
+        font-weight: 500;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 2px 6px rgba(0, 6, 102, 0.06);
+    }
+
+    /* User Transcript Bubble */
+    .stitch-user-bubble {
+        background-color: #F6F3F2;
+        color: #1B1C1C;
+        border: 1px solid #C6C5D4;
+        border-radius: 1rem 1rem 0.125rem 1rem;
+        padding: 0.85rem 1.15rem;
+        font-size: 15px;
+        line-height: 1.4;
+        margin-bottom: 0.75rem;
+    }
+
+    /* Mic Action Button Container */
+    .stitch-mic-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 0;
+    }
+    .stitch-mic-pulse {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 15px;
+        font-weight: 600;
+        color: #454652;
+        margin-top: 0.75rem;
+    }
+    .stitch-mic-dot {
+        width: 10px;
+        height: 10px;
+        background-color: #DF8017;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(0.95); opacity: 0.8; }
+        50% { transform: scale(1.3); opacity: 1; }
+        100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
     /* Material Icon utility */
     .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;

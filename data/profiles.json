@@ -122,5 +122,26 @@
     "training_completion_date": null,
     "recommended_trade": null,
     "created_at": "2026-09-01T03:01:41.010381"
+  },
+  {
+    "beneficiary_id": "BEN-2026-007",
+    "name": "Sanjay Verma",
+    "age": 26,
+    "gender": "Other",
+    "district": "Nagpur",
+    "education_level": "10th Pass",
+    "family_occupation": "",
+    "current_livelihood": "Bijli fitting aur wiring ka kaam karta hoon",
+    "previous_work_experience": "Bijli fitting aur wiring ka kaam karta hoon",
+    "skills": "Wiring aur tools चलाना आता है",
+    "interests": "Wiring aur tools चलाना आता है",
+    "mobility_constraints": "Local only (within district)",
+    "employment_preference": "Wage Employment (Job)",
+    "language": "Hindi",
+    "training_status": "Not Started",
+    "training_start_date": null,
+    "training_completion_date": null,
+    "recommended_trade": null,
+    "created_at": "2026-09-01T03:03:43.303625"
   }
 ]

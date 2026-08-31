@@ -161,16 +161,12 @@ with st.sidebar:
 
 
 # ===========================================================================
-# PAGE 0: VOICE ASSISTANT (CONVERSATIONAL ONBOARDING - PROTOTYPE)
+# PAGE 0: VOICE ASSISTANT (STITCH UI DESIGN - PHASE 4B)
 # ===========================================================================
 
 if page == "🎙️ Voice Assistant":
 
-    st.title("🎙️ Voice Assistant — Prototype")
-    st.caption(
-        "Controlled progressive voice onboarding: collects beneficiary profile turn-by-turn "
-        "and synthesizes NSQF recommendations using open-source AI4Bharat models."
-    )
+    render_stitch_breadcrumb("Voice Assistant")
 
     with st.sidebar:
         st.header("Assistant Settings")
@@ -206,97 +202,155 @@ if page == "🎙️ Voice Assistant":
     session: ConversationSession = st.session_state.conv_session
     session.district = assistant_district
 
-    # Progress bar and visual checklist
-    prog = session.get_progress()
-    st.progress(prog, text=f"Conversation Progress: {int(prog * 100)}%")
+    # Stitch Top Header
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C6C5D4; padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+                <h2 style="font-size: 26px; font-weight: 700; color: #000666; margin: 0;">
+                    Tell us about your work, skills and interests
+                </h2>
+                <p style="font-size: 14px; color: #454652; margin: 4px 0 0 0;">
+                    We'll help you find suitable NSQF skill pathways matched to local district demand.
+                </p>
+            </div>
+            <div>
+                <span class="stitch-demo-badge">Demo Mode</span>
+            </div>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">
+            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">language</span> Language: <b>{assistant_lang}</b></span>
+            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">location_on</span> District: <b>{assistant_district}</b></span>
+            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">person</span> ID: <b>{session.beneficiary_id}</b></span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # Visual checklist row
-    cols = st.columns(5)
-    checklist = session.get_checklist()
-    for col, (label, is_done, val) in zip(cols, checklist):
-        if is_done:
-            col.success(f"✓ **{label}**\n\n`{val}`" if val else f"✓ **{label}**")
-        else:
-            col.info(f"○ **{label}**")
-
-    st.divider()
-
-    # In-progress conversation turns
+    # If conversation is still in progress
     if not session.is_complete:
-        curr_q = session.get_current_question()
+        col_left, col_right = st.columns([7, 5])
 
-        with st.container(border=True):
-            st.subheader(f"Step {session.current_step_idx + 1} of 5: {STEP_LABELS.get(session.current_step, session.current_step)}")
-            st.markdown(f"### 🤖 *\"{curr_q}\"*")
+        with col_left:
+            curr_q = session.get_current_question()
+            step_name = STEP_LABELS.get(session.current_step, session.current_step)
 
-            # Optional TTS button to hear current question
-            if st.button("🔊 Hear Question (TTS)", key=f"speak_q_{session.current_step_idx}"):
-                with st.spinner("Synthesizing question audio..."):
-                    tts_model, tts_tokenizer, tts_desc = get_tts_bundle()
-                    audio_arr, sr = synthesize(
-                        curr_q,
-                        LANGUAGES[assistant_lang],
-                        tts_model,
-                        tts_tokenizer,
-                        tts_desc,
+            with st.container(border=True):
+                st.markdown(f"<div style='font-size: 16px; font-weight: 700; color: #000666; margin-bottom: 8px;'>Step {session.current_step_idx + 1} of 5: {step_name}</div>", unsafe_allow_html=True)
+                
+                # Assistant Message Bubble
+                st.markdown(
+                    f"""
+                    <div class="stitch-assistant-bubble">
+                        🤖 "{curr_q}"
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                # Optional TTS button to hear current question
+                if st.button("🔊 Hear Question (TTS)", key=f"speak_q_{session.current_step_idx}"):
+                    with st.spinner("Synthesizing question audio..."):
+                        tts_model, tts_tokenizer, tts_desc = get_tts_bundle()
+                        audio_arr, sr = synthesize(
+                            curr_q,
+                            LANGUAGES[assistant_lang],
+                            tts_model,
+                            tts_tokenizer,
+                            tts_desc,
+                        )
+                        import io, soundfile as sf
+                        buf = io.BytesIO()
+                        sf.write(buf, audio_arr, sr, format="WAV")
+                        buf.seek(0)
+                        st.audio(buf.read(), format="audio/wav")
+
+                st.markdown(
+                    f"""
+                    <div class="stitch-mic-pulse">
+                        <span class="stitch-mic-dot"></span>
+                        🎙️ Speak naturally in <b>{assistant_lang}</b>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                # Voice input via audio_input or file upload
+                audio_val = None
+                if hasattr(st, "audio_input"):
+                    audio_val = st.audio_input("Record voice response", key=f"mic_turn_{session.current_step_idx}")
+
+                upload_val = st.file_uploader(
+                    "Or upload an audio clip (WAV/MP3)",
+                    type=["wav", "mp3", "ogg", "flac"],
+                    key=f"file_turn_{session.current_step_idx}",
+                )
+
+                audio_to_process = audio_val or upload_val
+
+                st.caption("🛠️ Debug / Manual text input fallback:")
+                text_turn = st.text_input("Type spoken response directly:", key=f"text_turn_{session.current_step_idx}")
+
+                c1, c2 = st.columns([1, 4])
+                submit_audio = c1.button("🎙️ Submit Voice", type="primary", key=f"sub_audio_{session.current_step_idx}", disabled=(audio_to_process is None))
+                submit_text = c2.button("Submit Text", type="secondary", key=f"sub_text_{session.current_step_idx}", disabled=(not text_turn.strip()))
+
+                if submit_audio and audio_to_process:
+                    with st.spinner("Transcribing with AI4Bharat Indic Conformer ASR..."):
+                        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                            tmp.write(audio_to_process.getvalue())
+                            tmp_path = tmp.name
+
+                        try:
+                            asr_model, asr_processor = get_asr_model()
+                            transcript = transcribe(
+                                tmp_path,
+                                LANGUAGES[assistant_lang],
+                                asr_model,
+                                asr_processor,
+                            )
+                        finally:
+                            if os.path.exists(tmp_path):
+                                os.remove(tmp_path)
+
+                        st.session_state.last_user_transcript = transcript
+                        next_q, is_done = session.process_turn(transcript)
+                        st.rerun()
+
+                elif submit_text and text_turn.strip():
+                    st.session_state.last_user_transcript = text_turn.strip()
+                    next_q, is_done = session.process_turn(text_turn.strip())
+                    st.rerun()
+
+                if st.session_state.get("last_user_transcript"):
+                    st.markdown(
+                        f"""
+                        <div class="stitch-user-bubble">
+                            🗣️ <b>Understood:</b> "{st.session_state.last_user_transcript}"
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
                     )
-                    import io, soundfile as sf
-                    buf = io.BytesIO()
-                    sf.write(buf, audio_arr, sr, format="WAV")
-                    buf.seek(0)
-                    st.audio(buf.read(), format="audio/wav")
 
-        st.subheader("🎙️ Speak Your Answer")
-        st.caption("Record voice or upload an audio file. The Indic Conformer ASR will transcribe your response.")
+        # Right Column: Context & Progress
+        with col_right:
+            with st.container(border=True):
+                st.markdown("<div style='font-size: 16px; font-weight: 700; color: #000666; margin-bottom: 8px;'>📌 Profile Information</div>", unsafe_allow_html=True)
+                prog = session.get_progress()
+                st.progress(prog, text=f"Progress: {int(prog * 100)}%")
 
-        audio_val = None
-        if hasattr(st, "audio_input"):
-            audio_val = st.audio_input("Record your answer", key=f"mic_turn_{session.current_step_idx}")
+                checklist = session.get_checklist()
+                for label, is_done, val in checklist:
+                    if is_done:
+                        st.success(f"✓ **{label}**: {val}" if val else f"✓ **{label}**")
+                    else:
+                        st.info(f"○ **{label}**")
 
-        upload_val = st.file_uploader(
-            "Or upload an audio clip (WAV/MP3)",
-            type=["wav", "mp3", "ogg", "flac"],
-            key=f"file_turn_{session.current_step_idx}",
-        )
-
-        audio_to_process = audio_val or upload_val
-
-        st.caption("🛠️ Debug / Manual text input fallback:")
-        text_turn = st.text_input("Type spoken response directly:", key=f"text_turn_{session.current_step_idx}")
-
-        c1, c2 = st.columns([1, 4])
-        submit_audio = c1.button("Submit Voice", type="primary", key=f"sub_audio_{session.current_step_idx}", disabled=(audio_to_process is None))
-        submit_text = c2.button("Submit Text", type="secondary", key=f"sub_text_{session.current_step_idx}", disabled=(not text_turn.strip()))
-
-        if submit_audio and audio_to_process:
-            with st.spinner("Transcribing with AI4Bharat Indic Conformer ASR..."):
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-                    tmp.write(audio_to_process.getvalue())
-                    tmp_path = tmp.name
-
-                try:
-                    asr_model, asr_processor = get_asr_model()
-                    transcript = transcribe(
-                        tmp_path,
-                        LANGUAGES[assistant_lang],
-                        asr_model,
-                        asr_processor,
-                    )
-                finally:
-                    if os.path.exists(tmp_path):
-                        os.remove(tmp_path)
-
-                st.session_state.last_user_transcript = transcript
-                next_q, is_done = session.process_turn(transcript)
-                st.rerun()
-
-        elif submit_text and text_turn.strip():
-            st.session_state.last_user_transcript = text_turn.strip()
-            next_q, is_done = session.process_turn(text_turn.strip())
-            st.rerun()
-
-        if st.session_state.get("last_user_transcript"):
-            st.info(f"🗣️ **Understood:** *{st.session_state.last_user_transcript}*")
+                if session.history:
+                    st.markdown("<div style='font-size: 14px; font-weight: 600; color: #000666; margin-top: 14px; margin-bottom: 6px;'>Recent Dialogue:</div>", unsafe_allow_html=True)
+                    for item in session.history[-2:]:
+                        st.caption(f"🤖 {item['question']}")
+                        st.caption(f"🗣️ *\"{item['transcript']}\"*")
 
     # Conversation Completed -> Display Recommendation and Spoken Synthesis
     else:
