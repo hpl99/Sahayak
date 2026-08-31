@@ -1,0 +1,32 @@
+[
+  {
+    "beneficiary_id": "BEN-2026-001",
+    "expected_phrase": "Three One Eight Eight (3 1 8 8)",
+    "transcript": "Three One Eight Eight",
+    "status": "Pass",
+    "flagged": false,
+    "match_score": 1.0,
+    "record_id": "ATT-2026-0001",
+    "timestamp": "2026-09-01T02:26:55.916163"
+  },
+  {
+    "beneficiary_id": "BEN-2026-001",
+    "expected_phrase": "Eight Four One One (8 4 1 1)",
+    "transcript": "Eight Four One One",
+    "status": "Pass",
+    "flagged": false,
+    "match_score": 1.0,
+    "record_id": "ATT-2026-0002",
+    "timestamp": "2026-09-01T02:27:12.553283"
+  },
+  {
+    "beneficiary_id": "BEN-2026-001",
+    "expected_phrase": "Nine Two Four Eight (9 2 4 8)",
+    "transcript": "Nine Two Four Eight",
+    "status": "Pass",
+    "flagged": false,
+    "match_score": 1.0,
+    "record_id": "ATT-2026-0003",
+    "timestamp": "2026-09-01T02:27:54.492100"
+  }
+]

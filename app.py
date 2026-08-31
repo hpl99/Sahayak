@@ -61,6 +61,13 @@ from followup_store import (
     get_milestone_timing,
 )
 
+from attendance_store import (
+    load_attendance,
+    save_attendance_record,
+    generate_challenge_phrase,
+    verify_phrase_match,
+)
+
 
 # ---------------------------------------------------------------------------
 # PAGE
@@ -129,6 +136,7 @@ with st.sidebar:
             "👤 Beneficiary Profile",
             "📄 Resume",
             "📅 Training Follow-up",
+            "🛡️ Attendance Integrity",
         ],
         index=0,
     )
@@ -911,3 +919,144 @@ elif page == "📅 Training Follow-up":
                         for f in all_followups
                     ]
                     st.dataframe(summary_fol, use_container_width=True)
+
+
+# ===========================================================================
+# PAGE 5: ATTENDANCE INTEGRITY (FEATURE 5)
+# ===========================================================================
+
+elif page == "🛡️ Attendance Integrity":
+
+    st.title("🛡️ Trainee Attendance Integrity Check")
+    st.warning(
+        "⚠️ **DEMO / PROTOTYPE**: Voice identity verification is not implemented. "
+        "This prototype uses dynamic challenge-response phrase verification with the existing ASR pipeline "
+        "to prevent static audio replay attacks in low-bandwidth training attendance check-ins."
+    )
+
+    profiles = load_profiles()
+
+    if not profiles:
+        st.info("No beneficiary profiles found. Please create a profile in the 'Beneficiary Profile' section first.")
+    else:
+        profile_options = {
+            f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
+            for p in profiles
+        }
+        selected_label = st.selectbox("Select Trainee for Check-in", list(profile_options.keys()))
+        selected_id = profile_options[selected_label]
+        profile = get_profile(selected_id)
+
+        # Initialize session state for challenge phrase if needed
+        if "current_challenge" not in st.session_state:
+            st.session_state.current_challenge = generate_challenge_phrase(4)
+
+        challenge = st.session_state.current_challenge
+
+        st.divider()
+        st.subheader("1. Dynamic Spoken Challenge")
+        st.caption("The trainee must speak the randomly generated phrase below to complete verification.")
+
+        with st.container(border=True):
+            st.markdown(f"### 🗣️ \"{challenge['phrase_en']}\"")
+            st.write(f"• **Digits:** `{challenge['digits_str']}`")
+            st.write(f"• **Hindi / Regional Phrasing:** {challenge['phrase_hi']}")
+
+            if st.button("🔄 Generate New Challenge Phrase"):
+                st.session_state.current_challenge = generate_challenge_phrase(4)
+                st.rerun()
+
+        st.subheader("2. Speak Challenge Phrase")
+        st.write("Record your voice speaking the dynamic challenge phrase above:")
+
+        att_audio_input = st.audio_input("Record challenge phrase")
+        att_file_upload = st.file_uploader("...or upload recorded WAV clip", type=["wav", "flac"], key="att_uploader")
+
+        att_bytes = None
+        if att_audio_input is not None:
+            att_bytes = att_audio_input.getvalue()
+        elif att_file_upload is not None:
+            att_bytes = att_file_upload.getvalue()
+
+        verify_btn = st.button("🎙️ Transcribe & Verify Attendance", type="primary", disabled=att_bytes is None)
+
+        if verify_btn and att_bytes is not None:
+            tmp_att_path = None
+            try:
+                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_att:
+                    tmp_att.write(att_bytes)
+                    tmp_att_path = tmp_att.name
+
+                with st.spinner("Transcribing spoken challenge with AI4Bharat Indic Conformer ASR..."):
+                    asr_model = get_asr_model()
+                    lang_code = LANGUAGES.get(profile.get("language", "Hindi"), "hi")
+                    att_transcript = transcribe(asr_model, tmp_att_path, lang_code, "ctc")
+
+                st.subheader("3. Verification Result")
+                st.write(f"**Expected Phrase:** `{challenge['expected_phrase']}`")
+                st.write(f"**Transcribed Speech:** `{att_transcript}`")
+
+                status, flagged, match_score, reason = verify_phrase_match(challenge["digits"], att_transcript)
+
+                record_data = {
+                    "beneficiary_id": selected_id,
+                    "expected_phrase": challenge["expected_phrase"],
+                    "transcript": att_transcript,
+                    "status": status,
+                    "flagged": flagged,
+                    "match_score": match_score,
+                    "reason": reason,
+                    "demo_note": "Demo attendance integrity — voice identity verification not implemented",
+                }
+                saved_rec = save_attendance_record(record_data)
+
+                if status == "Pass" and not flagged:
+                    st.success(f"✅ **Attendance Verified (PASS)** — {reason} (Score: {match_score:.0%})")
+                elif status == "Pass" and flagged:
+                    st.warning(f"⚠️ **Attendance Recorded (FLAGGED FOR REVIEW)** — {reason} (Score: {match_score:.0%})")
+                else:
+                    st.error(f"❌ **Attendance Rejected (FAIL)** — {reason} (Score: {match_score:.0%})")
+
+                # Generate fresh challenge for next check-in
+                st.session_state.current_challenge = generate_challenge_phrase(4)
+
+            except Exception as e:
+                st.error("Error during attendance transcription and verification.")
+                st.exception(e)
+            finally:
+                if tmp_att_path is not None and os.path.exists(tmp_att_path):
+                    try:
+                        os.unlink(tmp_att_path)
+                    except OSError:
+                        pass
+
+        # Attendance Log & Summary
+        st.divider()
+        st.subheader("Trainee Attendance Dashboard")
+        all_att = load_attendance()
+        if all_att:
+            total_att = len(all_att)
+            passed_att = sum(1 for a in all_att if a.get("status") == "Pass")
+            failed_att = sum(1 for a in all_att if a.get("status") == "Fail")
+            flagged_att = sum(1 for a in all_att if a.get("flagged") is True)
+
+            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+            m_col1.metric("Total Check-ins", total_att)
+            m_col2.metric("Verified (Pass)", passed_att)
+            m_col3.metric("Rejected (Fail)", failed_att)
+            m_col4.metric("Flagged for Review", flagged_att)
+
+            st.write("Recent Attendance Records:")
+            att_table = [
+                {
+                    "Record ID": a.get("record_id"),
+                    "Trainee": a.get("beneficiary_id"),
+                    "Timestamp": a.get("timestamp", "")[:19].replace("T", " "),
+                    "Expected": a.get("expected_phrase"),
+                    "Transcribed": a.get("transcript"),
+                    "Status": a.get("status"),
+                    "Flagged": "⚠️ Yes" if a.get("flagged") else "No",
+                }
+                for a in reversed(all_att)
+            ]
+            st.dataframe(att_table, use_container_width=True)
