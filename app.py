@@ -68,6 +68,11 @@ from attendance_store import (
     verify_phrase_match,
 )
 
+from conversation_manager import (
+    ConversationSession,
+    STEP_LABELS,
+)
+
 
 # ---------------------------------------------------------------------------
 # PAGE
@@ -132,6 +137,7 @@ with st.sidebar:
     page = st.radio(
         "Go to",
         [
+            "🎙️ Voice Assistant",
             "🎙️ Voice Recommendation",
             "👤 Beneficiary Profile",
             "📄 Resume",
@@ -145,10 +151,196 @@ with st.sidebar:
 
 
 # ===========================================================================
+# PAGE 0: VOICE ASSISTANT (CONVERSATIONAL ONBOARDING - PROTOTYPE)
+# ===========================================================================
+
+if page == "🎙️ Voice Assistant":
+
+    st.title("🎙️ Voice Assistant — Prototype")
+    st.caption(
+        "Controlled progressive voice onboarding: collects beneficiary profile turn-by-turn "
+        "and synthesizes NSQF recommendations using open-source AI4Bharat models."
+    )
+
+    with st.sidebar:
+        st.header("Assistant Settings")
+        assistant_lang = st.selectbox(
+            "Conversation Language",
+            list(LANGUAGES.keys()),
+            index=0,
+            key="assistant_lang_select",
+        )
+        assistant_district = st.selectbox(
+            "District for Local Demand",
+            ["Nagpur", "Pune", "Mumbai", "Amravati", "Nashik", "Aurangabad", "Default (any district)"],
+            index=0,
+            key="assistant_district_select",
+        )
+
+        if st.button("🔄 Start New Conversation", type="secondary"):
+            st.session_state.conv_session = ConversationSession(
+                language=assistant_lang,
+                district=assistant_district,
+            )
+            st.session_state.last_user_transcript = None
+            st.session_state.spoken_rec_audio = None
+            st.rerun()
+
+    # Initialize session state if missing
+    if "conv_session" not in st.session_state or st.session_state.conv_session.language != assistant_lang:
+        st.session_state.conv_session = ConversationSession(
+            language=assistant_lang,
+            district=assistant_district,
+        )
+
+    session: ConversationSession = st.session_state.conv_session
+    session.district = assistant_district
+
+    # Progress bar and visual checklist
+    prog = session.get_progress()
+    st.progress(prog, text=f"Conversation Progress: {int(prog * 100)}%")
+
+    # Visual checklist row
+    cols = st.columns(5)
+    checklist = session.get_checklist()
+    for col, (label, is_done, val) in zip(cols, checklist):
+        if is_done:
+            col.success(f"✓ **{label}**\n\n`{val}`" if val else f"✓ **{label}**")
+        else:
+            col.info(f"○ **{label}**")
+
+    st.divider()
+
+    # In-progress conversation turns
+    if not session.is_complete:
+        curr_q = session.get_current_question()
+
+        with st.container(border=True):
+            st.subheader(f"Step {session.current_step_idx + 1} of 5: {STEP_LABELS.get(session.current_step, session.current_step)}")
+            st.markdown(f"### 🤖 *\"{curr_q}\"*")
+
+            # Optional TTS button to hear current question
+            if st.button("🔊 Hear Question (TTS)", key=f"speak_q_{session.current_step_idx}"):
+                with st.spinner("Synthesizing question audio..."):
+                    tts_model, tts_tokenizer, tts_desc = get_tts_bundle()
+                    audio_arr, sr = synthesize(
+                        curr_q,
+                        LANGUAGES[assistant_lang],
+                        tts_model,
+                        tts_tokenizer,
+                        tts_desc,
+                    )
+                    import io, soundfile as sf
+                    buf = io.BytesIO()
+                    sf.write(buf, audio_arr, sr, format="WAV")
+                    buf.seek(0)
+                    st.audio(buf.read(), format="audio/wav")
+
+        st.subheader("🎙️ Speak Your Answer")
+        st.caption("Record voice or upload an audio file. The Indic Conformer ASR will transcribe your response.")
+
+        audio_val = None
+        if hasattr(st, "audio_input"):
+            audio_val = st.audio_input("Record your answer", key=f"mic_turn_{session.current_step_idx}")
+
+        upload_val = st.file_uploader(
+            "Or upload an audio clip (WAV/MP3)",
+            type=["wav", "mp3", "ogg", "flac"],
+            key=f"file_turn_{session.current_step_idx}",
+        )
+
+        audio_to_process = audio_val or upload_val
+
+        st.caption("🛠️ Debug / Manual text input fallback:")
+        text_turn = st.text_input("Type spoken response directly:", key=f"text_turn_{session.current_step_idx}")
+
+        c1, c2 = st.columns([1, 4])
+        submit_audio = c1.button("Submit Voice", type="primary", key=f"sub_audio_{session.current_step_idx}", disabled=(audio_to_process is None))
+        submit_text = c2.button("Submit Text", type="secondary", key=f"sub_text_{session.current_step_idx}", disabled=(not text_turn.strip()))
+
+        if submit_audio and audio_to_process:
+            with st.spinner("Transcribing with AI4Bharat Indic Conformer ASR..."):
+                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                    tmp.write(audio_to_process.getvalue())
+                    tmp_path = tmp.name
+
+                try:
+                    asr_model, asr_processor = get_asr_model()
+                    transcript = transcribe(
+                        tmp_path,
+                        LANGUAGES[assistant_lang],
+                        asr_model,
+                        asr_processor,
+                    )
+                finally:
+                    if os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+
+                st.session_state.last_user_transcript = transcript
+                next_q, is_done = session.process_turn(transcript)
+                st.rerun()
+
+        elif submit_text and text_turn.strip():
+            st.session_state.last_user_transcript = text_turn.strip()
+            next_q, is_done = session.process_turn(text_turn.strip())
+            st.rerun()
+
+        if st.session_state.get("last_user_transcript"):
+            st.info(f"🗣️ **Understood:** *{st.session_state.last_user_transcript}*")
+
+    # Conversation Completed -> Display Recommendation and Spoken Synthesis
+    else:
+        st.success("✅ Profile information collected successfully!")
+        st.info("🔍 Finding suitable skill pathways...")
+
+        trades_df = get_trades_df()
+        profile_matches = match_profile(
+            session.slots,
+            district=session.district,
+            trades_df=trades_df,
+            top_n=3,
+        )
+
+        st.subheader("🎯 Recommended NSQF Trade Pathways")
+        for i, m in enumerate(profile_matches, start=1):
+            with st.container(border=True):
+                st.markdown(f"**{i}. {m['trade_name']}** · NSQF Level {m['nsqf_level']} · {m['sector']}")
+                cols = st.columns(3)
+                cols[0].metric("Local demand score", f"{m['demand_score']:.0f}/10")
+                cols[1].metric("Avg monthly wage", f"₹{m['avg_monthly_wage_inr']:,}")
+                cols[2].metric("Match score", f"{m['score']:.1f}")
+
+                st.markdown("**Recommended because:**")
+                for exp in m["explanations"]:
+                    st.write(exp)
+
+        # Spoken Recommendation Audio
+        st.subheader("🔊 Spoken Recommendation")
+        rec_text = build_recommendation_text(profile_matches, assistant_lang)
+        st.markdown(f"**Spoken Text:** *\"{rec_text}\"*")
+
+        if st.button("🔊 Synthesize & Speak Recommendation (TTS)", type="primary"):
+            with st.spinner("Synthesizing recommendation in regional speech..."):
+                tts_model, tts_tokenizer, tts_desc = get_tts_bundle()
+                audio_arr, sr = synthesize(
+                    rec_text,
+                    LANGUAGES[assistant_lang],
+                    tts_model,
+                    tts_tokenizer,
+                    tts_desc,
+                )
+                import io, soundfile as sf
+                buf = io.BytesIO()
+                sf.write(buf, audio_arr, sr, format="WAV")
+                buf.seek(0)
+                st.audio(buf.read(), format="audio/wav")
+
+
+# ===========================================================================
 # PAGE 1: VOICE RECOMMENDATION (ORIGINAL DEMO - 100% PRESERVED)
 # ===========================================================================
 
-if page == "🎙️ Voice Recommendation":
+elif page == "🎙️ Voice Recommendation":
 
     st.title("🎙️ Voice for Livelihood")
 
