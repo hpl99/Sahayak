@@ -82,7 +82,10 @@ from stitch_theme import (
     inject_stitch_theme,
     calculate_profile_completion,
     render_stitch_breadcrumb,
+    render_stitch_header,
     render_stitch_completion_card,
+    render_stitch_phrase_card,
+    render_stitch_disclaimer,
 )
 
 
@@ -93,21 +96,24 @@ from stitch_theme import (
 st.set_page_config(
     page_title="Voice for Livelihood",
     page_icon="🎙️",
-    layout="centered",
+    layout="wide",
 )
 
-# Inject Google Stitch Material 3 CSS & Typography
 inject_stitch_theme()
-
 
 DISTRICTS = [
     "Nagpur",
+    "Pune",
+    "Mumbai",
+    "Amravati",
+    "Nashik",
+    "Aurangabad",
     "Default (any district)",
 ]
 
 
 # ---------------------------------------------------------------------------
-# CACHED MODEL LOADERS
+# MODELS (CACHED)
 # ---------------------------------------------------------------------------
 
 @st.cache_resource(
@@ -144,32 +150,59 @@ def get_trades_df():
 
 
 # ---------------------------------------------------------------------------
-# NAVIGATION
+# NAVIGATION (STITCH SIDEBAR DESIGN)
 # ---------------------------------------------------------------------------
 
 with st.sidebar:
-    st.title("Navigation")
-    page = st.radio(
-        "Go to",
-        [
-            "🎙️ Voice Assistant",
-            "🎙️ Voice Recommendation",
-            "👤 Beneficiary Profile",
-            "📄 Resume",
-            "📅 Training Follow-up",
-            "🛡️ Attendance Integrity",
-            "📊 Monitoring Dashboard",
-        ],
-        index=0,
+    st.markdown(
+        """
+        <div style="margin-bottom: 20px; padding: 0 4px;">
+            <div style="display: flex; align-items: center; gap: 8px; color: #000666;">
+                <span class="material-symbols-outlined" style="font-size: 26px;">mic</span>
+                <span style="font-size: 20px; font-weight: 700; color: #000666;">Voice for Livelihood</span>
+            </div>
+            <p style="font-size: 13px; color: #454652; margin: 4px 0 0 0;">Livelihood &amp; Skill Development</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
+
+    if st.button("🎙️ Start Voice Assistant", type="primary", use_container_width=True):
+        st.session_state.selected_nav_page = "Voice Assistant"
+        st.rerun()
+
+    NAV_PAGES = [
+        "Dashboard",
+        "Voice Assistant",
+        "Beneficiary Profile",
+        "Skill Pathways",
+        "Training",
+        "Follow-up",
+        "Attendance",
+        "Resume",
+    ]
+
+    default_idx = 1
+    if "selected_nav_page" in st.session_state and st.session_state.selected_nav_page in NAV_PAGES:
+        default_idx = NAV_PAGES.index(st.session_state.selected_nav_page)
+
+    page = st.radio(
+        "Navigation Menu",
+        NAV_PAGES,
+        index=default_idx,
+        label_visibility="collapsed",
+    )
+    st.session_state.selected_nav_page = page
+
     st.divider()
+    st.caption("© 2024 Sahayak | Official Prototype")
 
 
 # ===========================================================================
-# PAGE 0: VOICE ASSISTANT (STITCH UI DESIGN - PHASE 4B)
+# PAGE: VOICE ASSISTANT (EXACT STITCH UI DESIGN - PHASE 4C)
 # ===========================================================================
 
-if page == "🎙️ Voice Assistant":
+if page == "Voice Assistant":
 
     render_stitch_breadcrumb("Voice Assistant")
 
@@ -208,25 +241,19 @@ if page == "🎙️ Voice Assistant":
     session.district = assistant_district
 
     # Stitch Top Header
+    render_stitch_header(
+        "Tell us about your work, skills and interests.",
+        "We'll help you find suitable skill pathways.",
+        demo_mode=True,
+    )
+
+    # Status Pills
     st.markdown(
         f"""
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C6C5D4; padding-bottom: 12px; margin-bottom: 16px;">
-            <div>
-                <h2 style="font-size: 26px; font-weight: 700; color: #000666; margin: 0;">
-                    Tell us about your work, skills and interests
-                </h2>
-                <p style="font-size: 14px; color: #454652; margin: 4px 0 0 0;">
-                    We'll help you find suitable NSQF skill pathways matched to local district demand.
-                </p>
-            </div>
-            <div>
-                <span class="stitch-demo-badge">Demo Mode</span>
-            </div>
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">
-            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">language</span> Language: <b>{assistant_lang}</b></span>
-            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">location_on</span> District: <b>{assistant_district}</b></span>
-            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">person</span> ID: <b>{session.beneficiary_id}</b></span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">language</span> Language ({assistant_lang})</span>
+            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">location_on</span> District ({assistant_district})</span>
+            <span class="stitch-pill"><span class="material-symbols-outlined" style="font-size: 16px;">person</span> Profile ({session.beneficiary_id})</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -241,13 +268,13 @@ if page == "🎙️ Voice Assistant":
             step_name = STEP_LABELS.get(session.current_step, session.current_step)
 
             with st.container(border=True):
-                st.markdown(f"<div style='font-size: 16px; font-weight: 700; color: #000666; margin-bottom: 8px;'>Step {session.current_step_idx + 1} of 5: {step_name}</div>", unsafe_allow_html=True)
+                st.markdown("<h3 style='font-size: 20px; font-weight: 700; color: #000666; margin-bottom: 12px; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px;'>Let's understand your livelihood</h3>", unsafe_allow_html=True)
                 
                 # Assistant Message Bubble
                 st.markdown(
                     f"""
                     <div class="stitch-assistant-bubble">
-                        🤖 "{curr_q}"
+                        "{curr_q}"
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -256,25 +283,28 @@ if page == "🎙️ Voice Assistant":
                 # Optional TTS button to hear current question
                 if st.button("🔊 Hear Question (TTS)", key=f"speak_q_{session.current_step_idx}"):
                     with st.spinner("Synthesizing question audio..."):
-                        tts_model, tts_tokenizer, tts_desc = get_tts_bundle()
-                        audio_arr, sr = synthesize(
+                        tts_bundle = get_tts_bundle()
+                        tmp_out = os.path.join(tempfile.gettempdir(), f"q_tts_{session.current_step_idx}.wav")
+                        synthesize(
+                            tts_bundle,
                             curr_q,
                             LANGUAGES[assistant_lang],
-                            tts_model,
-                            tts_tokenizer,
-                            tts_desc,
+                            out_path=tmp_out,
                         )
-                        import io, soundfile as sf
-                        buf = io.BytesIO()
-                        sf.write(buf, audio_arr, sr, format="WAV")
-                        buf.seek(0)
-                        st.audio(buf.read(), format="audio/wav")
+                        st.audio(tmp_out, format="audio/wav")
 
+                # Central Pulsing Mic Hero Component
                 st.markdown(
                     f"""
-                    <div class="stitch-mic-pulse">
-                        <span class="stitch-mic-dot"></span>
-                        🎙️ Speak naturally in <b>{assistant_lang}</b>
+                    <div class="stitch-mic-hero">
+                        <div class="stitch-mic-ring-outer"></div>
+                        <div class="stitch-mic-ring-inner"></div>
+                        <div class="stitch-mic-button-core">
+                            <span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">mic</span>
+                        </div>
+                    </div>
+                    <div style="text-align: center; font-size: 15px; font-weight: 600; color: #454652; margin-bottom: 12px;">
+                        <span class="stitch-mic-dot"></span> 🎙️ Start speaking in <b>{assistant_lang}</b>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -283,7 +313,7 @@ if page == "🎙️ Voice Assistant":
                 # Voice input via audio_input or file upload
                 audio_val = None
                 if hasattr(st, "audio_input"):
-                    audio_val = st.audio_input("Record voice response", key=f"mic_turn_{session.current_step_idx}")
+                    audio_val = st.audio_input("Record your answer", key=f"mic_turn_{session.current_step_idx}")
 
                 upload_val = st.file_uploader(
                     "Or upload an audio clip (WAV/MP3)",
@@ -307,12 +337,12 @@ if page == "🎙️ Voice Assistant":
                             tmp_path = tmp.name
 
                         try:
-                            asr_model, asr_processor = get_asr_model()
+                            asr_model = get_asr_model()
                             transcript = transcribe(
+                                asr_model,
                                 tmp_path,
                                 LANGUAGES[assistant_lang],
-                                asr_model,
-                                asr_processor,
+                                decoding="ctc",
                             )
                         finally:
                             if os.path.exists(tmp_path):
@@ -339,23 +369,74 @@ if page == "🎙️ Voice Assistant":
 
         # Right Column: Context & Progress
         with col_right:
+            # Card 1: Recent Dialogue
             with st.container(border=True):
-                st.markdown("<div style='font-size: 16px; font-weight: 700; color: #000666; margin-bottom: 8px;'>📌 Profile Information</div>", unsafe_allow_html=True)
+                st.markdown(
+                    """
+                    <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px; margin-bottom: 12px;">
+                        <span class="material-symbols-outlined" style="color: #000666; font-size: 20px;">forum</span>
+                        <span style="font-size: 16px; font-weight: 700; color: #000666;">Recent Dialogue</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                if session.history:
+                    for item in session.history[-3:]:
+                        st.markdown(
+                            f"""
+                            <div style="margin-bottom: 8px;">
+                                <div style="background-color: #EAE8E7; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #1B1C1C; margin-bottom: 4px;">
+                                    🤖 {item['question']}
+                                </div>
+                                <div style="background-color: #F6F3F2; border: 1px solid #C6C5D4; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #1B1C1C; text-align: right;">
+                                    🗣️ "{item['transcript']}"
+                                </div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+                else:
+                    st.caption("Dialogue will appear as you speak.")
+
+            # Card 2: Extracted Information & Progress
+            with st.container(border=True):
+                st.markdown(
+                    """
+                    <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px; margin-bottom: 12px;">
+                        <span class="material-symbols-outlined" style="color: #000666; font-size: 20px;">memory</span>
+                        <span style="font-size: 16px; font-weight: 700; color: #000666;">Extracted Information</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+                # Context chips
+                chips = []
+                if session.slots.get("current_livelihood"):
+                    chips.append(("work", session.slots["current_livelihood"]))
+                if session.slots.get("skills"):
+                    chips.append(("bolt", session.slots["skills"]))
+                if session.slots.get("previous_work_experience"):
+                    chips.append(("history", session.slots["previous_work_experience"]))
+                if session.slots.get("family_occupation"):
+                    chips.append(("group", session.slots["family_occupation"]))
+                if session.slots.get("employment_preference"):
+                    chips.append(("badge", session.slots["employment_preference"]))
+
+                if chips:
+                    chips_html = "".join([f'<span class="stitch-chip"><span class="material-symbols-outlined" style="font-size: 14px;">{icon}</span> {val}</span> ' for icon, val in chips])
+                    st.markdown(f"<div style='display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;'>{chips_html}</div>", unsafe_allow_html=True)
+
                 prog = session.get_progress()
                 st.progress(prog, text=f"Progress: {int(prog * 100)}%")
 
                 checklist = session.get_checklist()
                 for label, is_done, val in checklist:
                     if is_done:
-                        st.success(f"✓ **{label}**: {val}" if val else f"✓ **{label}**")
+                        st.markdown(f"<div style='font-size: 13px; color: #006633; margin-bottom: 4px;'>✓ <b>{label}:</b> {val}</div>", unsafe_allow_html=True)
                     else:
-                        st.info(f"○ **{label}**")
-
-                if session.history:
-                    st.markdown("<div style='font-size: 14px; font-weight: 600; color: #000666; margin-top: 14px; margin-bottom: 6px;'>Recent Dialogue:</div>", unsafe_allow_html=True)
-                    for item in session.history[-2:]:
-                        st.caption(f"🤖 {item['question']}")
-                        st.caption(f"🗣️ *\"{item['transcript']}\"*")
+                        st.markdown(f"<div style='font-size: 13px; color: #767683; margin-bottom: 4px;'>○ <b>{label}</b></div>", unsafe_allow_html=True)
 
     # Conversation Completed -> Display Recommendation and Spoken Synthesis
     else:
@@ -390,33 +471,29 @@ if page == "🎙️ Voice Assistant":
 
         if st.button("🔊 Synthesize & Speak Recommendation (TTS)", type="primary"):
             with st.spinner("Synthesizing recommendation in regional speech..."):
-                tts_model, tts_tokenizer, tts_desc = get_tts_bundle()
-                audio_arr, sr = synthesize(
+                tts_bundle = get_tts_bundle()
+                tmp_rec_out = os.path.join(tempfile.gettempdir(), "spoken_rec.wav")
+                synthesize(
+                    tts_bundle,
                     rec_text,
                     LANGUAGES[assistant_lang],
-                    tts_model,
-                    tts_tokenizer,
-                    tts_desc,
+                    out_path=tmp_rec_out,
                 )
-                import io, soundfile as sf
-                buf = io.BytesIO()
-                sf.write(buf, audio_arr, sr, format="WAV")
-                buf.seek(0)
-                st.audio(buf.read(), format="audio/wav")
+                st.audio(tmp_rec_out, format="audio/wav")
 
 
 # ===========================================================================
-# PAGE 1: VOICE RECOMMENDATION (ORIGINAL DEMO - 100% PRESERVED)
+# PAGE 1: SKILL PATHWAYS / VOICE RECOMMENDATION (ORIGINAL DEMO - PRESERVED)
 # ===========================================================================
 
-elif page == "🎙️ Voice Recommendation":
+elif page in ["Skill Pathways", "🎙️ Voice Recommendation"]:
 
-    st.title("🎙️ Voice for Livelihood")
+    render_stitch_breadcrumb("Skill Pathways")
 
-    st.caption(
-        "Prototype — speak your background and interests, "
-        "get an NSQF-aligned skilling recommendation matched "
-        "to local demand, spoken back to you."
+    render_stitch_header(
+        "Skill Pathways & Recommendations",
+        "Speak your background and interests to discover NSQF-aligned skilling opportunities matched to local demand.",
+        demo_mode=True,
     )
 
     # -----------------------------------------------------------------------
@@ -696,24 +773,15 @@ elif page == "🎙️ Voice Recommendation":
 # PAGE 2: BENEFICIARY PROFILE (STITCH UI DESIGN - PHASE 4A)
 # ===========================================================================
 
-elif page == "👤 Beneficiary Profile":
+elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
 
     render_stitch_breadcrumb("Beneficiary Profile")
 
     # Top Header
-    st.markdown(
-        """
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C6C5D4; padding-bottom: 12px; margin-bottom: 16px;">
-            <div>
-                <h2 style="font-size: 26px; font-weight: 700; color: #000666; margin: 0;">Beneficiary Profile</h2>
-                <p style="font-size: 14px; color: #454652; margin: 4px 0 0 0;">Manage personal background, education, and skills to unlock targeted NSQF pathways.</p>
-            </div>
-            <div>
-                <span class="stitch-demo-badge">Demo Mode</span>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
+    render_stitch_header(
+        "Beneficiary Profile",
+        "Manage personal background, education, and skills to unlock targeted NSQF pathways.",
+        demo_mode=True,
     )
 
     profiles = load_profiles()
@@ -970,10 +1038,15 @@ elif page == "👤 Beneficiary Profile":
 # PAGE 3: RESUME (FEATURE 3)
 # ===========================================================================
 
-elif page == "📄 Resume":
+elif page in ["Resume", "📄 Resume"]:
 
-    st.title("📄 Beneficiary Resume Generator")
-    st.caption("Generate a structured one-page DOCX resume from the saved beneficiary profile and skilling recommendations.")
+    render_stitch_breadcrumb("Resume")
+
+    render_stitch_header(
+        "Beneficiary Resume Generator",
+        "Generate a structured one-page DOCX resume from the saved beneficiary profile and skilling recommendations.",
+        demo_mode=True,
+    )
 
     profiles = load_profiles()
 
@@ -1063,12 +1136,14 @@ elif page == "📄 Resume":
 # PAGE 4: TRAINING FOLLOW-UP (FEATURE 4)
 # ===========================================================================
 
-elif page == "📅 Training Follow-up":
+elif page in ["Follow-up", "📅 Training Follow-up"]:
 
-    st.title("📅 Post-Training Livelihood Follow-up")
-    st.info(
-        "⚠️ **DEMO / PROTOTYPE**: Automated post-training milestone simulation for Smart India Hackathon. "
-        "Simulates 30-day, 60-day, and 180-day retention calls without external IVR/telecom dependencies."
+    render_stitch_breadcrumb("Follow-up")
+
+    render_stitch_header(
+        "Post-Training Livelihood Follow-up",
+        "Automated post-training milestone tracking and retention surveys across 30-day, 60-day, and 180-day intervals.",
+        demo_mode=True,
     )
 
     demo_mode = st.toggle(
@@ -1233,16 +1308,17 @@ elif page == "📅 Training Follow-up":
 
 
 # ===========================================================================
-# PAGE 5: ATTENDANCE INTEGRITY (FEATURE 5)
+# PAGE 5: ATTENDANCE INTEGRITY (STITCH UI DESIGN - PHASE 4C)
 # ===========================================================================
 
-elif page == "🛡️ Attendance Integrity":
+elif page == "Attendance":
 
-    st.title("🛡️ Trainee Attendance Integrity Check")
-    st.warning(
-        "⚠️ **DEMO / PROTOTYPE**: Voice identity verification is not implemented. "
-        "This prototype uses dynamic challenge-response phrase verification with the existing ASR pipeline "
-        "to prevent static audio replay attacks in low-bandwidth training attendance check-ins."
+    render_stitch_breadcrumb("Attendance")
+
+    render_stitch_header(
+        "Training Attendance",
+        "Verify beneficiary presence for today's session.",
+        demo_mode=True,
     )
 
     profiles = load_profiles()
@@ -1264,86 +1340,171 @@ elif page == "🛡️ Attendance Integrity":
 
         challenge = st.session_state.current_challenge
 
-        st.divider()
-        st.subheader("1. Dynamic Spoken Challenge")
-        st.caption("The trainee must speak the randomly generated phrase below to complete verification.")
+        # Trainee info for Bento Cards
+        t_name = profile.get("name", "Anita Devi") if profile else "Anita Devi"
+        t_id = selected_id if profile else "BEN-2026-001"
+        t_trade = profile.get("recommended_trade", "Electrician (Domestic)") if profile else "Electrician (Domestic)"
+        if not t_trade:
+            t_trade = "Electrician (Domestic)"
 
+        # 4 Bento KPI Cards
+        b1, b2, b3, b4 = st.columns(4)
+        with b1:
+            st.markdown(
+                f"""
+                <div class="stitch-bento-card">
+                    <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">person</span> Beneficiary
+                    </span>
+                    <span style="font-size: 18px; font-weight: 700; color: #1B1C1C; margin-top: 6px;">{t_name}</span>
+                    <span style="font-size: 12px; color: #454652; margin-top: 4px;">ID: {t_id}</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with b2:
+            st.markdown(
+                f"""
+                <div class="stitch-bento-card">
+                    <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">school</span> Training Module
+                    </span>
+                    <span style="font-size: 18px; font-weight: 700; color: #1B1C1C; margin-top: 6px;">{t_trade}</span>
+                    <span style="font-size: 12px; color: #454652; margin-top: 4px;">Week 3 · Skill Practice</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with b3:
+            st.markdown(
+                f"""
+                <div class="stitch-bento-card">
+                    <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">calendar_today</span> Date
+                    </span>
+                    <span style="font-size: 18px; font-weight: 700; color: #1B1C1C; margin-top: 6px;">Sep 1, 2026</span>
+                    <span style="font-size: 12px; color: #454652; margin-top: 4px;">Session: 10:00 AM</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with b4:
+            st.markdown(
+                f"""
+                <div class="stitch-bento-card">
+                    <span style="font-size: 13px; color: #454652; display: flex; align-items: center; gap: 4px;">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">fact_check</span> Status
+                    </span>
+                    <span style="font-size: 18px; font-weight: 700; color: #000666; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+                        Pending <span class="material-symbols-outlined" style="font-size: 18px; color: #767683;">pending</span>
+                    </span>
+                    <span style="font-size: 12px; color: #454652; margin-top: 4px;">Awaiting spoken check</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+
+        # Voice Challenge Feature Card
         with st.container(border=True):
-            st.markdown(f"### 🗣️ \"{challenge['phrase_en']}\"")
-            st.write(f"• **Digits:** `{challenge['digits_str']}`")
-            st.write(f"• **Hindi / Regional Phrasing:** {challenge['phrase_hi']}")
+            st.markdown("<h3 style='font-size: 20px; font-weight: 700; color: #000666; text-align: center; margin-bottom: 4px;'>Today's attendance check</h3>", unsafe_allow_html=True)
+            st.markdown("<p style='font-size: 14px; color: #454652; text-align: center; margin-bottom: 12px;'>Please speak the phrase shown below clearly into your device.</p>", unsafe_allow_html=True)
 
-            if st.button("🔄 Generate New Challenge Phrase"):
+            # The Phrase Box
+            render_stitch_phrase_card(challenge["phrase_en"].upper())
+
+            # Pulsing Mic Hero Component
+            st.markdown(
+                """
+                <div class="stitch-mic-hero">
+                    <div class="stitch-mic-ring-outer"></div>
+                    <div class="stitch-mic-ring-inner"></div>
+                    <div class="stitch-mic-button-core">
+                        <span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">mic</span>
+                    </div>
+                </div>
+                <div style="text-align: center; font-size: 14px; font-weight: 600; color: #454652; margin-bottom: 14px;">
+                    <span class="stitch-mic-dot"></span> Tap microphone to record phrase
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            att_audio_input = st.audio_input("Record challenge phrase", key="att_audio_mic")
+            att_file_upload = st.file_uploader("...or upload recorded WAV clip", type=["wav", "flac"], key="att_uploader")
+
+            att_bytes = None
+            if att_audio_input is not None:
+                att_bytes = att_audio_input.getvalue()
+            elif att_file_upload is not None:
+                att_bytes = att_file_upload.getvalue()
+
+            c_btn1, c_btn2 = st.columns([2, 1])
+            verify_btn = c_btn1.button("🎙️ Transcribe & Verify Attendance", type="primary", disabled=att_bytes is None, use_container_width=True)
+            if c_btn2.button("🔄 New Challenge Phrase", type="secondary", use_container_width=True):
                 st.session_state.current_challenge = generate_challenge_phrase(4)
                 st.rerun()
 
-        st.subheader("2. Speak Challenge Phrase")
-        st.write("Record your voice speaking the dynamic challenge phrase above:")
+            if verify_btn and att_bytes is not None:
+                tmp_att_path = None
+                try:
+                    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_att:
+                        tmp_att.write(att_bytes)
+                        tmp_att_path = tmp_att.name
 
-        att_audio_input = st.audio_input("Record challenge phrase")
-        att_file_upload = st.file_uploader("...or upload recorded WAV clip", type=["wav", "flac"], key="att_uploader")
+                    with st.spinner("Transcribing spoken challenge with AI4Bharat Indic Conformer ASR..."):
+                        asr_model = get_asr_model()
+                        lang_code = LANGUAGES.get(profile.get("language", "Hindi"), "hi")
+                        att_transcript = transcribe(asr_model, tmp_att_path, lang_code, "ctc")
 
-        att_bytes = None
-        if att_audio_input is not None:
-            att_bytes = att_audio_input.getvalue()
-        elif att_file_upload is not None:
-            att_bytes = att_file_upload.getvalue()
+                    status, flagged, match_score, reason = verify_phrase_match(challenge["digits"], att_transcript)
 
-        verify_btn = st.button("🎙️ Transcribe & Verify Attendance", type="primary", disabled=att_bytes is None)
+                    record_data = {
+                        "beneficiary_id": selected_id,
+                        "expected_phrase": challenge["expected_phrase"],
+                        "transcript": att_transcript,
+                        "status": status,
+                        "flagged": flagged,
+                        "match_score": match_score,
+                        "reason": reason,
+                        "demo_note": "Demo attendance integrity — voice identity verification not implemented",
+                    }
+                    saved_rec = save_attendance_record(record_data)
 
-        if verify_btn and att_bytes is not None:
-            tmp_att_path = None
-            try:
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_att:
-                    tmp_att.write(att_bytes)
-                    tmp_att_path = tmp_att.name
+                    st.markdown("---")
+                    st.markdown(f"**Expected Phrase:** `{challenge['expected_phrase']}`")
+                    st.markdown(f"**Transcribed Speech:** `{att_transcript}`")
 
-                with st.spinner("Transcribing spoken challenge with AI4Bharat Indic Conformer ASR..."):
-                    asr_model = get_asr_model()
-                    lang_code = LANGUAGES.get(profile.get("language", "Hindi"), "hi")
-                    att_transcript = transcribe(asr_model, tmp_att_path, lang_code, "ctc")
+                    if status == "Pass" and not flagged:
+                        st.success(f"✅ **Attendance Verified (PASS)** — {reason} (Score: {match_score:.0%})")
+                    elif status == "Pass" and flagged:
+                        st.warning(f"⚠️ **Attendance Recorded (FLAGGED FOR REVIEW)** — {reason} (Score: {match_score:.0%})")
+                    else:
+                        st.error(f"❌ **Attendance Rejected (FAIL)** — {reason} (Score: {match_score:.0%})")
 
-                st.subheader("3. Verification Result")
-                st.write(f"**Expected Phrase:** `{challenge['expected_phrase']}`")
-                st.write(f"**Transcribed Speech:** `{att_transcript}`")
+                    # Generate fresh challenge for next check-in
+                    st.session_state.current_challenge = generate_challenge_phrase(4)
 
-                status, flagged, match_score, reason = verify_phrase_match(challenge["digits"], att_transcript)
+                except Exception as e:
+                    st.error("Error during attendance transcription and verification.")
+                    st.exception(e)
+                finally:
+                    if tmp_att_path is not None and os.path.exists(tmp_att_path):
+                        try:
+                            os.unlink(tmp_att_path)
+                        except OSError:
+                            pass
 
-                record_data = {
-                    "beneficiary_id": selected_id,
-                    "expected_phrase": challenge["expected_phrase"],
-                    "transcript": att_transcript,
-                    "status": status,
-                    "flagged": flagged,
-                    "match_score": match_score,
-                    "reason": reason,
-                    "demo_note": "Demo attendance integrity — voice identity verification not implemented",
-                }
-                saved_rec = save_attendance_record(record_data)
-
-                if status == "Pass" and not flagged:
-                    st.success(f"✅ **Attendance Verified (PASS)** — {reason} (Score: {match_score:.0%})")
-                elif status == "Pass" and flagged:
-                    st.warning(f"⚠️ **Attendance Recorded (FLAGGED FOR REVIEW)** — {reason} (Score: {match_score:.0%})")
-                else:
-                    st.error(f"❌ **Attendance Rejected (FAIL)** — {reason} (Score: {match_score:.0%})")
-
-                # Generate fresh challenge for next check-in
-                st.session_state.current_challenge = generate_challenge_phrase(4)
-
-            except Exception as e:
-                st.error("Error during attendance transcription and verification.")
-                st.exception(e)
-            finally:
-                if tmp_att_path is not None and os.path.exists(tmp_att_path):
-                    try:
-                        os.unlink(tmp_att_path)
-                    except OSError:
-                        pass
+        # Prototype Disclaimer
+        render_stitch_disclaimer(
+            "DEMO / PROTOTYPE",
+            "This demonstrates voice challenge verification. It is not biometric identity verification. In a production environment, this confirms presence and liveness, but does not authenticate the specific individual's voice print.",
+        )
 
         # Attendance Log & Summary
         st.divider()
-        st.subheader("Trainee Attendance Dashboard")
+        st.subheader("Trainee Attendance Records")
         all_att = load_attendance()
         if all_att:
             total_att = len(all_att)
@@ -1357,7 +1518,6 @@ elif page == "🛡️ Attendance Integrity":
             m_col3.metric("Rejected (Fail)", failed_att)
             m_col4.metric("Flagged for Review", flagged_att)
 
-            st.write("Recent Attendance Records:")
             att_table = [
                 {
                     "Record ID": a.get("record_id"),
@@ -1374,15 +1534,17 @@ elif page == "🛡️ Attendance Integrity":
 
 
 # ===========================================================================
-# PAGE 6: MONITORING DASHBOARD (FEATURE 6)
+# PAGE 6: MONITORING DASHBOARD (STITCH UI DESIGN - PHASE 4C)
 # ===========================================================================
 
-elif page == "📊 Monitoring Dashboard":
+elif page == "Dashboard":
 
-    st.title("📊 Livelihood Monitoring Dashboard")
-    st.caption(
-        "Aggregated program analytics for SIH PS 26097: beneficiary enrollment, "
-        "training completions, post-training employment retention, and attendance integrity."
+    render_stitch_breadcrumb("Dashboard")
+
+    render_stitch_header(
+        "Livelihood Monitoring Dashboard",
+        "Aggregated program analytics: beneficiary enrollment, training completions, post-training employment retention, and attendance integrity.",
+        demo_mode=True,
     )
 
     profiles = load_profiles()
@@ -1494,3 +1656,22 @@ elif page == "📊 Monitoring Dashboard":
             st.dataframe(fol_table, use_container_width=True)
         else:
             st.info("No follow-up records yet.")
+
+
+# ===========================================================================
+# PAGE 7: TRAINING (STITCH UI DESIGN - PHASE 4C)
+# ===========================================================================
+
+elif page == "Training":
+
+    render_stitch_breadcrumb("Training")
+
+    render_stitch_header(
+        "Training Modules & NSQF Pathways",
+        "Explore accredited training modules and regional skill development courses.",
+        demo_mode=True,
+    )
+
+    trades_df = get_trades_df()
+    st.subheader("Accredited NSQF Training Modules")
+    st.dataframe(trades_df, use_container_width=True)

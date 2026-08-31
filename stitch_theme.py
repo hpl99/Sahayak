@@ -6,10 +6,10 @@ Implements Google Stitch Material 3 design tokens:
 - Surface Canvas (#FBF9F8)
 - High-legibility Inter Typography
 - Google Material Symbols Outlined
-- Card containers and dynamic profile completion calculation.
+- Bento card containers, dynamic completion calculations, and exact Stitch layout tokens.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 import streamlit as st
 
 STITCH_CSS = """
@@ -41,6 +41,7 @@ STITCH_CSS = """
     section[data-testid="stSidebar"] {
         background-color: #F6F3F2 !important;
         border-right: 1px solid #C6C5D4 !important;
+        padding-top: 1.5rem !important;
     }
 
     /* Buttons */
@@ -51,7 +52,7 @@ STITCH_CSS = """
         border-radius: 0.375rem !important;
         font-weight: 600 !important;
         font-size: 15px !important;
-        padding: 0.5rem 1.25rem !important;
+        padding: 0.6rem 1.25rem !important;
         transition: all 0.15s ease-in-out !important;
     }
     .stButton > button:hover {
@@ -87,7 +88,7 @@ STITCH_CSS = """
     .stitch-card {
         background-color: #FFFFFF;
         border: 1px solid #C6C5D4;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         padding: 1.5rem;
         margin-bottom: 1.25rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -121,7 +122,7 @@ STITCH_CSS = """
         color: #000767;
         font-size: 13px;
         font-weight: 600;
-        padding: 0.25rem 0.6rem;
+        padding: 0.25rem 0.65rem;
         border-radius: 9999px;
         border: 1px solid #BDC2FF;
     }
@@ -179,38 +180,108 @@ STITCH_CSS = """
         padding: 0.85rem 1.15rem;
         font-size: 15px;
         line-height: 1.4;
+        margin-top: 0.75rem;
         margin-bottom: 0.75rem;
     }
 
-    /* Mic Action Button Container */
-    .stitch-mic-container {
+    /* Large Central Pulsing Mic Animation */
+    .stitch-mic-hero {
+        position: relative;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 1.5rem 0;
+        width: 140px;
+        height: 140px;
+        margin: 1rem auto;
     }
-    .stitch-mic-pulse {
+    .stitch-mic-ring-outer {
+        position: absolute;
+        inset: 0;
+        border: 3px solid #FF9933;
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: stitch-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    .stitch-mic-ring-inner {
+        position: absolute;
+        inset: 12px;
+        border: 3px solid #FF9933;
+        border-radius: 50%;
+        opacity: 0.7;
+        animation: stitch-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    .stitch-mic-button-core {
+        position: relative;
+        z-index: 10;
+        width: 88px;
+        height: 88px;
+        background-color: #000666;
+        color: #FFFFFF;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(0, 6, 102, 0.25);
+    }
+    @keyframes stitch-ping {
+        75%, 100% { transform: scale(1.3); opacity: 0; }
+    }
+    @keyframes stitch-pulse {
+        50% { opacity: 0.3; }
+    }
+
+    /* Phrase Box */
+    .stitch-phrase-box {
+        background-color: #FFFFFF;
+        border: 2px solid rgba(0, 6, 102, 0.25);
+        border-radius: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        margin: 1rem 0;
+        text-align: center;
+    }
+    .stitch-phrase-text {
+        font-size: 26px;
+        font-weight: 700;
+        color: #000666;
+        letter-spacing: 0.18em;
+    }
+
+    /* Bento Card */
+    .stitch-bento-card {
+        background-color: #FFFFFF;
+        border: 1px solid #C6C5D4;
+        border-radius: 0.75rem;
+        padding: 1.15rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* Chips */
+    .stitch-chip {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 15px;
-        font-weight: 600;
+        gap: 0.35rem;
+        background-color: #E4E2E1;
         color: #454652;
-        margin-top: 0.75rem;
+        border: 1px solid #C6C5D4;
+        padding: 0.3rem 0.65rem;
+        border-radius: 0.375rem;
+        font-size: 13px;
+        font-weight: 500;
     }
-    .stitch-mic-dot {
-        width: 10px;
-        height: 10px;
-        background-color: #DF8017;
-        border-radius: 50%;
-        display: inline-block;
-        animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-        0% { transform: scale(0.95); opacity: 0.8; }
-        50% { transform: scale(1.3); opacity: 1; }
-        100% { transform: scale(0.95); opacity: 0.8; }
+
+    /* Disclaimer Card */
+    .stitch-disclaimer {
+        background-color: #E4E2E1;
+        border: 1px solid #767683;
+        border-radius: 0.5rem;
+        padding: 1rem 1.25rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
     }
 
     /* Material Icon utility */
@@ -266,6 +337,25 @@ def render_stitch_breadcrumb(page_title: str) -> None:
     )
 
 
+def render_stitch_header(title: str, subtitle: str = "", demo_mode: bool = True) -> None:
+    """Render standardized top Stitch header with title, subtitle, and Demo Mode badge."""
+    badge_html = '<span class="stitch-demo-badge">Demo Mode</span>' if demo_mode else ''
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #C6C5D4; padding-bottom: 12px; margin-bottom: 16px;">
+            <div>
+                <h2 style="font-size: 26px; font-weight: 700; color: #000666; margin: 0;">{title}</h2>
+                {f'<p style="font-size: 14px; color: #454652; margin: 4px 0 0 0;">{subtitle}</p>' if subtitle else ''}
+            </div>
+            <div>
+                {badge_html}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_stitch_completion_card(completion_pct: int) -> None:
     """Render the Stitch profile completion card with dynamic percentage and progress bar."""
     st.markdown(
@@ -284,6 +374,34 @@ def render_stitch_completion_card(completion_pct: int) -> None:
             </div>
             <div class="stitch-progress-container">
                 <div class="stitch-progress-bar" style="width: {completion_pct}%;"></div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_stitch_phrase_card(phrase_str: str) -> None:
+    """Render the central dynamic challenge phrase card."""
+    st.markdown(
+        f"""
+        <div class="stitch-phrase-box">
+            <div class="stitch-phrase-text">{phrase_str}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_stitch_disclaimer(title: str, body: str) -> None:
+    """Render standardized prototype disclaimer card."""
+    st.markdown(
+        f"""
+        <div class="stitch-disclaimer">
+            <span class="material-symbols-outlined" style="color: #454652; font-size: 22px;">info</span>
+            <div>
+                <div style="font-weight: 700; font-size: 14px; color: #1B1C1C;">{title}</div>
+                <div style="font-size: 13px; color: #454652; margin-top: 2px;">{body}</div>
             </div>
         </div>
         """,

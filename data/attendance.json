@@ -28,5 +28,17 @@
     "match_score": 1.0,
     "record_id": "ATT-2026-0003",
     "timestamp": "2026-09-01T02:27:54.492100"
+  },
+  {
+    "beneficiary_id": "BEN-2026-008",
+    "expected_phrase": "Six Three Eight One (6 3 8 1)",
+    "transcript": "Six Three Eight One",
+    "status": "Pass",
+    "flagged": false,
+    "match_score": 1.0,
+    "reason": "Matched 4/4 challenge elements",
+    "demo_note": "Demo",
+    "record_id": "ATT-2026-0004",
+    "timestamp": "2026-09-01T03:13:40.958239"
   }
 ]
