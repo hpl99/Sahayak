@@ -137,6 +137,7 @@ with st.sidebar:
             "📄 Resume",
             "📅 Training Follow-up",
             "🛡️ Attendance Integrity",
+            "📊 Monitoring Dashboard",
         ],
         index=0,
     )
@@ -1060,3 +1061,126 @@ elif page == "🛡️ Attendance Integrity":
                 for a in reversed(all_att)
             ]
             st.dataframe(att_table, use_container_width=True)
+
+
+# ===========================================================================
+# PAGE 6: MONITORING DASHBOARD (FEATURE 6)
+# ===========================================================================
+
+elif page == "📊 Monitoring Dashboard":
+
+    st.title("📊 Livelihood Monitoring Dashboard")
+    st.caption(
+        "Aggregated program analytics for SIH PS 26097: beneficiary enrollment, "
+        "training completions, post-training employment retention, and attendance integrity."
+    )
+
+    profiles = load_profiles()
+    followups = load_followups()
+    attendance = load_attendance()
+    trades_df = get_trades_df()
+
+    # Section 1: Beneficiary & Skilling Overview
+    st.subheader("1. Beneficiary Enrollment & Training Progress")
+    total_b = len(profiles)
+    completed_train = sum(1 for p in profiles if p.get("training_status") == "Completed")
+    in_progress_train = sum(1 for p in profiles if p.get("training_status") == "In Progress")
+    not_started_train = sum(1 for p in profiles if p.get("training_status") == "Not Started")
+    assigned_trades = sum(1 for p in profiles if p.get("recommended_trade"))
+
+    b_col1, b_col2, b_col3, b_col4 = st.columns(4)
+    b_col1.metric("Total Beneficiaries", total_b)
+    b_col2.metric("Training Completed", completed_train)
+    b_col3.metric("Training In Progress", in_progress_train)
+    b_col4.metric("Assigned Pathways", assigned_trades)
+
+    st.divider()
+
+    # Section 2: Post-Training Follow-up & Employment Outcomes
+    st.subheader("2. Post-Training Employment & Retention Outcomes")
+    total_fol = len(followups)
+    completed_fol = sum(1 for f in followups if f.get("status") == "Completed")
+    
+    working_count = 0
+    unemployed_count = 0
+    incomes = []
+
+    for f in followups:
+        resp = f.get("survey_response")
+        if resp:
+            if resp.get("is_working") == "Yes":
+                working_count += 1
+                inc = resp.get("monthly_income_inr", 0)
+                if inc > 0:
+                    incomes.append(inc)
+            elif resp.get("is_working") == "No":
+                unemployed_count += 1
+
+    avg_inc = sum(incomes) / len(incomes) if incomes else 0
+
+    f_col1, f_col2, f_col3, f_col4 = st.columns(4)
+    f_col1.metric("Follow-ups Completed", completed_fol)
+    f_col2.metric("Employed Post-Training", working_count)
+    f_col3.metric("Seeking Re-skilling", unemployed_count)
+    f_col4.metric("Avg Monthly Income", f"₹{avg_inc:,.0f}" if avg_inc > 0 else "N/A")
+
+    st.divider()
+
+    # Section 3: Attendance Integrity Metrics
+    st.subheader("3. Trainee Attendance Integrity Check Overview")
+    total_att = len(attendance)
+    passed_att = sum(1 for a in attendance if a.get("status") == "Pass")
+    failed_att = sum(1 for a in attendance if a.get("status") == "Fail")
+    flagged_att = sum(1 for a in attendance if a.get("flagged") is True)
+
+    a_col1, a_col2, a_col3, a_col4 = st.columns(4)
+    a_col1.metric("Attendance Attempts", total_att)
+    a_col2.metric("Verified (Pass)", passed_att)
+    a_col3.metric("Rejected (Fail)", failed_att)
+    a_col4.metric("Flagged for Review", flagged_att)
+
+    st.divider()
+
+    # Section 4: Data Tables
+    st.subheader("4. Detailed Records & District Demand")
+
+    tab1, tab2, tab3 = st.tabs(["Beneficiaries", "NSQF Trade Demand", "Follow-up Surveys"])
+
+    with tab1:
+        if profiles:
+            p_table = [
+                {
+                    "ID": p.get("beneficiary_id"),
+                    "Name": p.get("name"),
+                    "District": p.get("district"),
+                    "Education": p.get("education_level"),
+                    "Preference": p.get("employment_preference"),
+                    "Status": p.get("training_status"),
+                    "Trade": p.get("recommended_trade") or "General",
+                }
+                for p in profiles
+            ]
+            st.dataframe(p_table, use_container_width=True)
+        else:
+            st.info("No beneficiary records yet.")
+
+    with tab2:
+        st.dataframe(trades_df[["trade_name", "sector", "nsqf_level", "demand_nagpur", "demand_default", "avg_monthly_wage_inr"]], use_container_width=True)
+
+    with tab3:
+        if followups:
+            fol_table = [
+                {
+                    "Follow-up ID": f.get("followup_id"),
+                    "Beneficiary": f.get("beneficiary_id"),
+                    "Trade": f.get("trade_name"),
+                    "Milestone": f.get("milestone"),
+                    "Status": f.get("status"),
+                    "Working?": f.get("survey_response", {}).get("is_working", "-") if f.get("survey_response") else "-",
+                    "Income": f"₹{f.get('survey_response', {}).get('monthly_income_inr', 0):,}" if f.get("survey_response") else "-",
+                }
+                for f in followups
+            ]
+            st.dataframe(fol_table, use_container_width=True)
+        else:
+            st.info("No follow-up records yet.")
