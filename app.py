@@ -198,301 +198,176 @@ with st.sidebar:
     st.caption("© 2024 Sahayak | Official Prototype")
 
 
+import base64
+import streamlit.components.v1 as components
+
+# Declare Stitch Voice Assistant Frontend Component
+_stitch_voice_assistant_component = components.declare_component(
+    "stitch_voice_assistant",
+    path=os.path.join(os.path.dirname(__file__), "frontend", "voice_assistant"),
+)
+
+
 # ===========================================================================
-# PAGE: VOICE ASSISTANT (UNIFIED STITCH UI DESIGN - PHASE 4C)
+# PAGE: VOICE ASSISTANT (ACTUAL STITCH FRONTEND COMPONENT)
 # ===========================================================================
 
 if page == "Voice Assistant":
 
-    render_stitch_breadcrumb("Voice Assistant")
-
-    render_stitch_header(
-        "Tell us about your work, skills and interests.",
-        "We'll help you find suitable NSQF skill pathways matched to local district demand.",
-        demo_mode=True,
-    )
-
-    # Inline Assistant Settings Bar (Single unified control strip)
-    col_lang, col_dist, col_reset = st.columns([3, 3, 2])
-    with col_lang:
-        assistant_lang = st.selectbox(
-            "Conversation Language",
-            list(LANGUAGES.keys()),
-            index=0,
-            key="assistant_lang_select",
-        )
-    with col_dist:
-        assistant_district = st.selectbox(
-            "District for Local Demand",
-            DISTRICTS,
-            index=0,
-            key="assistant_district_select",
-        )
-    with col_reset:
-        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
-        if st.button("🔄 New Chat", type="secondary", use_container_width=True):
-            st.session_state.conv_session = ConversationSession(
-                language=assistant_lang,
-                district=assistant_district,
-            )
-            st.session_state.last_user_transcript = None
-            st.session_state.spoken_rec_audio = None
-            st.rerun()
-
-    # Initialize session state if missing or language changed
-    if "conv_session" not in st.session_state or st.session_state.conv_session.language != assistant_lang:
-        st.session_state.conv_session = ConversationSession(
-            language=assistant_lang,
-            district=assistant_district,
-        )
-
-    session: ConversationSession = st.session_state.conv_session
-    session.district = assistant_district
-
-    # Status Pills
+    # Hide default Streamlit sidebar and wrapper padding when Stitch Voice Assistant is active
     st.markdown(
-        f"""
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 18px 0;">
-            <span class="stitch-pill">🌐 Language: <b>{assistant_lang}</b></span>
-            <span class="stitch-pill">📍 District: <b>{assistant_district}</b></span>
-            <span class="stitch-pill">👤 ID: <b>{session.beneficiary_id}</b></span>
-        </div>
+        """
+        <style>
+            section[data-testid="stSidebar"] { display: none !important; }
+            .main .block-container { padding: 0 !important; max-width: 100vw !important; }
+            header[data-testid="stHeader"] { display: none !important; }
+            footer { display: none !important; }
+            iframe { border: none !important; width: 100% !important; min-height: 100vh !important; }
+        </style>
         """,
         unsafe_allow_html=True,
     )
 
-    # If conversation is still in progress
-    if not session.is_complete:
-        col_left, col_right = st.columns([7, 5])
+    # Initialize session state if missing
+    if "conv_session" not in st.session_state:
+        st.session_state.conv_session = ConversationSession(
+            language="Hindi",
+            district="Nagpur",
+        )
 
-        with col_left:
-            curr_q = session.get_current_question()
-            step_name = STEP_LABELS.get(session.current_step, session.current_step)
+    session: ConversationSession = st.session_state.conv_session
 
-            with st.container(border=True):
-                st.markdown(
-                    f"""
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #C6C5D4; padding-bottom: 8px; margin-bottom: 12px;">
-                        <span style="font-size: 17px; font-weight: 700; color: #000666;">Let's understand your livelihood</span>
-                        <span style="font-size: 13px; font-weight: 600; color: #767683;">Step {session.current_step_idx + 1} of 5: {step_name}</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
+    # Prepare Recommendations & TTS if complete
+    recommendations = []
+    rec_spoken_text = ""
+    rec_audio_base64 = None
 
-                # Assistant Message Bubble
-                st.markdown(
-                    f"""
-                    <div class="stitch-assistant-bubble">
-                        "{curr_q}"
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                # Hear Question TTS button
-                if st.button("🔊 Hear Question (TTS)", key=f"speak_q_{session.current_step_idx}"):
-                    with st.spinner("Synthesizing question audio..."):
-                        tts_bundle = get_tts_bundle()
-                        tmp_out = os.path.join(tempfile.gettempdir(), f"q_tts_{session.current_step_idx}.wav")
-                        synthesize(
-                            tts_bundle,
-                            curr_q,
-                            LANGUAGES[assistant_lang],
-                            out_path=tmp_out,
-                        )
-                        st.audio(tmp_out, format="audio/wav")
-
-                # Central Pulsing Mic Hero Component
-                st.markdown(
-                    f"""
-                    <div class="stitch-mic-hero">
-                        <div class="stitch-mic-ring-outer"></div>
-                        <div class="stitch-mic-ring-inner"></div>
-                        <div class="stitch-mic-button-core">
-                            <span style="font-size: 34px; line-height: 1;">🎙️</span>
-                        </div>
-                    </div>
-                    <div style="text-align: center; font-size: 14px; font-weight: 600; color: #454652; margin-bottom: 10px;">
-                        <span class="stitch-mic-dot"></span> 🎙️ Speak naturally in <b>{assistant_lang}</b>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                # Voice recording widget
-                audio_val = None
-                if hasattr(st, "audio_input"):
-                    audio_val = st.audio_input("Record your answer", label_visibility="collapsed", key=f"mic_turn_{session.current_step_idx}")
-
-                with st.expander("📁 Upload recorded audio file instead (WAV/MP3/FLAC)", expanded=False):
-                    upload_val = st.file_uploader(
-                        "Upload audio clip",
-                        type=["wav", "mp3", "ogg", "flac"],
-                        label_visibility="collapsed",
-                        key=f"file_turn_{session.current_step_idx}",
-                    )
-
-                audio_to_process = audio_val or upload_val
-
-                c_sub, _ = st.columns([2, 3])
-                submit_audio = c_sub.button("🎙️ Submit Voice", type="primary", key=f"sub_audio_{session.current_step_idx}", disabled=(audio_to_process is None), use_container_width=True)
-
-                with st.expander("⌨️ Manual text input fallback (accessibility / debug)", expanded=False):
-                    text_turn = st.text_input("Type spoken response directly:", label_visibility="collapsed", key=f"text_turn_{session.current_step_idx}")
-                    submit_text = st.button("Submit Text", type="secondary", key=f"sub_text_{session.current_step_idx}", disabled=(not text_turn.strip()))
-
-                if submit_audio and audio_to_process:
-                    with st.spinner("Transcribing with AI4Bharat Indic Conformer ASR..."):
-                        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-                            tmp.write(audio_to_process.getvalue())
-                            tmp_path = tmp.name
-
-                        try:
-                            asr_model = get_asr_model()
-                            transcript = transcribe(
-                                asr_model,
-                                tmp_path,
-                                LANGUAGES[assistant_lang],
-                                decoding="ctc",
-                            )
-                        finally:
-                            if os.path.exists(tmp_path):
-                                os.remove(tmp_path)
-
-                        st.session_state.last_user_transcript = transcript
-                        next_q, is_done = session.process_turn(transcript)
-                        st.rerun()
-
-                elif submit_text and text_turn.strip():
-                    st.session_state.last_user_transcript = text_turn.strip()
-                    next_q, is_done = session.process_turn(text_turn.strip())
-                    st.rerun()
-
-                if st.session_state.get("last_user_transcript"):
-                    st.markdown(
-                        f"""
-                        <div class="stitch-user-bubble">
-                            🗣️ <b>Understood:</b> "{st.session_state.last_user_transcript}"
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-        # Right Column: Context & Progress
-        with col_right:
-            # Card 1: Recent Dialogue
-            with st.container(border=True):
-                st.markdown(
-                    """
-                    <div style="display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 10px;">
-                        <span style="font-size: 16px;">💬</span>
-                        <span style="font-size: 15px; font-weight: 700; color: #000666;">Recent Dialogue</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                if session.history:
-                    for item in session.history[-3:]:
-                        st.markdown(
-                            f"""
-                            <div style="margin-bottom: 6px;">
-                                <div style="background-color: #EAE8E7; padding: 6px 10px; border-radius: 6px; font-size: 12.5px; color: #1B1C1C; margin-bottom: 3px;">
-                                    🤖 {item['question']}
-                                </div>
-                                <div style="background-color: #F6F3F2; border: 1px solid #C6C5D4; padding: 6px 10px; border-radius: 6px; font-size: 12.5px; color: #1B1C1C; text-align: right;">
-                                    🗣️ "{item['transcript']}"
-                                </div>
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.caption("Dialogue history will appear as you speak.")
-
-            # Card 2: Extracted Information & Progress
-            with st.container(border=True):
-                st.markdown(
-                    """
-                    <div style="display: flex; align-items: center; gap: 6px; border-bottom: 1px solid #C6C5D4; padding-bottom: 6px; margin-bottom: 10px;">
-                        <span style="font-size: 16px;">📊</span>
-                        <span style="font-size: 15px; font-weight: 700; color: #000666;">Extracted Information</span>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-
-                # Context chips
-                chip_emojis = {"work": "💼", "bolt": "⚡", "history": "📜", "group": "👥", "badge": "🎯"}
-                chips = []
-                if session.slots.get("current_livelihood"):
-                    chips.append(("work", session.slots["current_livelihood"]))
-                if session.slots.get("skills"):
-                    chips.append(("bolt", session.slots["skills"]))
-                if session.slots.get("previous_work_experience"):
-                    chips.append(("history", session.slots["previous_work_experience"]))
-                if session.slots.get("family_occupation"):
-                    chips.append(("group", session.slots["family_occupation"]))
-                if session.slots.get("employment_preference"):
-                    chips.append(("badge", session.slots["employment_preference"]))
-
-                if chips:
-                    chips_html = "".join([f'<span class="stitch-chip">{chip_emojis.get(icon, "•")} {val}</span> ' for icon, val in chips])
-                    st.markdown(f"<div style='display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;'>{chips_html}</div>", unsafe_allow_html=True)
-
-                prog = session.get_progress()
-                st.progress(prog, text=f"Progress: {int(prog * 100)}%")
-
-                checklist = session.get_checklist()
-                for label, is_done, val in checklist:
-                    if is_done:
-                        st.markdown(f"<div style='font-size: 12.5px; color: #006633; margin-bottom: 3px;'>✓ <b>{label}:</b> {val}</div>", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"<div style='font-size: 12.5px; color: #767683; margin-bottom: 3px;'>○ <b>{label}</b></div>", unsafe_allow_html=True)
-
-    # Conversation Completed -> Display Recommendation and Spoken Synthesis
-    else:
-        st.success("✅ Profile information collected successfully!")
-        st.info("🔍 Finding suitable skill pathways...")
-
+    if session.is_complete:
         trades_df = get_trades_df()
-        profile_matches = match_profile(
+        recommendations = match_profile(
             session.slots,
             district=session.district,
             trades_df=trades_df,
             top_n=3,
         )
+        rec_spoken_text = build_recommendation_text(recommendations, session.language)
 
-        st.subheader("🎯 Recommended NSQF Trade Pathways")
-        for i, m in enumerate(profile_matches, start=1):
-            with st.container(border=True):
-                st.markdown(f"**{i}. {m['trade_name']}** · NSQF Level {m['nsqf_level']} · {m['sector']}")
-                cols = st.columns(3)
-                cols[0].metric("Local demand score", f"{m['demand_score']:.0f}/10")
-                cols[1].metric("Avg monthly wage", f"₹{m['avg_monthly_wage_inr']:,}")
-                cols[2].metric("Match score", f"{m['score']:.1f}")
-
-                st.markdown("**Recommended because:**")
-                for exp in m["explanations"]:
-                    st.write(exp)
-
-        # Spoken Recommendation Audio
-        st.subheader("🔊 Spoken Recommendation")
-        rec_text = build_recommendation_text(profile_matches, assistant_lang)
-        st.markdown(f"**Spoken Text:** *\"{rec_text}\"*")
-
-        if st.button("🔊 Synthesize & Speak Recommendation (TTS)", type="primary"):
-            with st.spinner("Synthesizing recommendation in regional speech..."):
+        # Synthesize recommendation audio if not yet cached
+        rec_cache_key = f"rec_audio_{session.beneficiary_id}"
+        if rec_cache_key not in st.session_state:
+            try:
                 tts_bundle = get_tts_bundle()
-                tmp_rec_out = os.path.join(tempfile.gettempdir(), "spoken_rec.wav")
+                tmp_rec_out = os.path.join(tempfile.gettempdir(), f"rec_{session.beneficiary_id}.wav")
                 synthesize(
                     tts_bundle,
-                    rec_text,
-                    LANGUAGES[assistant_lang],
+                    rec_spoken_text,
+                    LANGUAGES.get(session.language, "hi"),
                     out_path=tmp_rec_out,
                 )
-                st.audio(tmp_rec_out, format="audio/wav")
+                with open(tmp_rec_out, "rb") as f:
+                    st.session_state[rec_cache_key] = base64.b64encode(f.read()).decode("utf-8")
+            except Exception as e:
+                print("TTS rec error:", e)
+
+        rec_audio_base64 = st.session_state.get(rec_cache_key)
+
+    # Prepare TTS audio for current question
+    curr_q = session.get_current_question()
+    tts_audio_base64 = None
+
+    if not session.is_complete:
+        q_cache_key = f"q_tts_{session.beneficiary_id}_{session.current_step_idx}"
+        if q_cache_key not in st.session_state:
+            try:
+                tts_bundle = get_tts_bundle()
+                tmp_q_out = os.path.join(tempfile.gettempdir(), f"q_{session.beneficiary_id}_{session.current_step_idx}.wav")
+                synthesize(
+                    tts_bundle,
+                    curr_q,
+                    LANGUAGES.get(session.language, "hi"),
+                    out_path=tmp_q_out,
+                )
+                with open(tmp_q_out, "rb") as f:
+                    st.session_state[q_cache_key] = base64.b64encode(f.read()).decode("utf-8")
+            except Exception as e:
+                print("TTS question error:", e)
+
+        tts_audio_base64 = st.session_state.get(q_cache_key)
+
+    # Render the exact Stitch Frontend Component
+    event = _stitch_voice_assistant_component(
+        language=session.language,
+        district=session.district,
+        beneficiary_id=session.beneficiary_id,
+        step_label=STEP_LABELS.get(session.current_step, session.current_step),
+        step_idx=session.current_step_idx,
+        question=curr_q,
+        history=session.history,
+        slots=session.slots,
+        progress=session.get_progress(),
+        is_complete=session.is_complete,
+        recommendations=recommendations,
+        rec_spoken_text=rec_spoken_text,
+        tts_audio_base64=tts_audio_base64,
+        rec_audio_base64=rec_audio_base64,
+        default=None,
+        key="stitch_voice_assistant_component",
+    )
+
+    # Handle Bridge Events from the Stitch Frontend
+    if event and isinstance(event, dict):
+        action = event.get("action")
+
+        if action == "audio_recorded" and event.get("audio_base64"):
+            try:
+                audio_bytes = base64.b64decode(event["audio_base64"])
+                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                    tmp.write(audio_bytes)
+                    tmp_path = tmp.name
+
+                try:
+                    asr_model = get_asr_model()
+                    transcript = transcribe(
+                        asr_model,
+                        tmp_path,
+                        LANGUAGES.get(session.language, "hi"),
+                        decoding="ctc",
+                    )
+                finally:
+                    if os.path.exists(tmp_path):
+                        os.remove(tmp_path)
+
+                if transcript and transcript.strip():
+                    session.process_turn(transcript.strip())
+                    st.rerun()
+            except Exception as e:
+                print("Audio transcription error:", e)
+
+        elif action == "user_text" and event.get("text"):
+            session.process_turn(event["text"].strip())
+            st.rerun()
+
+        elif action == "navigate" and event.get("page"):
+            st.session_state.selected_nav_page = event["page"]
+            st.rerun()
+
+        elif action == "change_language" and event.get("language"):
+            st.session_state.conv_session = ConversationSession(
+                language=event["language"],
+                district=session.district,
+            )
+            st.rerun()
+
+        elif action == "change_district" and event.get("district"):
+            session.district = event["district"]
+            st.rerun()
+
+        elif action == "reset":
+            st.session_state.conv_session = ConversationSession(
+                language=session.language,
+                district=session.district,
+            )
+            st.rerun()
 
 
 # ===========================================================================
