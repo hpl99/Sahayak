@@ -78,25 +78,32 @@ def match_trades(
 
 def match_profile(
     profile: dict,
-    trades_df: pd.DataFrame,
     district: str = None,
+    trades_df: pd.DataFrame = None,
     top_n: int = 3,
 ) -> list[dict]:
     """
     Rank trades based on a complete Beneficiary Profile.
 
     Uses:
-    - Skills (high weight)
-    - Interests (medium weight)
-    - Current livelihood (transition weight)
-    - Employment preference (self-employment vs wage employment alignment)
-    - Mobility constraints (local demand alignment)
-    - Education level vs NSQF level compatibility
-    - District demand score
+    - skills (high weight)
+    - previous_work_experience (experience matching)
+    - interests (aspiration matching)
+    - current_livelihood (transition potential)
+    - family_occupation (traditional background affinity)
+    - employment_preference (wage vs self-employment)
+    - mobility_constraints (local vs relocation alignment)
+    - education_level (NSQF level qualification fit)
+    - district (local demand weighting)
 
-    Returns transparent reasons / explanations for each recommendation.
+    Returns transparent explanations for every recommendation.
     """
-    if not district:
+    # Gracefully handle flexible argument orders (profile, trades_df, district) vs (profile, district, trades_df)
+    if isinstance(district, pd.DataFrame):
+        trades_df, district = district, trades_df
+    if trades_df is None:
+        trades_df = load_trades()
+    if not district or not isinstance(district, str):
         district = profile.get("district", "nagpur")
     
     district_clean = str(district).lower().strip()
@@ -105,17 +112,21 @@ def match_profile(
         demand_col = "demand_default"
 
     skills_text = str(profile.get("skills", "") or "")
+    exp_text = str(profile.get("previous_work_experience", "") or "")
     interests_text = str(profile.get("interests", "") or "")
     livelihood_text = str(profile.get("current_livelihood", "") or "")
+    family_text = str(profile.get("family_occupation", "") or "")
     emp_pref = str(profile.get("employment_preference", "") or "")
     mobility = str(profile.get("mobility_constraints", "") or "")
     education = str(profile.get("education_level", "") or "")
 
     skill_tokens = _tokenize(skills_text)
+    exp_tokens = _tokenize(exp_text)
     interest_tokens = _tokenize(interests_text)
     livelihood_tokens = _tokenize(livelihood_text)
+    family_tokens = _tokenize(family_text)
 
-    # Specific trade profiles for employment preference weighting
+    # Trades suitable for self-employment vs wage employment
     self_employment_trades = {
         "tailoring & fashion design",
         "mobile repair technician",
@@ -148,56 +159,65 @@ def match_profile(
         trade_keywords = _tokenize(str(row["keywords"]).replace("|", " "))
         sector_tokens = _tokenize(sector)
 
-        # 1. Skill overlap (weight = 3)
+        # 1. Skill overlap (weight = 3.0)
         skill_overlap = skill_tokens & trade_keywords
         skill_score = len(skill_overlap) * 3.0
 
-        # 2. Interest overlap (weight = 2)
+        # 2. Previous Experience overlap (weight = 2.5)
+        exp_overlap = exp_tokens & trade_keywords
+        exp_score = len(exp_overlap) * 2.5
+
+        # 3. Interest overlap (weight = 2.0)
         interest_overlap = interest_tokens & (trade_keywords | sector_tokens | _tokenize(trade_name))
         interest_score = len(interest_overlap) * 2.0
 
-        # 3. Livelihood overlap (weight = 1.5)
+        # 4. Current Livelihood & Family Background overlap (weight = 1.5)
         livelihood_overlap = livelihood_tokens & trade_keywords
-        livelihood_score = len(livelihood_overlap) * 1.5
+        family_overlap = family_tokens & (trade_keywords | sector_tokens)
+        bg_score = (len(livelihood_overlap) + len(family_overlap)) * 1.5
 
-        # 4. Employment preference bonus
+        # 5. Employment preference alignment
         emp_bonus = 0.0
         emp_reason = None
         if "self" in emp_pref.lower():
             if trade_lower in self_employment_trades:
                 emp_bonus = 2.5
-                emp_reason = "✓ Matches self-employment / micro-enterprise preference"
+                emp_reason = "- Employment preference matches self-employment / micro-enterprise"
         elif "wage" in emp_pref.lower() or "job" in emp_pref.lower():
             if trade_lower in wage_employment_trades:
                 emp_bonus = 2.5
-                emp_reason = "✓ Matches wage-employment preference with structured hiring"
+                emp_reason = "- Employment preference matches wage employment"
 
-        # 5. Demand score
-        total_score = skill_score + interest_score + livelihood_score + emp_bonus + demand_score
+        # 6. Demand score
+        total_score = skill_score + exp_score + interest_score + bg_score + emp_bonus + demand_score
 
-        # 6. Build transparent explanations
+        # 7. Build transparent explanations
         explanations = []
         if skill_overlap:
-            explanations.append(f"✓ Stated skill matches: {', '.join(sorted(skill_overlap))}")
-        elif interest_overlap:
-            explanations.append(f"✓ Stated interest aligns with {sector} sector ({', '.join(sorted(interest_overlap))})")
+            explanations.append(f"- Stated skills ({', '.join(sorted(skill_overlap))}) match this pathway")
+        if exp_overlap:
+            explanations.append(f"- Previous work experience aligns with {trade_name}")
+        if interest_overlap:
+            explanations.append(f"- Learning interest matches {sector} sector ({', '.join(sorted(interest_overlap))})")
+        if family_overlap:
+            explanations.append(f"- Family background ({', '.join(sorted(family_overlap))}) provides trade familiarity")
 
+        dist_display = district.capitalize() if district.lower() != "default" else "local area"
         if demand_score >= 7.0:
-            dist_display = district.capitalize() if district != "default" else "local market"
-            explanations.append(f"✓ High local demand in {dist_display} ({demand_score:.0f}/10)")
+            explanations.append(f"- High local demand score ({demand_score:.0f}/10 in {dist_display}) [Demo/Prototype score]")
         elif demand_score >= 5.0:
-            explanations.append(f"✓ Moderate local demand score ({demand_score:.0f}/10)")
+            explanations.append(f"- Moderate local demand score ({demand_score:.0f}/10 in {dist_display}) [Demo/Prototype score]")
 
         if emp_reason:
             explanations.append(emp_reason)
 
         if education and education != "No formal education":
-            explanations.append(f"✓ Education background ({education}) fits NSQF Level {nsqf_level}")
+            explanations.append(f"- Education level ({education}) fits NSQF Level {nsqf_level}")
 
         if not explanations:
-            explanations.append(f"✓ Foundation NSQF Level {nsqf_level} pathway with ₹{wage:,}/mo avg wage")
+            explanations.append(f"- Entry-level NSQF Level {nsqf_level} pathway in {sector}")
 
-        all_matched_keywords = sorted(skill_overlap | interest_overlap | livelihood_overlap)
+        all_matched_keywords = sorted(skill_overlap | exp_overlap | interest_overlap | livelihood_overlap | family_overlap)
 
         results.append(
             {

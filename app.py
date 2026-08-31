@@ -617,11 +617,12 @@ elif page == "👤 Beneficiary Profile":
 
         # Profile-Based Trade Recommendations
         st.subheader("🎯 Profile-Based Skilling Recommendations")
+        st.caption("ℹ️ Notice: Local demand scores and monthly wages shown are prototype/demo values.")
         trades_df = get_trades_df()
         profile_matches = match_profile(
             active_profile,
-            trades_df=trades_df,
             district=active_profile.get("district", "Nagpur"),
+            trades_df=trades_df,
             top_n=3,
         )
 
