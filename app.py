@@ -472,6 +472,7 @@ elif page == "👤 Beneficiary Profile":
         def_edu = selected_profile.get("education_level", "10th Pass")
         def_fam = selected_profile.get("family_occupation", "")
         def_live = selected_profile.get("current_livelihood", "")
+        def_prev_exp = selected_profile.get("previous_work_experience", "")
         def_skills = selected_profile.get("skills", "")
         def_interests = selected_profile.get("interests", "")
         def_mobility = selected_profile.get("mobility_constraints", "Local only (within district)")
@@ -488,6 +489,7 @@ elif page == "👤 Beneficiary Profile":
         def_edu = "10th Pass"
         def_fam = ""
         def_live = ""
+        def_prev_exp = ""
         def_skills = ""
         def_interests = ""
         def_mobility = "Local only (within district)"
@@ -528,6 +530,7 @@ elif page == "👤 Beneficiary Profile":
         with col2:
             family_occupation = st.text_input("Family Occupation / Background", value=def_fam)
             current_livelihood = st.text_input("Current Livelihood / Occupation", value=def_live)
+            previous_work_experience = st.text_input("Previous Work Experience", value=def_prev_exp)
             mobility_constraints = st.selectbox(
                 "Mobility Constraints",
                 ["Local only (within district)", "Willing to relocate within state", "Willing to relocate anywhere in India"],
@@ -546,9 +549,9 @@ elif page == "👤 Beneficiary Profile":
             recommended_trade = st.text_input("Recommended Trade (if assigned)", value=def_trade)
 
         skills = st.text_area(
-            "Skills & Work Experience (e.g. electrical wiring, switch repair, plumbing, driving)",
+            "Skills & Practical Experience (e.g. electrical wiring, switch repair, plumbing, driving)",
             value=def_skills,
-            help="Enter key skills or previous informal work experience.",
+            help="Enter key skills or practical abilities.",
         )
         interests = st.text_area(
             "Interests & Learning Aspirations (e.g. solar panel installation, machine maintenance)",
@@ -571,6 +574,7 @@ elif page == "👤 Beneficiary Profile":
                     "education_level": education_level,
                     "family_occupation": family_occupation.strip(),
                     "current_livelihood": current_livelihood.strip(),
+                    "previous_work_experience": previous_work_experience.strip(),
                     "skills": skills.strip(),
                     "interests": interests.strip(),
                     "mobility_constraints": mobility_constraints,
@@ -600,6 +604,7 @@ elif page == "👤 Beneficiary Profile":
                 st.write(f"**Language:** {active_profile.get('language')}")
             with col_b:
                 st.write(f"**Current Livelihood:** {active_profile.get('current_livelihood') or 'None specified'}")
+                st.write(f"**Previous Experience:** {active_profile.get('previous_work_experience') or 'None specified'}")
                 st.write(f"**Family Occupation:** {active_profile.get('family_occupation') or 'None specified'}")
                 st.write(f"**Mobility:** {active_profile.get('mobility_constraints')}")
                 st.write(f"**Employment Pref:** {active_profile.get('employment_preference')}")

@@ -3,6 +3,7 @@ Local persistent profile store for Voice for Livelihood beneficiaries.
 
 Stores beneficiary profiles in data/profiles.json using standard JSON.
 No external database or cloud dependency required.
+Designed for both direct UI usage and future conversational chatbot slot accumulation.
 """
 
 import json
@@ -88,7 +89,7 @@ def save_profile(profile_data: Dict[str, Any]) -> Dict[str, Any]:
     if not profile_data.get("created_at"):
         profile_data["created_at"] = datetime.now().isoformat()
 
-    # Ensure default fields exist
+    # Ensure complete schema definition
     default_schema = {
         "beneficiary_id": beneficiary_id,
         "name": "",
@@ -98,6 +99,7 @@ def save_profile(profile_data: Dict[str, Any]) -> Dict[str, Any]:
         "education_level": "10th Pass",
         "family_occupation": "",
         "current_livelihood": "",
+        "previous_work_experience": "",
         "skills": "",
         "interests": "",
         "mobility_constraints": "Local only (within district)",
@@ -127,3 +129,13 @@ def save_profile(profile_data: Dict[str, Any]) -> Dict[str, Any]:
         json.dump(profiles, f, indent=2, ensure_ascii=False)
 
     return merged
+
+
+def update_profile_slots(beneficiary_id: str, slots: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Incrementally update extracted conversational slots for a beneficiary.
+    Allows future conversational managers to write turn-by-turn slots.
+    """
+    profile = get_profile(beneficiary_id) or {"beneficiary_id": beneficiary_id}
+    profile.update(slots)
+    return save_profile(profile)
