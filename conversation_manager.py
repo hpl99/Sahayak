@@ -522,6 +522,18 @@ class ConversationSession:
         """Returns progress ratio between 0.0 and 1.0 based on filled slots."""
         return min(1.0, self._filled_count() / len(STEPS))
 
+    def reset(self) -> None:
+        """Reset the conversation flow to step 1 without erasing the stored profile immediately."""
+        self.history = []
+        self.slots["name"] = ""
+        self.slots["age"] = ""
+        self.slots["current_livelihood"] = ""
+        self.slots["previous_work_experience"] = ""
+        self.slots["skills"] = ""
+        self.slots["interests"] = ""
+        self.slots["employment_preference"] = ""
+        self._recompute_state()
+
     def get_checklist(self) -> List[Tuple[str, bool, str]]:
         """
         Returns checklist of collected slots with label, completion bool, and current value.

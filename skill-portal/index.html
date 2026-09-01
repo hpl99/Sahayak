@@ -600,6 +600,47 @@
       if (matched) {
         selectedCourse = matched;
       }
+
+      // Localize Quick Action Chips based on language
+      const chipsContainer = document.querySelector('.bg-slate-50.flex.flex-wrap.gap-1\\.5.overflow-x-auto');
+      if (chipsContainer) {
+        let chip1 = "What is this course?";
+        let chip2 = "Is this suitable for me?";
+        let chip3 = "What will I learn?";
+        let chip4 = "Show me other courses";
+        
+        if (beneficiaryContext.language === "Hindi") {
+          chip1 = "ये course क्या है?";
+          chip2 = "क्या यह मेरे लिए सही है?";
+          chip3 = "मैं इसमें क्या सीखूंगा?";
+          chip4 = "अन्य कोर्स दिखाएं";
+        } else if (beneficiaryContext.language === "Marathi") {
+          chip1 = "हा कोर्स काय आहे?";
+          chip2 = "हा कोर्स माझ्यासाठी योग्य आहे का?";
+          chip3 = "मी यात काय शिकेन?";
+          chip4 = "दुसरे कोर्स दाखवा";
+        } else if (beneficiaryContext.language === "Telugu") {
+          chip1 = "ఈ కోర్సు ఏమిటి?";
+          chip2 = "ఇది నాకు సరిపోతుందా?";
+          chip3 = "నేను ఏమి నేర్చుకుంటాను?";
+          chip4 = "వేరే కోర్సులు చూపించండి";
+        }
+
+        chipsContainer.innerHTML = `
+          <button onclick="sendUserMessage('${chip1}')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+            💡 ${chip1}
+          </button>
+          <button onclick="sendUserMessage('${chip2}')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+            🎯 ${chip2}
+          </button>
+          <button onclick="sendUserMessage('${chip3}')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+            📚 ${chip3}
+          </button>
+          <button onclick="sendUserMessage('${chip4}')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+            🔍 ${chip4}
+          </button>
+        `;
+      }
     }
 
     // 4. Render Course Cards Grid
@@ -932,6 +973,7 @@
       // 1. "What is this course?" / "हा कोर्स काय आहे?" / "ये कोर्स क्या है?"
       const isOverview = text.includes("what is this course") || text.includes("what is the course") ||
                          text.includes("kya hai") || text.includes("kay ahe") || text.includes("काय आहे") ||
+                         text.includes("क्या है") || text.includes("कोर्स क्या है") || text.includes("कोर्सबद्दल") ||
                          text.includes("माहिती") || text.includes("course details") || text.includes("about the course") ||
                          text.includes("కోర్సు ఏమిటి") || text.includes("என்ன பயிற்சி");
 
@@ -942,6 +984,7 @@
       // 2. "Is this suitable for me?" / "हा कोर्स माझ्यासाठी योग्य आहे का?" / "क्या यह मेरे लिए सही है?"
       const isSuitability = text.includes("suitable") || text.includes("fit") || text.includes("sahi hai") ||
                             text.includes("योग्य आहे") || text.includes("माझ्यासाठी") || text.includes("mere liye") ||
+                            text.includes("मेरे लिए") || text.includes("सही है") || text.includes("माझ्यासाठी योग्य") ||
                             text.includes("for me") || text.includes("उपयुक्त") || text.includes("సరిపోతుందా") ||
                             text.includes("பொருத்தமானதா");
 
@@ -952,7 +995,8 @@
       // 3. "What will I learn?" / "मी यात काय शिकेन?" / "मैं क्या सीखूंगा?"
       const isLearn = text.includes("learn") || text.includes("seekh") || text.includes("shiken") ||
                       text.includes("शिकेन") || text.includes("काय शिकणार") || text.includes("kya sikhunga") ||
-                      text.includes("syllabus") || text.includes("modules") || text.includes("ನೇర్చుకుంటాను") ||
+                      text.includes("क्या सीखूंगा") || text.includes("क्या सीखेंगे") || text.includes("काय शिकायला मिळेल") ||
+                      text.includes("syllabus") || text.includes("modules") || text.includes("నేర్చుకుంటాను") ||
                       text.includes("கற்பேன்");
 
       if (isLearn) {
@@ -962,7 +1006,7 @@
       // 4. "Show me other courses" / "दुसरे कोर्स दाखवा" / "अन्य कोर्स दिखाएं"
       const isOthers = text.includes("other course") || text.includes("another course") || text.includes("dusra") ||
                        text.includes("dusre") || text.includes("दुसरे") || text.includes("इतर") || text.includes("अन्य") ||
-                       text.includes("options") || text.includes("all courses") || text.includes("వేరే కోర్సులు") ||
+                       text.includes("और कोर्स") || text.includes("options") || text.includes("all courses") || text.includes("వేరే కోర్సులు") ||
                        text.includes("மற்ற பயிற்சிகள்");
 
       if (isOthers) {

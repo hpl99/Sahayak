@@ -11,11 +11,11 @@
     "due_date_demo": "2026-09-01T02:24:47.578785",
     "status": "Completed",
     "survey_response": {
-      "is_working": "No",
-      "work_related_to_training": "No",
-      "monthly_income_inr": 0,
-      "wants_new_recommendation": "Yes",
-      "submitted_at": "2026-09-01T02:25:00.403456"
+      "is_working": "Yes",
+      "work_related_to_training": "Yes",
+      "monthly_income_inr": 12000,
+      "wants_new_recommendation": "No",
+      "submitted_at": "2026-09-01T16:44:16.312005"
     }
   },
   {
@@ -41,8 +41,14 @@
     "completion_date": "2026-09-01T02:25:00.401685",
     "due_date_real": "2026-10-31T02:25:00.401685",
     "due_date_demo": "2026-09-01T02:26:00.401685",
-    "status": "Pending",
-    "survey_response": null
+    "status": "Completed",
+    "survey_response": {
+      "is_working": "Yes",
+      "work_related_to_training": "Yes",
+      "monthly_income_inr": 12000,
+      "wants_new_recommendation": "No",
+      "submitted_at": "2026-09-01T16:44:10.837064"
+    }
   },
   {
     "followup_id": "FOL-BEN2026001-180-day",
@@ -54,8 +60,14 @@
     "completion_date": "2026-09-01T02:25:00.401685",
     "due_date_real": "2027-02-28T02:25:00.401685",
     "due_date_demo": "2026-09-01T02:28:00.401685",
-    "status": "Pending",
-    "survey_response": null
+    "status": "Completed",
+    "survey_response": {
+      "is_working": "Yes",
+      "work_related_to_training": "Yes",
+      "monthly_income_inr": 12000,
+      "wants_new_recommendation": "No",
+      "submitted_at": "2026-09-01T16:44:21.928125"
+    }
   },
   {
     "followup_id": "FOL-BEN2026999-30-day",

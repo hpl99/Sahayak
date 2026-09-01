@@ -470,13 +470,7 @@ if page == "Voice Assistant":
                 st.rerun()
 
             elif action == "reset":
-                new_id = generate_beneficiary_id()
-                st.session_state.active_beneficiary_id = new_id
-                st.session_state.conv_session = ConversationSession(
-                    beneficiary_id=new_id,
-                    language=st.session_state.get("selected_language", session.language),
-                    district=session.district,
-                )
+                session.reset()
                 st.rerun()
 
 
