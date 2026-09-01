@@ -7,7 +7,7 @@ An end-to-end, voice-first livelihood support prototype tailored for rural and i
 
 ## 🏛️ System Architecture
 
-```
+``` 
 [ Beneficiary Voice Input ]
            │
            ▼

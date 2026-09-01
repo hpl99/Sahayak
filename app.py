@@ -234,6 +234,8 @@ if page == "Voice Assistant":
             language="Hindi",
             district="Nagpur",
         )
+    if "last_processed_event_id" not in st.session_state:
+        st.session_state.last_processed_event_id = None
 
     session: ConversationSession = st.session_state.conv_session
 
@@ -255,21 +257,23 @@ if page == "Voice Assistant":
         # Synthesize recommendation audio if not yet cached
         rec_cache_key = f"rec_audio_{session.beneficiary_id}"
         if rec_cache_key not in st.session_state:
+            st.session_state[rec_cache_key] = ""
             try:
                 tts_bundle = get_tts_bundle()
-                tmp_rec_out = os.path.join(tempfile.gettempdir(), f"rec_{session.beneficiary_id}.wav")
-                synthesize(
+                tmp_rec_out = os.path.join(tempfile.gettempdir(), f"rec_{session.beneficiary_id}.mp3")
+                out = synthesize(
                     tts_bundle,
                     rec_spoken_text,
                     LANGUAGES.get(session.language, "hi"),
                     out_path=tmp_rec_out,
                 )
-                with open(tmp_rec_out, "rb") as f:
-                    st.session_state[rec_cache_key] = base64.b64encode(f.read()).decode("utf-8")
+                if out and os.path.exists(tmp_rec_out):
+                    with open(tmp_rec_out, "rb") as f:
+                        st.session_state[rec_cache_key] = base64.b64encode(f.read()).decode("utf-8")
             except Exception as e:
                 print("TTS rec error:", e)
 
-        rec_audio_base64 = st.session_state.get(rec_cache_key)
+        rec_audio_base64 = st.session_state.get(rec_cache_key) or None
 
     # Prepare TTS audio for current question
     curr_q = session.get_current_question()
@@ -278,28 +282,42 @@ if page == "Voice Assistant":
     if not session.is_complete:
         q_cache_key = f"q_tts_{session.beneficiary_id}_{session.current_step_idx}"
         if q_cache_key not in st.session_state:
+            st.session_state[q_cache_key] = ""
             try:
                 tts_bundle = get_tts_bundle()
-                tmp_q_out = os.path.join(tempfile.gettempdir(), f"q_{session.beneficiary_id}_{session.current_step_idx}.wav")
-                synthesize(
+                tmp_q_out = os.path.join(tempfile.gettempdir(), f"q_{session.beneficiary_id}_{session.current_step_idx}.mp3")
+                out = synthesize(
                     tts_bundle,
                     curr_q,
                     LANGUAGES.get(session.language, "hi"),
                     out_path=tmp_q_out,
                 )
-                with open(tmp_q_out, "rb") as f:
-                    st.session_state[q_cache_key] = base64.b64encode(f.read()).decode("utf-8")
+                if out and os.path.exists(tmp_q_out):
+                    with open(tmp_q_out, "rb") as f:
+                        st.session_state[q_cache_key] = base64.b64encode(f.read()).decode("utf-8")
             except Exception as e:
                 print("TTS question error:", e)
 
-        tts_audio_base64 = st.session_state.get(q_cache_key)
+        tts_audio_base64 = st.session_state.get(q_cache_key) or None
+
+    # Load list of existing profiles for the selector
+    all_profiles = load_profiles()
+    profile_list = [
+        {
+            "id": p.get("beneficiary_id"),
+            "name": p.get("name") or "Unnamed Beneficiary",
+            "district": p.get("district") or "",
+            "is_complete": bool(p.get("name") and p.get("skills")),
+        }
+        for p in all_profiles
+    ]
 
     # Render the exact Stitch Frontend Component
     event = _stitch_voice_assistant_component(
         language=session.language,
         district=session.district,
         beneficiary_id=session.beneficiary_id,
-        step_label=STEP_LABELS.get(session.current_step, session.current_step),
+        step_label=STEP_LABELS.get(session.current_step, session.current_step) if not session.is_complete else "Complete",
         step_idx=session.current_step_idx,
         question=curr_q,
         history=session.history,
@@ -310,64 +328,90 @@ if page == "Voice Assistant":
         rec_spoken_text=rec_spoken_text,
         tts_audio_base64=tts_audio_base64,
         rec_audio_base64=rec_audio_base64,
+        profiles=profile_list,
         default=None,
         key="stitch_voice_assistant_component",
     )
 
-    # Handle Bridge Events from the Stitch Frontend
+    # Handle Bridge Events from the Stitch Frontend (with Deduplication)
     if event and isinstance(event, dict):
-        action = event.get("action")
+        event_id = event.get("event_id")
+        if event_id and event_id != st.session_state.last_processed_event_id:
+            st.session_state.last_processed_event_id = event_id
+            action = event.get("action")
 
-        if action == "audio_recorded" and event.get("audio_base64"):
-            try:
-                audio_bytes = base64.b64decode(event["audio_base64"])
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-                    tmp.write(audio_bytes)
-                    tmp_path = tmp.name
-
+            if action == "audio_recorded" and event.get("audio_base64"):
                 try:
-                    asr_model = get_asr_model()
-                    transcript = transcribe(
-                        asr_model,
-                        tmp_path,
-                        LANGUAGES.get(session.language, "hi"),
-                        decoding="ctc",
-                    )
-                finally:
-                    if os.path.exists(tmp_path):
-                        os.remove(tmp_path)
+                    audio_bytes = base64.b64decode(event["audio_base64"])
+                    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+                        tmp.write(audio_bytes)
+                        tmp_path = tmp.name
 
-                if transcript and transcript.strip():
-                    session.process_turn(transcript.strip())
+                    try:
+                        asr_model = get_asr_model()
+                        transcript = transcribe(
+                            asr_model,
+                            tmp_path,
+                            LANGUAGES.get(session.language, "hi"),
+                            decoding="ctc",
+                        )
+                    finally:
+                        if os.path.exists(tmp_path):
+                            os.remove(tmp_path)
+
+                    if transcript and transcript.strip():
+                        session.process_turn(transcript.strip())
+                        st.rerun()
+                except Exception as e:
+                    print("Audio transcription error:", e)
+
+            elif action == "user_text" and event.get("text"):
+                text = event["text"].strip()
+                if text:
+                    session.process_turn(text)
                     st.rerun()
-            except Exception as e:
-                print("Audio transcription error:", e)
 
-        elif action == "user_text" and event.get("text"):
-            session.process_turn(event["text"].strip())
-            st.rerun()
+            elif action == "navigate" and event.get("page"):
+                st.session_state.selected_nav_page = event["page"]
+                st.rerun()
 
-        elif action == "navigate" and event.get("page"):
-            st.session_state.selected_nav_page = event["page"]
-            st.rerun()
+            elif action == "change_language" and event.get("language"):
+                session.language = event["language"]
+                session.slots["language"] = event["language"]
+                session.save_profile()
+                st.rerun()
 
-        elif action == "change_language" and event.get("language"):
-            st.session_state.conv_session = ConversationSession(
-                language=event["language"],
-                district=session.district,
-            )
-            st.rerun()
+            elif action == "change_district" and event.get("district"):
+                session.district = event["district"]
+                session.slots["district"] = event["district"]
+                session.save_profile()
+                st.rerun()
 
-        elif action == "change_district" and event.get("district"):
-            session.district = event["district"]
-            st.rerun()
+            elif action == "select_profile" and event.get("beneficiary_id"):
+                b_id = event["beneficiary_id"]
+                if b_id == "NEW":
+                    new_id = generate_beneficiary_id()
+                    st.session_state.conv_session = ConversationSession(
+                        beneficiary_id=new_id,
+                        language=session.language,
+                        district=session.district,
+                    )
+                else:
+                    st.session_state.conv_session = ConversationSession(
+                        beneficiary_id=b_id,
+                        language=session.language,
+                        district=session.district,
+                    )
+                st.rerun()
 
-        elif action == "reset":
-            st.session_state.conv_session = ConversationSession(
-                language=session.language,
-                district=session.district,
-            )
-            st.rerun()
+            elif action == "reset":
+                new_id = generate_beneficiary_id()
+                st.session_state.conv_session = ConversationSession(
+                    beneficiary_id=new_id,
+                    language=session.language,
+                    district=session.district,
+                )
+                st.rerun()
 
 
 # ===========================================================================
@@ -605,7 +649,7 @@ elif page in ["Skill Pathways", "🎙️ Voice Recommendation"]:
 
                 out_path = os.path.join(
                     tempfile.gettempdir(),
-                    "voice_livelihood_reply.wav",
+                    "voice_livelihood_reply.mp3",
                 )
 
                 out_path = synthesize(
@@ -619,14 +663,17 @@ elif page in ["Skill Pathways", "🎙️ Voice Recommendation"]:
             # PLAY AUDIO
             # ---------------------------------------------------------------
 
-            st.audio(
-                out_path,
-                format="audio/wav",
-            )
+            if out_path and os.path.exists(out_path):
+                st.audio(
+                    out_path,
+                    format="audio/mp3",
+                )
 
-            st.success(
-                f"Spoken response generated in {language_label}."
-            )
+                st.success(
+                    f"Spoken response generated in {language_label}."
+                )
+            else:
+                st.info(f"Response text prepared in {language_label}.")
 
         except Exception as e:
 

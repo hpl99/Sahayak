@@ -170,27 +170,75 @@ class ConversationSession:
     State machine session tracking the progressive voice onboarding conversation.
     """
 
-    def __init__(self, beneficiary_id: Optional[str] = None, language: str = "Hindi", district: str = "Nagpur"):
+    def __init__(
+        self,
+        beneficiary_id: Optional[str] = None,
+        language: str = "Hindi",
+        district: str = "Nagpur",
+        existing_profile: Optional[Dict[str, Any]] = None,
+    ):
         self.beneficiary_id = beneficiary_id or generate_beneficiary_id()
         self.language = language if language in QUESTIONS else "Hindi"
         self.district = district
-        self.current_step_idx = 0
-        self.slots: Dict[str, Any] = {
-            "beneficiary_id": self.beneficiary_id,
-            "language": self.language,
-            "district": self.district,
-            "name": "",
-            "age": 25,
-            "current_livelihood": "",
-            "previous_work_experience": "",
-            "skills": "",
-            "interests": "",
-            "employment_preference": "Wage Employment (Job)",
-            "education_level": "10th Pass",
-            "mobility_constraints": "Local only (within district)",
-        }
         self.history: List[Dict[str, str]] = []
-        self.is_complete = False
+
+        # Check if profile already exists in storage or was provided
+        saved = existing_profile or get_profile(self.beneficiary_id)
+        if saved:
+            self.slots: Dict[str, Any] = {
+                "beneficiary_id": self.beneficiary_id,
+                "language": saved.get("language", self.language),
+                "district": saved.get("district", self.district),
+                "name": saved.get("name", ""),
+                "age": saved.get("age", 25),
+                "current_livelihood": saved.get("current_livelihood", ""),
+                "previous_work_experience": saved.get("previous_work_experience", ""),
+                "skills": saved.get("skills", ""),
+                "interests": saved.get("interests", ""),
+                "employment_preference": saved.get("employment_preference", "Wage Employment (Job)"),
+                "education_level": saved.get("education_level", "10th Pass"),
+                "mobility_constraints": saved.get("mobility_constraints", "Local only (within district)"),
+            }
+            self.language = self.slots["language"] if self.slots["language"] in QUESTIONS else "Hindi"
+            self.district = self.slots["district"]
+
+            # If all key onboarding slots are filled, mark complete
+            has_name = bool(self.slots.get("name"))
+            has_work = bool(self.slots.get("current_livelihood") or self.slots.get("previous_work_experience"))
+            has_skills = bool(self.slots.get("skills") or self.slots.get("interests"))
+
+            if has_name and has_work and has_skills:
+                self.current_step_idx = len(STEPS)
+                self.is_complete = True
+            elif not has_name:
+                self.current_step_idx = 0
+                self.is_complete = False
+            elif not has_work:
+                self.current_step_idx = 2
+                self.is_complete = False
+            elif not has_skills:
+                self.current_step_idx = 3
+                self.is_complete = False
+            else:
+                self.current_step_idx = 4
+                self.is_complete = False
+        else:
+            self.current_step_idx = 0
+            self.slots = {
+                "beneficiary_id": self.beneficiary_id,
+                "language": self.language,
+                "district": self.district,
+                "name": "",
+                "age": 25,
+                "current_livelihood": "",
+                "previous_work_experience": "",
+                "skills": "",
+                "interests": "",
+                "employment_preference": "Wage Employment (Job)",
+                "education_level": "10th Pass",
+                "mobility_constraints": "Local only (within district)",
+            }
+            self.is_complete = False
 
     @property
     def current_step(self) -> str:

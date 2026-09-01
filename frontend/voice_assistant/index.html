@@ -17,90 +17,27 @@
       darkMode: "class",
       theme: {
         extend: {
-          "colors": {
-            "secondary-fixed-dim": "#c4c7c9",
-            "on-secondary-container": "#626567",
+          colors: {
+            "primary": "#000666",
+            "primary-container": "#1a237e",
             "on-primary": "#ffffff",
-            "primary-fixed-dim": "#bdc2ff",
-            "tertiary-fixed-dim": "#ffb77a",
+            "primary-fixed": "#e0e0ff",
+            "on-primary-fixed": "#000767",
+            "surface": "#fbf9f8",
             "surface-container-lowest": "#ffffff",
             "surface-container-low": "#f6f3f2",
-            "surface": "#fbf9f8",
-            "on-error-container": "#93000a",
-            "on-primary-fixed-variant": "#343d96",
-            "surface-container-highest": "#e4e2e1",
-            "background": "#fbf9f8",
-            "on-secondary-fixed-variant": "#444749",
-            "error": "#ba1a1a",
-            "surface-tint": "#4c56af",
-            "on-surface-variant": "#454652",
-            "primary": "#000666",
-            "on-secondary": "#ffffff",
             "surface-container": "#f0eded",
-            "surface-variant": "#e4e2e1",
-            "outline-variant": "#c6c5d4",
-            "error-container": "#ffdad6",
-            "primary-fixed": "#e0e0ff",
-            "inverse-primary": "#bdc2ff",
-            "inverse-on-surface": "#f3f0f0",
             "surface-container-high": "#eae8e7",
-            "tertiary": "#2d1500",
-            "on-tertiary-container": "#df8017",
-            "surface-bright": "#fbf9f8",
-            "on-primary-container": "#8690ee",
-            "tertiary-container": "#4c2600",
-            "on-secondary-fixed": "#191c1e",
-            "on-primary-fixed": "#000767",
-            "tertiary-fixed": "#ffdcc2",
-            "on-error": "#ffffff",
-            "secondary": "#5c5f61",
-            "outline": "#767683",
-            "on-tertiary-fixed-variant": "#6d3a00",
-            "primary-container": "#1a237e",
+            "surface-container-highest": "#e4e2e1",
             "on-surface": "#1b1c1c",
-            "on-background": "#1b1c1c",
-            "on-tertiary-fixed": "#2e1500",
-            "secondary-fixed": "#e0e3e5",
-            "on-tertiary": "#ffffff",
-            "inverse-surface": "#303030",
-            "surface-dim": "#dcd9d9",
-            "secondary-container": "#e0e3e5"
+            "on-surface-variant": "#454652",
+            "outline-variant": "#c6c5d4",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "secondary": "#5c5f61"
           },
-          "borderRadius": {
-            "DEFAULT": "0.125rem",
-            "lg": "0.25rem",
-            "xl": "0.5rem",
-            "full": "0.75rem"
-          },
-          "spacing": {
-            "margin-desktop": "40px",
-            "stack-sm": "8px",
-            "gutter": "24px",
-            "stack-md": "16px",
-            "stack-lg": "32px",
-            "unit": "8px",
-            "container-max": "1200px",
-            "margin-mobile": "16px"
-          },
-          "fontFamily": {
-            "body-lg": ["Inter", "sans-serif"],
-            "body-md": ["Inter", "sans-serif"],
-            "label-sm": ["Inter", "sans-serif"],
-            "label-lg": ["Inter", "sans-serif"],
-            "display": ["Inter", "sans-serif"],
-            "headline-lg-mobile": ["Inter", "sans-serif"],
-            "headline-lg": ["Inter", "sans-serif"],
-            "headline-md": ["Inter", "sans-serif"]
-          },
-          "fontSize": {
-            "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
-            "body-md": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-            "label-sm": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
-            "label-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "600"}],
-            "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-            "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
-            "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
-            "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+          fontFamily: {
+            sans: ["Inter", "sans-serif"]
           }
         }
       }
@@ -114,7 +51,6 @@
       vertical-align: middle;
       line-height: 1;
     }
-    /* Pulsing mic keyframes */
     @keyframes ping-slow {
       75%, 100% {
         transform: scale(1.35);
@@ -126,92 +62,97 @@
     }
   </style>
 </head>
-<body class="bg-background text-on-background font-body-md text-body-md flex min-h-screen antialiased select-none">
+<body class="bg-[#fbf9f8] text-[#1b1c1c] font-sans antialiased min-h-screen flex select-none overflow-x-hidden">
 
   <!-- SideNavBar -->
-  <aside class="bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-full flex flex-col p-stack-md z-40 w-64 hidden md:flex">
-    <div class="mb-stack-lg px-2">
-      <h1 class="font-headline-md text-headline-md text-primary font-bold">Voice for Livelihood</h1>
-      <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Livelihood &amp; Skill Development</p>
+  <aside class="bg-surface-container-low border-r border-outline-variant fixed left-0 top-0 h-full flex flex-col p-4 z-40 w-60 hidden md:flex">
+    <div class="mb-5 px-2">
+      <div class="flex items-center gap-2 text-primary font-bold text-lg">
+        <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+        <span>Voice for Livelihood</span>
+      </div>
+      <p class="text-xs text-on-surface-variant mt-0.5">Livelihood &amp; Skill Development</p>
     </div>
     <nav class="flex-1 flex flex-col gap-1 overflow-y-auto" id="stitch-nav-menu">
-      <a onclick="navigateTo('Dashboard')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">dashboard</span>
-        <span class="font-label-lg text-label-lg">Dashboard</span>
+      <a onclick="navigateTo('Dashboard')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">dashboard</span>
+        <span>Dashboard</span>
       </a>
-      <a class="flex items-center gap-stack-md bg-primary text-on-primary rounded-xl px-4 py-3 scale-95 duration-150 cursor-pointer">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
-        <span class="font-label-lg text-label-lg">Voice Assistant</span>
+      <a class="flex items-center gap-3 bg-primary text-on-primary rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-semibold shadow-sm">
+        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">mic</span>
+        <span>Voice Assistant</span>
       </a>
-      <a onclick="navigateTo('Beneficiary Profile')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">person</span>
-        <span class="font-label-lg text-label-lg">Beneficiary Profile</span>
+      <a onclick="navigateTo('Beneficiary Profile')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">person</span>
+        <span>Beneficiary Profile</span>
       </a>
-      <a onclick="navigateTo('Skill Pathways')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">moving</span>
-        <span class="font-label-lg text-label-lg">Skill Pathways</span>
+      <a onclick="navigateTo('Skill Pathways')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">moving</span>
+        <span>Skill Pathways</span>
       </a>
-      <a onclick="navigateTo('Training')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">school</span>
-        <span class="font-label-lg text-label-lg">Training</span>
+      <a onclick="navigateTo('Training')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">school</span>
+        <span>Training</span>
       </a>
-      <a onclick="navigateTo('Follow-up')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">history_edu</span>
-        <span class="font-label-lg text-label-lg">Follow-up</span>
+      <a onclick="navigateTo('Follow-up')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">history_edu</span>
+        <span>Follow-up</span>
       </a>
-      <a onclick="navigateTo('Attendance')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">event_available</span>
-        <span class="font-label-lg text-label-lg">Attendance</span>
+      <a onclick="navigateTo('Attendance')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">event_available</span>
+        <span>Attendance</span>
       </a>
-      <a onclick="navigateTo('Resume')" class="flex items-center gap-stack-md text-on-surface-variant hover:bg-surface-container-high rounded-xl px-4 py-3 cursor-pointer transition-all">
-        <span class="material-symbols-outlined">description</span>
-        <span class="font-label-lg text-label-lg">Resume</span>
+      <a onclick="navigateTo('Resume')" class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-container-high rounded-xl px-3.5 py-2.5 cursor-pointer text-sm font-medium transition-all">
+        <span class="material-symbols-outlined text-[20px]">description</span>
+        <span>Resume</span>
       </a>
     </nav>
-    <div class="mt-auto pt-stack-md">
-      <button onclick="resetConversation()" class="w-full bg-primary text-on-primary font-label-lg text-label-lg py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-sm">
-        <span class="material-symbols-outlined">mic</span>
-        Start Voice Assistant
+    <div class="mt-auto pt-3 border-t border-outline-variant/60">
+      <button onclick="resetConversation()" class="w-full bg-primary text-on-primary text-xs font-semibold py-2.5 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-container transition-colors shadow-sm cursor-pointer">
+        <span class="material-symbols-outlined text-[18px]">add_circle</span>
+        Start New Conversation
       </button>
     </div>
   </aside>
 
   <!-- Main Content Wrapper -->
-  <div class="flex-1 flex flex-col md:ml-64 min-h-screen relative w-full">
+  <div class="flex-1 flex flex-col md:ml-60 min-h-screen relative w-full overflow-y-auto">
     <!-- TopNavBar -->
-    <header class="bg-surface border-b border-outline-variant w-full z-30 sticky top-0">
-      <div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
-        <div class="md:hidden flex items-center">
-          <span class="text-headline-md font-headline-md font-bold text-primary">Voice for Livelihood</span>
+    <header class="bg-surface border-b border-outline-variant w-full z-30 sticky top-0 py-2.5 px-4 md:px-6">
+      <div class="flex flex-wrap justify-between items-center w-full max-w-6xl mx-auto gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-error bg-error-container px-2 py-0.5 rounded-md font-semibold">Demo Prototype</span>
+          <span class="text-xs text-on-surface-variant hidden sm:inline">NSQF Demand Matcher</span>
         </div>
-        <div class="hidden md:block">
-          <span class="font-label-sm text-label-sm text-error bg-error-container px-2.5 py-1 rounded-md font-medium">Prototype / Demonstration</span>
-        </div>
-        <div class="flex items-center gap-stack-md">
-          <span class="font-label-lg text-label-lg text-on-surface-variant">Demo Mode</span>
-          <div class="flex gap-2 text-primary">
-            <!-- Language Switcher -->
-            <select id="stitch-lang-select" onchange="changeLanguage(this.value)" class="text-sm bg-surface-container border border-outline-variant rounded-md px-2 py-1 text-on-surface font-medium focus:outline-none focus:border-primary">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Profile Selector -->
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-on-surface-variant font-medium hidden lg:inline">Profile:</span>
+            <select id="stitch-profile-select" onchange="selectProfile(this.value)" class="text-xs bg-surface-container border border-outline-variant rounded-md px-2 py-1 text-on-surface font-medium focus:outline-none focus:border-primary">
+              <option value="NEW">+ New Session</option>
+            </select>
+          </div>
+          <!-- Language Switcher -->
+          <div class="flex items-center gap-1">
+            <select id="stitch-lang-select" onchange="changeLanguage(this.value)" class="text-xs bg-surface-container border border-outline-variant rounded-md px-2 py-1 text-on-surface font-medium focus:outline-none focus:border-primary">
               <option value="Hindi">Hindi (हिंदी)</option>
               <option value="Marathi">Marathi (मराठी)</option>
               <option value="Telugu">Telugu (తెలుగు)</option>
               <option value="Tamil">Tamil (தமிழ்)</option>
               <option value="Bengali">Bengali (বাংলা)</option>
               <option value="Gujarati">Gujarati (ગુજરાતી)</option>
-              <option value="Kannada">Kannada (ಕನ್ನಡ)</option>
-              <option value="Malayalam">Malayalam (മലയാളം)</option>
-              <option value="Odia">Odia (ଓଡ଼ିଆ)</option>
-              <option value="Punjabi">Punjabi (ਪੰਜਾਬੀ)</option>
             </select>
-            <!-- District Switcher -->
-            <select id="stitch-district-select" onchange="changeDistrict(this.value)" class="text-sm bg-surface-container border border-outline-variant rounded-md px-2 py-1 text-on-surface font-medium focus:outline-none focus:border-primary">
+          </div>
+          <!-- District Switcher -->
+          <div class="flex items-center gap-1">
+            <select id="stitch-district-select" onchange="changeDistrict(this.value)" class="text-xs bg-surface-container border border-outline-variant rounded-md px-2 py-1 text-on-surface font-medium focus:outline-none focus:border-primary">
               <option value="Nagpur">Nagpur</option>
               <option value="Pune">Pune</option>
               <option value="Mumbai">Mumbai</option>
               <option value="Amravati">Amravati</option>
               <option value="Nashik">Nashik</option>
               <option value="Aurangabad">Aurangabad</option>
-              <option value="Default (any district)">Default (any district)</option>
+              <option value="Default (any district)">Default (All)</option>
             </select>
           </div>
         </div>
@@ -219,87 +160,91 @@
     </header>
 
     <!-- Main Canvas -->
-    <main class="flex-1 p-margin-mobile md:p-margin-desktop w-full max-w-container-max mx-auto pb-stack-lg">
-      <!-- Header Section -->
-      <section class="mb-stack-lg">
-        <h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-stack-sm font-bold">
-          Tell us about your work, skills and interests.
-        </h2>
-        <p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-md">
-          We'll help you find suitable skill pathways.
-        </p>
+    <main class="flex-1 p-4 md:p-6 w-full max-w-6xl mx-auto flex flex-col gap-4">
+      <!-- Header Banner -->
+      <section class="flex flex-wrap justify-between items-start gap-2 border-b border-outline-variant pb-3">
+        <div>
+          <h2 class="text-xl md:text-2xl text-on-surface font-bold text-primary">
+            Voice-First Livelihood Assistant
+          </h2>
+          <p class="text-xs md:text-sm text-on-surface-variant mt-0.5">
+            Answer 5 simple questions by voice to discover NSQF-aligned job training pathways.
+          </p>
+        </div>
         <!-- Status Indicators -->
-        <div class="flex flex-wrap gap-stack-sm">
-          <div class="inline-flex items-center gap-2 bg-surface-container border border-outline-variant px-3 py-1.5 rounded-full">
-            <span class="material-symbols-outlined text-[18px] text-secondary">language</span>
-            <span class="font-label-sm text-label-sm text-on-surface" id="status-pill-lang">Language (Hindi)</span>
+        <div class="flex flex-wrap gap-2">
+          <div class="inline-flex items-center gap-1.5 bg-surface-container border border-outline-variant px-2.5 py-1 rounded-full text-xs text-on-surface font-medium">
+            <span class="material-symbols-outlined text-[15px] text-primary">language</span>
+            <span id="status-pill-lang">Hindi</span>
           </div>
-          <div class="inline-flex items-center gap-2 bg-surface-container border border-outline-variant px-3 py-1.5 rounded-full">
-            <span class="material-symbols-outlined text-[18px] text-secondary">location_on</span>
-            <span class="font-label-sm text-label-sm text-on-surface" id="status-pill-district">District (Nagpur)</span>
+          <div class="inline-flex items-center gap-1.5 bg-surface-container border border-outline-variant px-2.5 py-1 rounded-full text-xs text-on-surface font-medium">
+            <span class="material-symbols-outlined text-[15px] text-primary">location_on</span>
+            <span id="status-pill-district">Nagpur</span>
           </div>
-          <div class="inline-flex items-center gap-2 bg-surface-container border border-outline-variant px-3 py-1.5 rounded-full">
-            <span class="material-symbols-outlined text-[18px] text-secondary">person</span>
-            <span class="font-label-sm text-label-sm text-on-surface" id="status-pill-profile">Profile (New)</span>
+          <div class="inline-flex items-center gap-1.5 bg-surface-container border border-outline-variant px-2.5 py-1 rounded-full text-xs text-on-surface font-medium">
+            <span class="material-symbols-outlined text-[15px] text-primary">badge</span>
+            <span id="status-pill-profile">BEN-New</span>
           </div>
         </div>
       </section>
 
-      <!-- Grid Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-        <!-- Left Column: Voice Interaction (8 cols) -->
-        <div class="lg:col-span-8 flex flex-col gap-gutter">
-          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md md:p-stack-lg flex flex-col min-h-[460px] shadow-sm">
-            <div class="flex justify-between items-center border-b border-outline-variant pb-3 mb-stack-lg">
-              <h3 class="font-headline-md text-headline-md text-on-surface font-semibold">
-                Let's understand your livelihood
+      <!-- 2-Column Responsive Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        <!-- Left Column: Voice Interaction (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 md:p-5 flex flex-col shadow-sm">
+            <div class="flex justify-between items-center border-b border-outline-variant pb-2.5 mb-4">
+              <h3 class="text-sm md:text-base text-on-surface font-bold flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">record_voice_over</span>
+                <span>Voice Conversation</span>
               </h3>
-              <span id="step-counter" class="text-xs font-semibold px-2.5 py-1 bg-surface-container rounded-full text-on-surface-variant">Step 1 of 5</span>
+              <span id="step-counter" class="text-xs font-bold px-2.5 py-1 bg-primary/10 text-primary rounded-full border border-primary/20">Step 1 of 5: Full Name</span>
             </div>
 
             <!-- In Progress View -->
-            <div id="stitch-active-flow" class="flex flex-col flex-1">
+            <div id="stitch-active-flow" class="flex flex-col gap-4">
               <!-- Assistant Message Bubble -->
-              <div class="flex flex-col w-full mb-stack-lg">
-                <div class="bg-primary-fixed text-on-primary-fixed p-4 rounded-2xl rounded-tl-sm max-w-[95%] md:max-w-[85%] border border-primary/15 shadow-sm">
-                  <p class="font-body-lg text-body-lg leading-relaxed font-medium" id="stitch-assistant-question">
+              <div class="flex flex-col w-full">
+                <div class="bg-primary text-on-primary p-4 rounded-2xl rounded-tl-sm max-w-full shadow-sm">
+                  <div class="text-xs font-semibold uppercase tracking-wider text-[#bdc2ff] mb-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">smart_toy</span> Sahayak Voice Question
+                  </div>
+                  <p class="text-base md:text-lg leading-relaxed font-semibold text-white" id="stitch-assistant-question">
                     "नमस्ते! आपका शुभ नाम क्या है?"
                   </p>
                 </div>
                 <!-- Spoken Audio Replay -->
                 <div class="mt-2 flex items-center gap-2">
-                  <button id="btn-replay-tts" onclick="replayTTS()" class="text-xs font-medium text-primary hover:text-primary-container inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container border border-outline-variant/60">
-                    <span class="material-symbols-outlined text-[15px]">volume_up</span> Hear question (TTS)
+                  <button id="btn-replay-tts" onclick="replayTTS()" class="text-xs font-semibold text-primary hover:bg-primary/10 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant/60 transition-all cursor-pointer">
+                    <span class="material-symbols-outlined text-[16px]">volume_up</span> Hear question (TTS)
                   </button>
                   <audio id="tts-audio-player" class="hidden"></audio>
                 </div>
               </div>
 
-              <!-- Spacer -->
-              <div class="flex-grow"></div>
-
               <!-- Active Microphone Hero Component -->
-              <div class="flex flex-col items-center justify-center py-stack-md">
-                <div class="relative flex items-center justify-center w-36 h-36 mb-stack-md">
+              <div class="flex flex-col items-center justify-center py-3 bg-surface-container-low rounded-xl border border-outline-variant/50">
+                <div class="relative flex items-center justify-center w-28 h-28 mb-2">
                   <!-- Outer Pulsing Ring (Saffron) -->
-                  <div id="mic-ring-outer" class="absolute inset-0 border-[3.5px] border-[#FF9933] rounded-full animate-ping-slow opacity-60"></div>
-                  <div id="mic-ring-inner" class="absolute inset-3 border-[3.5px] border-[#FF9933] rounded-full animate-pulse opacity-80"></div>
+                  <div id="mic-ring-outer" class="absolute inset-0 border-[3px] border-[#FF9933] rounded-full animate-ping-slow opacity-60"></div>
+                  <div id="mic-ring-inner" class="absolute inset-2 border-[2.5px] border-[#FF9933] rounded-full animate-pulse opacity-80"></div>
                   <!-- Core Button -->
-                  <button id="stitch-mic-btn" onclick="toggleRecording()" class="relative z-10 w-20 h-20 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(0,6,102,0.3)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
-                    <span class="material-symbols-outlined text-[36px]" id="stitch-mic-icon" style="font-variation-settings: 'FILL' 1;">mic</span>
+                  <button id="stitch-mic-btn" onclick="toggleRecording()" class="relative z-10 w-16 h-16 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-[0_4px_16px_rgba(0,6,102,0.35)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer">
+                    <span class="material-symbols-outlined text-[30px]" id="stitch-mic-icon" style="font-variation-settings: 'FILL' 1;">mic</span>
                   </button>
                 </div>
-                <div id="stitch-mic-status" class="flex items-center gap-2 text-on-surface-variant font-label-lg text-label-lg font-medium">
+                <div id="stitch-mic-status" class="flex items-center gap-2 text-on-surface-variant text-xs md:text-sm font-medium">
                   <span class="w-2.5 h-2.5 bg-[#FF9933] rounded-full animate-pulse"></span>
-                  <span id="stitch-mic-status-text">🎙 Start speaking</span>
+                  <span id="stitch-mic-status-text">🎙 Start speaking (or click mic)</span>
                 </div>
               </div>
 
-              <!-- Fallback Text Input (Collapsible for Accessibility) -->
-              <div class="mt-4 pt-3 border-t border-outline-variant/50">
+              <!-- Fallback Text Input -->
+              <div class="pt-2 border-t border-outline-variant/50">
+                <div class="text-[11px] text-on-surface-variant font-medium mb-1">Type answer if microphone is unavailable:</div>
                 <div class="flex gap-2">
-                  <input type="text" id="stitch-text-fallback" placeholder="Type response manually if mic is not available..." class="flex-1 text-sm bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary" onkeydown="if(event.key==='Enter') submitTextFallback()">
-                  <button onclick="submitTextFallback()" class="bg-primary text-on-primary text-sm font-semibold px-4 py-2 rounded-lg hover:bg-primary-container transition-colors">
+                  <input type="text" id="stitch-text-fallback" placeholder="Type your response here..." class="flex-1 text-xs bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-on-surface focus:outline-none focus:border-primary" onkeydown="if(event.key==='Enter') submitTextFallback()">
+                  <button onclick="submitTextFallback()" class="bg-primary text-on-primary text-xs font-semibold px-4 py-2 rounded-lg hover:bg-primary-container transition-colors cursor-pointer">
                     Send
                   </button>
                 </div>
@@ -308,66 +253,83 @@
 
             <!-- Complete View (Recommendations) -->
             <div id="stitch-complete-flow" class="hidden flex-col gap-4">
-              <div class="bg-green-50 border border-green-200 text-green-800 p-4 rounded-xl flex items-center gap-3">
+              <div class="bg-green-50 border border-green-200 text-green-800 p-3.5 rounded-xl flex items-center gap-3">
                 <span class="material-symbols-outlined text-green-700 text-2xl">check_circle</span>
                 <div>
-                  <h4 class="font-bold text-sm">Profile Information Collected Successfully!</h4>
-                  <p class="text-xs text-green-700">Matched with NSQF occupational demand benchmarks.</p>
+                  <h4 class="font-bold text-xs md:text-sm">Profile Collected &amp; Validated Successfully!</h4>
+                  <p class="text-[11px] text-green-700">Matched with NSQF occupational demand &amp; local wage benchmarks.</p>
                 </div>
               </div>
 
-              <div class="space-y-3" id="stitch-recommendations-list">
-                <!-- Dynamically injected -->
+              <div class="space-y-2.5" id="stitch-recommendations-list">
+                <!-- Dynamically injected recommendations -->
               </div>
 
-              <div class="bg-surface-container p-4 rounded-xl border border-outline-variant mt-2 flex flex-col gap-2">
+              <div class="bg-surface-container p-3.5 rounded-xl border border-outline-variant flex flex-col gap-2">
                 <div class="flex items-center justify-between">
-                  <span class="font-bold text-primary text-sm">🔊 Spoken Recommendation</span>
-                  <button onclick="playRecAudio()" class="bg-primary text-on-primary text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-primary-container">
+                  <span class="font-bold text-primary text-xs flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">record_voice_over</span>
+                    Spoken Recommendation
+                  </span>
+                  <button onclick="playRecAudio()" class="bg-primary text-on-primary text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-primary-container cursor-pointer">
                     <span class="material-symbols-outlined text-[16px]">play_arrow</span> Play Spoken Summary
                   </button>
                 </div>
-                <p id="rec-spoken-text" class="text-xs text-on-surface-variant italic"></p>
+                <p id="rec-spoken-text" class="text-xs text-on-surface-variant italic leading-relaxed"></p>
                 <audio id="rec-audio-player" class="w-full mt-1 hidden" controls></audio>
+              </div>
+
+              <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+                <button onclick="navigateTo('Beneficiary Profile')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant hover:bg-surface-container-high cursor-pointer">
+                  View Full Profile
+                </button>
+                <button onclick="resetConversation()" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-on-primary hover:bg-primary-container cursor-pointer">
+                  Start New Session
+                </button>
               </div>
             </div>
 
           </div>
         </div>
 
-        <!-- Right Column: Context & Extraction (4 cols) -->
-        <div class="lg:col-span-4 flex flex-col gap-gutter">
-          <!-- Conversation Log -->
-          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex flex-col max-h-[300px] shadow-sm">
-            <div class="flex items-center gap-2 border-b border-outline-variant pb-2 mb-stack-sm">
-              <span class="material-symbols-outlined text-secondary text-[20px]">forum</span>
-              <h4 class="font-label-lg text-label-lg text-on-surface font-semibold">Recent Dialogue</h4>
+        <!-- Right Column: Context & Extraction (5 cols) -->
+        <div class="lg:col-span-5 flex flex-col gap-4">
+          <!-- Recent Dialogue Card -->
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col shadow-sm">
+            <div class="flex items-center justify-between border-b border-outline-variant pb-2 mb-3">
+              <div class="flex items-center gap-1.5 text-on-surface font-bold text-xs md:text-sm">
+                <span class="material-symbols-outlined text-primary text-[18px]">forum</span>
+                <span>Recent Dialogue</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant font-medium">Turn History</span>
             </div>
-            <div class="flex-1 overflow-y-auto flex flex-col gap-stack-sm pr-1 space-y-2" id="stitch-dialogue-list">
+            <div class="max-h-52 overflow-y-auto flex flex-col gap-2 pr-1" id="stitch-dialogue-list">
               <p class="text-xs text-on-surface-variant italic text-center py-4">Dialogue history will appear here as you speak.</p>
             </div>
           </div>
 
-          <!-- Extracted Chips & Progress -->
-          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md flex-1 shadow-sm">
-            <div class="flex items-center gap-2 border-b border-outline-variant pb-2 mb-stack-md">
-              <span class="material-symbols-outlined text-primary text-[20px]">memory</span>
-              <h4 class="font-label-lg text-label-lg text-on-surface font-semibold">Extracted Information</h4>
+          <!-- Extracted Profile Information & Progress -->
+          <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-col shadow-sm">
+            <div class="flex items-center justify-between border-b border-outline-variant pb-2 mb-3">
+              <div class="flex items-center gap-1.5 text-on-surface font-bold text-xs md:text-sm">
+                <span class="material-symbols-outlined text-primary text-[18px]">memory</span>
+                <span>Extracted Information</span>
+              </div>
+              <span class="text-[11px] text-on-surface-variant font-medium">Slots</span>
             </div>
-            <p class="font-body-md text-body-md text-xs text-on-surface-variant mb-2">Identified Context:</p>
-            <div class="flex flex-wrap gap-2 mb-4" id="stitch-chips-container">
-              <!-- Dynamically injected chips -->
-              <span class="text-xs text-on-surface-variant italic">Listening for background &amp; skills...</span>
+
+            <div class="flex flex-col gap-1.5 mb-4" id="stitch-chips-container">
+              <span class="text-xs text-on-surface-variant italic py-2">Listening for background &amp; skills...</span>
             </div>
 
             <!-- Progress Bar -->
-            <div class="mt-4 pt-3 border-t border-outline-variant/60">
-              <div class="flex justify-between text-xs text-on-surface-variant mb-1 font-medium">
+            <div class="pt-2.5 border-t border-outline-variant/60">
+              <div class="flex justify-between text-xs text-on-surface-variant mb-1 font-semibold">
                 <span>Profile Progress</span>
-                <span id="stitch-progress-text">20%</span>
+                <span id="stitch-progress-text" class="text-primary font-bold">0%</span>
               </div>
               <div class="w-full bg-surface-container-highest rounded-full h-2 overflow-hidden">
-                <div id="stitch-progress-bar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 20%;"></div>
+                <div id="stitch-progress-bar" class="bg-primary h-2 rounded-full transition-all duration-300" style="width: 0%;"></div>
               </div>
             </div>
           </div>
@@ -376,12 +338,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-surface-container-highest border-t border-outline-variant w-full py-stack-md px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-stack-sm mt-auto z-30">
-      <div class="font-label-lg text-label-lg font-bold text-secondary text-center md:text-left">© 2024 Sahayak | Official Prototype</div>
-      <div class="flex gap-stack-md">
-        <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
-        <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Accessibility</a>
-        <a class="font-label-sm text-label-sm text-on-secondary-fixed-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+    <footer class="bg-surface-container-highest border-t border-outline-variant w-full py-2.5 px-4 md:px-6 flex flex-wrap justify-between items-center gap-2 mt-auto z-30 text-xs text-secondary">
+      <div class="font-bold">© 2024 Sahayak | Official Prototype</div>
+      <div class="flex gap-4">
+        <span>NSQF Alignment</span>
+        <span>Local Demand Mapping</span>
+        <span>Multilingual Voice AI</span>
       </div>
     </footer>
   </div>
@@ -392,9 +354,25 @@
     let mediaRecorder = null;
     let audioChunks = [];
     let isRecording = false;
+    let speechRecognizer = null;
 
-    // Streamlit Component Messaging Protocol (with isStreamlitMessage: true)
+    function getBrowserLang(lang) {
+      const map = {
+        "Hindi": "hi-IN",
+        "Marathi": "mr-IN",
+        "Telugu": "te-IN",
+        "Tamil": "ta-IN",
+        "Bengali": "bn-IN",
+        "Gujarati": "gu-IN"
+      };
+      return map[lang] || "hi-IN";
+    }
+
+    // Streamlit Component Messaging Protocol with UNIQUE EVENT_ID
     function sendValueToStreamlit(value) {
+      if (!value.event_id) {
+        value.event_id = Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      }
       window.parent.postMessage({
         isStreamlitMessage: true,
         type: "streamlit:setComponentValue",
@@ -403,7 +381,7 @@
     }
 
     function setFrameHeight() {
-      const height = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, 880);
+      const height = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight, 720);
       window.parent.postMessage({
         isStreamlitMessage: true,
         type: "streamlit:setFrameHeight",
@@ -417,6 +395,10 @@
 
     function resetConversation() {
       sendValueToStreamlit({ action: "reset" });
+    }
+
+    function selectProfile(bId) {
+      sendValueToStreamlit({ action: "select_profile", beneficiary_id: bId });
     }
 
     function changeLanguage(lang) {
@@ -436,7 +418,7 @@
       sendValueToStreamlit({ action: "user_text", text: text });
     }
 
-    // Audio Recording Logic
+    // Audio / Voice Interaction Logic
     async function toggleRecording() {
       if (isRecording) {
         stopRecording();
@@ -446,6 +428,72 @@
     }
 
     async function startRecording() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      // Try fast browser Web Speech API first
+      if (SpeechRecognition) {
+        try {
+          if (speechRecognizer) {
+            try { speechRecognizer.abort(); } catch(e){}
+          }
+          speechRecognizer = new SpeechRecognition();
+          speechRecognizer.lang = getBrowserLang(appState.language || "Hindi");
+          speechRecognizer.interimResults = true;
+          speechRecognizer.maxAlternatives = 1;
+
+          speechRecognizer.onstart = () => {
+            isRecording = true;
+            document.getElementById("stitch-mic-status-text").innerText = "🔴 Listening... (Speak now)";
+            document.getElementById("stitch-mic-icon").innerText = "stop";
+            document.getElementById("stitch-mic-btn").classList.add("bg-red-600");
+          };
+
+          speechRecognizer.onresult = (event) => {
+            let interim = "";
+            let final = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+              if (event.results[i].isFinal) {
+                final += event.results[i][0].transcript;
+              } else {
+                interim += event.results[i][0].transcript;
+              }
+            }
+            if (final.trim()) {
+              document.getElementById("stitch-mic-status-text").innerText = `🗣️ "${final.trim()}"`;
+              isRecording = false;
+              document.getElementById("stitch-mic-icon").innerText = "mic";
+              document.getElementById("stitch-mic-btn").classList.remove("bg-red-600");
+              sendValueToStreamlit({ action: "user_text", text: final.trim() });
+            } else if (interim.trim()) {
+              document.getElementById("stitch-mic-status-text").innerText = `🎙️ "${interim.trim()}..."`;
+            }
+          };
+
+          speechRecognizer.onerror = (err) => {
+            console.log("Browser speech recognition notice:", err);
+            if (isRecording) {
+              stopRecording();
+              startMediaRecorderFallback();
+            }
+          };
+
+          speechRecognizer.onend = () => {
+            if (isRecording) {
+              stopRecording();
+            }
+          };
+
+          speechRecognizer.start();
+          return;
+        } catch (e) {
+          console.log("SpeechRecognition error, falling back to audio recording:", e);
+        }
+      }
+
+      startMediaRecorderFallback();
+    }
+
+    async function startMediaRecorderFallback() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioChunks = [];
@@ -463,7 +511,7 @@
           reader.readAsDataURL(audioBlob);
           reader.onloadend = () => {
             const base64Audio = reader.result.split(",")[1];
-            document.getElementById("stitch-mic-status-text").innerText = "⏳ Transcribing with AI4Bharat Indic Conformer ASR...";
+            document.getElementById("stitch-mic-status-text").innerText = "⏳ Transcribing audio...";
             sendValueToStreamlit({ action: "audio_recorded", audio_base64: base64Audio });
           };
           stream.getTracks().forEach(track => track.stop());
@@ -472,39 +520,61 @@
         mediaRecorder.start();
         isRecording = true;
 
-        // Update UI
-        document.getElementById("stitch-mic-status-text").innerText = "🔴 Listening... (Click to Finish)";
+        document.getElementById("stitch-mic-status-text").innerText = "🔴 Recording... (Click to finish)";
         document.getElementById("stitch-mic-icon").innerText = "stop";
         document.getElementById("stitch-mic-btn").classList.add("bg-red-600");
       } catch (err) {
         console.error("Microphone access error:", err);
-        alert("Microphone access error. You can also use the text input below to test conversation turns.");
+        alert("Microphone access is unavailable. Please use the text input below.");
       }
     }
 
     function stopRecording() {
+      if (speechRecognizer) {
+        try { speechRecognizer.stop(); } catch(e){}
+        speechRecognizer = null;
+      }
       if (mediaRecorder && mediaRecorder.state !== "inactive") {
-        mediaRecorder.stop();
+        try { mediaRecorder.stop(); } catch(e){}
       }
       isRecording = false;
-      document.getElementById("stitch-mic-status-text").innerText = "⏳ Processing audio...";
+      document.getElementById("stitch-mic-status-text").innerText = "⏳ Processing...";
       document.getElementById("stitch-mic-icon").innerText = "mic";
       document.getElementById("stitch-mic-btn").classList.remove("bg-red-600");
     }
 
     function replayTTS() {
       const audio = document.getElementById("tts-audio-player");
-      if (audio && audio.src) {
-        audio.play().catch(e => console.log("Audio play error:", e));
+      if (audio && audio.src && audio.src.length > 50) {
+        audio.currentTime = 0;
+        audio.play().catch(e => {
+          console.log("Audio play notice:", e);
+          speakBrowserFallback();
+        });
       } else {
-        sendValueToStreamlit({ action: "request_tts" });
+        speakBrowserFallback();
+      }
+    }
+
+    function speakBrowserFallback() {
+      if ('speechSynthesis' in window && appState && appState.question) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(appState.question);
+        u.lang = getBrowserLang(appState.language || "Hindi");
+        window.speechSynthesis.speak(u);
       }
     }
 
     function playRecAudio() {
       const audio = document.getElementById("rec-audio-player");
-      if (audio && audio.src) {
-        audio.play().catch(e => console.log("Audio play error:", e));
+      if (audio && audio.src && audio.src.length > 50) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log("Audio play notice:", e));
+      } else if ('speechSynthesis' in window && appState && appState.rec_spoken_text) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(appState.rec_spoken_text);
+        u.lang = getBrowserLang(appState.language || "Hindi");
+        window.speechSynthesis.speak(u);
       }
     }
 
@@ -515,43 +585,59 @@
 
       // Status pills & selectors
       if (args.language) {
-        document.getElementById("status-pill-lang").innerText = `Language (${args.language})`;
+        document.getElementById("status-pill-lang").innerText = args.language;
         const langSel = document.getElementById("stitch-lang-select");
         if (langSel) langSel.value = args.language;
       }
       if (args.district) {
-        document.getElementById("status-pill-district").innerText = `District (${args.district})`;
+        document.getElementById("status-pill-district").innerText = args.district;
         const distSel = document.getElementById("stitch-district-select");
         if (distSel) distSel.value = args.district;
       }
       if (args.beneficiary_id) {
-        document.getElementById("status-pill-profile").innerText = `Profile (${args.beneficiary_id})`;
+        document.getElementById("status-pill-profile").innerText = args.beneficiary_id;
+      }
+
+      // Profiles dropdown population
+      const profSel = document.getElementById("stitch-profile-select");
+      if (profSel && args.profiles) {
+        const currentVal = args.beneficiary_id || "NEW";
+        profSel.innerHTML = '<option value="NEW">+ New Session</option>' + args.profiles.map(p => `
+          <option value="${p.id}" ${p.id === currentVal ? 'selected' : ''}>${p.id} - ${p.name}</option>
+        `).join("");
       }
 
       // Step & Question
-      if (args.step_label) {
-        document.getElementById("step-counter").innerText = `Step ${args.step_idx + 1} of 5: ${args.step_label}`;
+      if (args.is_complete) {
+        document.getElementById("step-counter").innerText = "Completed (5 of 5)";
+      } else {
+        const stepNum = Math.min(5, (args.step_idx || 0) + 1);
+        document.getElementById("step-counter").innerText = `Step ${stepNum} of 5: ${args.step_label || ''}`;
       }
+
       if (args.question) {
         document.getElementById("stitch-assistant-question").innerText = `"${args.question}"`;
       }
 
       // TTS Audio
-      if (args.tts_audio_base64) {
+      if (args.tts_audio_base64 && args.tts_audio_base64.trim().length > 0) {
         const audioPlayer = document.getElementById("tts-audio-player");
-        audioPlayer.src = "data:audio/wav;base64," + args.tts_audio_base64;
+        const b64 = args.tts_audio_base64.trim();
+        audioPlayer.src = b64.startsWith("data:") ? b64 : ("data:audio/mp3;base64," + b64);
         audioPlayer.play().catch(e => console.log("Auto-playback notice:", e));
       }
 
       // Dialogue History
       const dialogueList = document.getElementById("stitch-dialogue-list");
       if (args.history && args.history.length > 0) {
-        dialogueList.innerHTML = args.history.slice(-4).map(h => `
-          <div class="self-start max-w-[85%] bg-surface-container text-on-surface p-2.5 rounded-lg rounded-tl-none text-xs">
-            <p class="font-medium text-primary">🤖 ${h.question}</p>
-          </div>
-          <div class="self-end max-w-[85%] bg-surface-variant text-on-surface p-2.5 rounded-lg rounded-tr-none border border-outline-variant/50 text-xs text-right">
-            <p class="font-semibold text-on-surface">🗣️ "${h.transcript}"</p>
+        dialogueList.innerHTML = args.history.slice(-5).map(h => `
+          <div class="flex flex-col gap-1">
+            <div class="self-start max-w-[90%] bg-surface-container text-on-surface px-3 py-1.5 rounded-xl rounded-tl-none text-xs border border-outline-variant/40">
+              <p class="font-semibold text-primary">🤖 ${h.question}</p>
+            </div>
+            <div class="self-end max-w-[90%] bg-primary-fixed text-on-primary-fixed px-3 py-1.5 rounded-xl rounded-tr-none border border-primary/20 text-xs text-right">
+              <p class="font-semibold">🗣️ "${h.transcript}"</p>
+            </div>
           </div>
         `).join("");
       } else {
@@ -560,23 +646,37 @@
 
       // Extracted Chips
       const chipsContainer = document.getElementById("stitch-chips-container");
-      const iconMap = {
-        current_livelihood: "bolt",
-        skills: "cable",
-        previous_work_experience: "history",
-        family_occupation: "group",
-        employment_preference: "badge"
+      const labelMap = {
+        name: { label: "Name", icon: "person" },
+        age: { label: "Age", icon: "cake" },
+        current_livelihood: { label: "Work", icon: "work" },
+        skills: { label: "Skills", icon: "build" },
+        employment_preference: { label: "Preference", icon: "badge" }
       };
+
       if (args.slots) {
-        const chipEntries = Object.entries(args.slots).filter(([k, v]) => v && String(v).trim().length > 0);
-        if (chipEntries.length > 0) {
-          chipsContainer.innerHTML = chipEntries.map(([k, v]) => `
-            <span class="inline-flex items-center gap-1 bg-surface-container-highest text-on-surface-variant px-2.5 py-1 rounded font-label-sm text-xs border border-outline-variant">
-              <span class="material-symbols-outlined text-[13px] text-primary">${iconMap[k] || 'info'}</span> ${v}
-            </span>
-          `).join("");
+        const items = [];
+        if (args.slots.name) items.push({ key: "name", val: args.slots.name });
+        if (args.slots.age && args.step_idx >= 2) items.push({ key: "age", val: `${args.slots.age} yrs` });
+        if (args.slots.current_livelihood && args.step_idx >= 3) items.push({ key: "current_livelihood", val: args.slots.current_livelihood });
+        if (args.slots.skills && args.step_idx >= 4) items.push({ key: "skills", val: args.slots.skills });
+        if (args.slots.employment_preference && args.is_complete) items.push({ key: "employment_preference", val: args.slots.employment_preference });
+
+        if (items.length > 0) {
+          chipsContainer.innerHTML = items.map(item => {
+            const conf = labelMap[item.key] || { label: item.key, icon: "info" };
+            return `
+              <div class="flex items-start gap-2 bg-surface-container border border-outline-variant/60 px-2.5 py-1.5 rounded-lg text-xs">
+                <span class="material-symbols-outlined text-[15px] text-primary mt-0.5">${conf.icon}</span>
+                <div class="flex flex-col">
+                  <span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">${conf.label}</span>
+                  <span class="text-xs text-on-surface font-semibold line-clamp-2">${item.val}</span>
+                </div>
+              </div>
+            `;
+          }).join("");
         } else {
-          chipsContainer.innerHTML = '<span class="text-xs text-on-surface-variant italic">Listening for background &amp; skills...</span>';
+          chipsContainer.innerHTML = '<span class="text-xs text-on-surface-variant italic py-2">Listening for background &amp; skills...</span>';
         }
       }
 
@@ -591,24 +691,29 @@
       if (args.is_complete) {
         document.getElementById("stitch-active-flow").classList.add("hidden");
         document.getElementById("stitch-complete-flow").classList.remove("hidden");
+        document.getElementById("stitch-complete-flow").classList.add("flex");
 
         // Render Recommendations
-        if (args.recommendations) {
+        if (args.recommendations && args.recommendations.length > 0) {
           const recList = document.getElementById("stitch-recommendations-list");
           recList.innerHTML = args.recommendations.map((r, i) => `
-            <div class="bg-surface-container border border-outline-variant rounded-xl p-3.5 flex flex-col gap-1">
+            <div class="bg-surface-container border border-outline-variant rounded-xl p-3 flex flex-col gap-1.5">
               <div class="flex justify-between items-start">
                 <div>
-                  <span class="font-bold text-primary text-sm">${i+1}. ${r.trade_name}</span>
-                  <span class="text-xs text-on-surface-variant ml-2 font-medium">NSQF Level ${r.nsqf_level} · ${r.sector}</span>
+                  <span class="font-bold text-primary text-xs md:text-sm">${i+1}. ${r.trade_name}</span>
+                  <span class="text-[11px] text-on-surface-variant ml-2 font-medium">NSQF Level ${r.nsqf_level} · ${r.sector}</span>
                 </div>
-                <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded">Match ${r.score.toFixed(1)}</span>
+                <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded border border-primary/20">Match Score ${r.score.toFixed(1)}</span>
               </div>
-              <div class="flex gap-4 text-xs text-on-surface-variant font-medium mt-1">
+              <div class="flex gap-4 text-[11px] text-on-surface-variant font-semibold">
                 <span>Avg Wage: <b>₹${r.avg_monthly_wage_inr.toLocaleString()}</b></span>
-                <span>Demand: <b>${Math.round(r.demand_score)}/10</b></span>
+                <span>Demand Score: <b>${Math.round(r.demand_score)}/10</b></span>
               </div>
-              <p class="text-xs text-on-surface-variant mt-1">✓ ${r.explanations ? r.explanations[0] : ''}</p>
+              ${r.explanations && r.explanations.length > 0 ? `
+                <div class="text-[11px] text-on-surface-variant/90 mt-0.5 space-y-0.5">
+                  ${r.explanations.slice(0, 2).map(exp => `<div>${exp}</div>`).join('')}
+                </div>
+              ` : ''}
             </div>
           `).join("");
         }
@@ -616,15 +721,17 @@
         if (args.rec_spoken_text) {
           document.getElementById("rec-spoken-text").innerText = `"${args.rec_spoken_text}"`;
         }
-        if (args.rec_audio_base64) {
+        if (args.rec_audio_base64 && args.rec_audio_base64.trim().length > 0) {
           const recPlayer = document.getElementById("rec-audio-player");
-          recPlayer.src = "data:audio/wav;base64," + args.rec_audio_base64;
+          const rB64 = args.rec_audio_base64.trim();
+          recPlayer.src = rB64.startsWith("data:") ? rB64 : ("data:audio/mp3;base64," + rB64);
           recPlayer.classList.remove("hidden");
         }
       } else {
         document.getElementById("stitch-active-flow").classList.remove("hidden");
         document.getElementById("stitch-complete-flow").classList.add("hidden");
-        document.getElementById("stitch-mic-status-text").innerText = "🎙 Start speaking";
+        document.getElementById("stitch-complete-flow").classList.remove("flex");
+        document.getElementById("stitch-mic-status-text").innerText = "🎙 Start speaking (or click mic)";
       }
 
       setFrameHeight();
@@ -644,7 +751,7 @@
       apiVersion: 1
     }, "*");
 
-    setTimeout(setFrameHeight, 300);
+    setTimeout(setFrameHeight, 200);
     window.addEventListener("resize", setFrameHeight);
   </script>
 </body>

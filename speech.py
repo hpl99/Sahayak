@@ -166,95 +166,151 @@ def transcribe(
 # ---------------------------------------------------------------------------
 
 def load_tts_model():
-    """Load AI4Bharat Indic Parler-TTS."""
+    """
+    Initialize TTS engine.
+    Prioritizes fast lightweight gTTS for instant responsiveness,
+    with fallback to AI4Bharat Parler-TTS if specifically installed.
+    """
+    # 1. Check for gTTS (fast, zero CPU load, crisp Indian language support)
+    try:
+        import gtts
+        return {"engine": "gtts"}
+    except ImportError:
+        pass
 
-    from parler_tts import (
-        ParlerTTSForConditionalGeneration
-    )
+    # 2. Check for Parler-TTS if available
+    try:
+        from parler_tts import (
+            ParlerTTSForConditionalGeneration
+        )
+        from transformers import AutoTokenizer
 
-    from transformers import AutoTokenizer
+        device = (
+            "cuda:0"
+            if torch.cuda.is_available()
+            else "cpu"
+        )
 
-    device = (
-        "cuda:0"
-        if torch.cuda.is_available()
-        else "cpu"
-    )
+        model = (
+            ParlerTTSForConditionalGeneration
+            .from_pretrained(
+                "ai4bharat/indic-parler-tts"
+            )
+            .to(device)
+        )
+        model.eval()
 
-    model = (
-        ParlerTTSForConditionalGeneration
-        .from_pretrained(
+        tokenizer = AutoTokenizer.from_pretrained(
             "ai4bharat/indic-parler-tts"
         )
-        .to(device)
-    )
+        description_tokenizer = AutoTokenizer.from_pretrained(
+            model.config.text_encoder._name_or_path
+        )
 
-    model.eval()
-
-    tokenizer = AutoTokenizer.from_pretrained(
-        "ai4bharat/indic-parler-tts"
-    )
-
-    description_tokenizer = AutoTokenizer.from_pretrained(
-        model.config.text_encoder._name_or_path
-    )
-
-    return (
-        model,
-        tokenizer,
-        description_tokenizer,
-        device,
-    )
+        return {
+            "engine": "parler",
+            "model": model,
+            "tokenizer": tokenizer,
+            "description_tokenizer": description_tokenizer,
+            "device": device,
+        }
+    except Exception as e:
+        return {"engine": "fallback", "error": str(e)}
 
 
 def synthesize(
     tts_bundle,
     text: str,
     lang_code: str,
-    out_path: str = "reply.wav",
-) -> str:
+    out_path: str = "reply.mp3",
+):
     """
     Generate spoken audio from text.
-
-    The text must already be written in the target language.
+    Supports fast gTTS, Indic Parler-TTS, and graceful fallbacks.
     """
+    if not text or not str(text).strip():
+        return None
 
-    model, tokenizer, description_tokenizer, device = tts_bundle
+    import os
+    text_clean = str(text).strip()
 
-    description = TTS_VOICE_DESCRIPTIONS.get(
-        lang_code,
-        TTS_VOICE_DESCRIPTIONS["hi"],
-    )
+    # Normalize bundle format
+    if not isinstance(tts_bundle, dict):
+        if isinstance(tts_bundle, (list, tuple)) and len(tts_bundle) == 4:
+            tts_bundle = {
+                "engine": "parler",
+                "model": tts_bundle[0],
+                "tokenizer": tts_bundle[1],
+                "description_tokenizer": tts_bundle[2],
+                "device": tts_bundle[3],
+            }
+        else:
+            tts_bundle = {"engine": "gtts"}
 
-    description_inputs = description_tokenizer(
-        description,
-        return_tensors="pt",
-    ).to(device)
+    engine = tts_bundle.get("engine", "gtts")
 
-    prompt_inputs = tokenizer(
-        text,
-        return_tensors="pt",
-    ).to(device)
+    # Fast gTTS path
+    if engine == "gtts":
+        try:
+            import gtts
+            supported_lang = lang_code if lang_code in ["hi", "mr", "ta", "te", "bn", "gu", "en"] else "hi"
+            tts = gtts.gTTS(text=text_clean, lang=supported_lang, slow=False)
+            
+            os.makedirs(os.path.dirname(os.path.abspath(out_path)) if os.path.dirname(out_path) else ".", exist_ok=True)
+            tts.save(out_path)
+            return out_path
+        except Exception as e:
+            print("gTTS error:", e)
+            return None
 
-    with torch.no_grad():
+    # Neural Parler-TTS path
+    elif engine == "parler":
+        try:
+            model = tts_bundle["model"]
+            tokenizer = tts_bundle["tokenizer"]
+            description_tokenizer = tts_bundle["description_tokenizer"]
+            device = tts_bundle["device"]
 
-        generation = model.generate(
-            input_ids=description_inputs.input_ids,
-            attention_mask=description_inputs.attention_mask,
-            prompt_input_ids=prompt_inputs.input_ids,
-            prompt_attention_mask=prompt_inputs.attention_mask,
-        )
+            description = TTS_VOICE_DESCRIPTIONS.get(
+                lang_code,
+                TTS_VOICE_DESCRIPTIONS["hi"],
+            )
 
-    audio = (
-        generation
-        .cpu()
-        .numpy()
-        .squeeze()
-    )
+            description_inputs = description_tokenizer(
+                description,
+                return_tensors="pt",
+            ).to(device)
 
-    sf.write(
-        out_path,
-        audio,
-        model.config.sampling_rate,
-    )
+            prompt_inputs = tokenizer(
+                text_clean,
+                return_tensors="pt",
+            ).to(device)
 
-    return out_path 
+            with torch.no_grad():
+                generation = model.generate(
+                    input_ids=description_inputs.input_ids,
+                    attention_mask=description_inputs.attention_mask,
+                    prompt_input_ids=prompt_inputs.input_ids,
+                    prompt_attention_mask=prompt_inputs.attention_mask,
+                )
+
+            audio = (
+                generation
+                .cpu()
+                .numpy()
+                .squeeze()
+            )
+
+            os.makedirs(os.path.dirname(os.path.abspath(out_path)) if os.path.dirname(out_path) else ".", exist_ok=True)
+            sf.write(
+                out_path,
+                audio,
+                model.config.sampling_rate,
+            )
+            return out_path
+        except Exception as e:
+            print("Parler TTS error:", e)
+            return None
+
+    return None
+ 
