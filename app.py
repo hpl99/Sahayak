@@ -613,13 +613,23 @@ elif page in ["Skill Pathways", "🎙️ Voice Recommendation"]:
                     )
 
                     if m["matched_keywords"]:
-
                         st.caption(
                             "Matched on: "
                             + ", ".join(
                                 m["matched_keywords"]
                             )
                         )
+
+                    import urllib.parse
+                    portal_query = urllib.parse.urlencode({
+                        "trade": m["trade_name"],
+                        "lang": language_label,
+                        "district": district,
+                    })
+                    st.markdown(
+                        f'<a href="/app/static/skill-portal/index.html?{portal_query}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #000666; text-decoration: none; padding: 4px 0;"><span>Explore {m["trade_name"]} on Skill Portal ↗</span></a>',
+                        unsafe_allow_html=True,
+                    )
 
             # ---------------------------------------------------------------
             # MULTILINGUAL RECOMMENDATION

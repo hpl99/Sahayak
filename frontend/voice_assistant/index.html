@@ -279,7 +279,11 @@
                 <audio id="rec-audio-player" class="w-full mt-1 hidden" controls></audio>
               </div>
 
-              <div class="flex justify-end gap-2 pt-2 border-t border-outline-variant/60">
+              <div class="flex flex-wrap justify-end gap-2 pt-2 border-t border-outline-variant/60">
+                <button onclick="openSkillPortal()" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-saffron text-slate-950 hover:bg-amber-400 cursor-pointer inline-flex items-center gap-1 shadow-xs">
+                  <span>Explore Skill Portal</span>
+                  <span class="material-symbols-outlined text-[15px]">open_in_new</span>
+                </button>
                 <button onclick="navigateTo('Beneficiary Profile')" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-surface-container border border-outline-variant hover:bg-surface-container-high cursor-pointer">
                   View Full Profile
                 </button>
@@ -399,6 +403,21 @@
 
     function selectProfile(bId) {
       sendValueToStreamlit({ action: "select_profile", beneficiary_id: bId });
+    }
+
+    function openSkillPortal(tradeName) {
+      const bId = encodeURIComponent(appState.beneficiary_id || '');
+      const name = encodeURIComponent((appState.slots && appState.slots.name) || '');
+      const dist = encodeURIComponent(appState.district || '');
+      const lang = encodeURIComponent(appState.language || 'Hindi');
+      const trade = encodeURIComponent(tradeName || '');
+      const skills = encodeURIComponent((appState.slots && appState.slots.skills) || '');
+      const work = encodeURIComponent((appState.slots && appState.slots.current_livelihood) || '');
+      const pref = encodeURIComponent((appState.slots && appState.slots.employment_preference) || '');
+      
+      const query = `beneficiary_id=${bId}&name=${name}&district=${dist}&lang=${lang}&trade=${trade}&skills=${skills}&work=${work}&pref=${pref}`;
+      const url = `/app/static/skill-portal/index.html?${query}`;
+      window.open(url, '_blank');
     }
 
     function changeLanguage(lang) {
@@ -715,6 +734,12 @@
                   ${r.explanations.slice(0, 2).map(exp => `<div>${exp}</div>`).join('')}
                 </div>
               ` : ''}
+              <div class="flex justify-between items-center mt-1 pt-1.5 border-t border-outline-variant/40">
+                <span class="text-[10px] text-primary font-bold">NSQF Certified Course</span>
+                <button onclick="openSkillPortal('${r.trade_name}')" class="text-[11px] font-bold text-white bg-primary hover:bg-primary-container px-2.5 py-1 rounded-md inline-flex items-center gap-1 shadow-2xs cursor-pointer">
+                  <span>Explore Course ↗</span>
+                </button>
+              </div>
             </div>
           `).join("");
         }

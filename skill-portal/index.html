@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Sahayak Skill Portal | NSQF Career & Training Pathways</title>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#000666",
+            "primary-container": "#1a237e",
+            "primary-light": "#e8eaf6",
+            "on-primary": "#ffffff",
+            "saffron": "#FF9933",
+            "saffron-light": "#FFF3E0",
+            "india-green": "#138808",
+            "india-green-light": "#E8F5E9",
+            "surface": "#fbf9f8",
+            "surface-container": "#f0eded",
+            "surface-container-high": "#eae8e7",
+            "surface-card": "#ffffff",
+            "on-surface": "#1b1c1c",
+            "on-surface-variant": "#454652",
+            "outline-variant": "#c6c5d4",
+          },
+          fontFamily: {
+            sans: ["Inter", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined' !important;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    @keyframes ping-slow {
+      75%, 100% {
+        transform: scale(1.35);
+        opacity: 0;
+      }
+    }
+    .animate-ping-slow {
+      animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #c6c5d4;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-[#f8f9fa] text-[#1b1c1c] font-sans antialiased min-h-screen flex flex-col selection:bg-primary/20">
+
+  <!-- Top Government Banner -->
+  <div class="bg-[#1a237e] text-white text-[11px] py-1 px-4 border-b border-indigo-900">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-2">
+        <span class="bg-[#FF9933] text-black font-bold px-1.5 py-0.2 rounded text-[10px]">Skill India</span>
+        <span>National Skill Development Mission · NSQF Career Pathways</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-300 text-[11px]">
+        <span>District Skill Committee (DSC)</span>
+        <span>Helpline: 1800-123-4567</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="bg-white border-b border-outline-variant sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-white shadow-md">
+          <span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">school</span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg md:text-xl font-extrabold text-primary tracking-tight">Sahayak Skill Portal</h1>
+            <span class="bg-indigo-100 text-primary text-[11px] font-bold px-2 py-0.5 rounded-full border border-indigo-200">Official Prototype</span>
+          </div>
+          <p class="text-xs text-on-surface-variant">Explore NSQF-aligned job training courses &amp; local opportunities</p>
+        </div>
+      </div>
+
+      <!-- Beneficiary Context Pill -->
+      <div id="beneficiary-pill" class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-1.5 text-xs shadow-xs">
+        <span class="material-symbols-outlined text-primary text-[18px]">account_circle</span>
+        <div>
+          <span class="text-slate-500 text-[10px] uppercase font-bold block leading-none">Beneficiary</span>
+          <span id="beneficiary-name-display" class="font-bold text-slate-800">Guest Visitor</span>
+        </div>
+        <div class="h-6 w-px bg-slate-200 mx-1"></div>
+        <div>
+          <span class="text-slate-500 text-[10px] uppercase font-bold block leading-none">District</span>
+          <span id="beneficiary-district-display" class="font-bold text-slate-800">Nagpur</span>
+        </div>
+        <div class="h-6 w-px bg-slate-200 mx-1"></div>
+        <div>
+          <span class="text-slate-500 text-[10px] uppercase font-bold block leading-none">Language</span>
+          <span id="beneficiary-lang-display" class="font-bold text-slate-800">Hindi</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Personalized Context Banner -->
+  <section id="personalized-banner" class="bg-gradient-to-r from-blue-900 via-indigo-900 to-primary text-white py-6 px-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <div class="inline-flex items-center gap-1.5 bg-saffron text-slate-950 px-2.5 py-0.5 rounded-full text-xs font-bold mb-2">
+          <span class="material-symbols-outlined text-[15px]">verified</span>
+          <span id="banner-match-tag">Personalized Recommendation Match</span>
+        </div>
+        <h2 id="banner-greeting" class="text-2xl md:text-3xl font-bold tracking-tight text-white">
+          Welcome to your Skill Pathways
+        </h2>
+        <p id="banner-subtext" class="text-sm md:text-base text-slate-200 mt-1 max-w-3xl leading-relaxed">
+          Based on your voice conversation profile in Nagpur, explore verified NSQF courses with high local placement demand and certified wage benchmarks.
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openAskSahayak('Is this suitable for me?')" class="bg-saffron hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs md:text-sm flex items-center gap-2 shadow-lg transition-transform active:scale-95 cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">mic</span>
+          Ask Sahayak AI
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter & Controls Toolbar -->
+  <div class="bg-white border-b border-slate-200 py-3 px-4 shadow-xs sticky top-[65px] z-20">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+      <!-- Sector Filters -->
+      <div class="flex flex-wrap items-center gap-1.5" id="sector-filters">
+        <button onclick="filterBySector('all')" class="sector-btn bg-primary text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="all">All Sectors</button>
+        <button onclick="filterBySector('Power')" class="sector-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="Power">Power &amp; Electrical</button>
+        <button onclick="filterBySector('Green Energy')" class="sector-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="Green Energy">Solar &amp; Green Energy</button>
+        <button onclick="filterBySector('Manufacturing')" class="sector-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="Manufacturing">Manufacturing</button>
+        <button onclick="filterBySector('Electronics')" class="sector-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="Electronics">Electronics</button>
+        <button onclick="filterBySector('Retail')" class="sector-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="Retail">Retail</button>
+        <button onclick="filterBySector('Apparel')" class="sector-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" data-sector="Apparel">Apparel &amp; Tailoring</button>
+      </div>
+
+      <!-- Search Box -->
+      <div class="flex items-center gap-2">
+        <div class="relative">
+          <input type="text" id="course-search-input" onkeyup="searchCourses(this.value)" placeholder="Search courses or skills..." class="text-xs bg-slate-50 border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 w-48 sm:w-64 focus:outline-none focus:border-primary focus:bg-white">
+          <span class="material-symbols-outlined text-slate-400 text-[18px] absolute left-2 top-2">search</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Canvas -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 w-full">
+    <!-- Courses Section Header -->
+    <div class="flex justify-between items-end mb-6">
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-900">Available NSQF Certified Courses</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Government-subsidized skill training programs with guaranteed placement assistance</p>
+      </div>
+      <div class="text-xs text-slate-500 font-medium">
+        Showing <span id="course-count" class="font-bold text-primary">6</span> programs
+      </div>
+    </div>
+
+    <!-- Course Cards Grid (5-6 realistic listings) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="courses-grid">
+      <!-- Dynamically generated via JS -->
+    </div>
+  </main>
+
+  <!-- Detailed Course Modal -->
+  <div id="course-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto custom-scrollbar shadow-2xl flex flex-col border border-slate-200">
+      <!-- Modal Header -->
+      <div class="bg-slate-50 border-b border-slate-200 p-5 flex justify-between items-start sticky top-0 z-10">
+        <div>
+          <div class="flex items-center gap-2">
+            <span id="modal-sector-badge" class="bg-indigo-100 text-primary text-[11px] font-bold px-2.5 py-0.5 rounded-full">Power</span>
+            <span id="modal-nsqf-badge" class="bg-amber-100 text-amber-900 text-[11px] font-bold px-2 py-0.5 rounded">NSQF Level 4</span>
+          </div>
+          <h3 id="modal-title" class="text-xl font-bold text-slate-900 mt-1.5">Electrician (Domestic)</h3>
+          <p id="modal-council" class="text-xs text-slate-500">Power Sector Skill Council</p>
+        </div>
+        <button onclick="closeCourseModal()" class="text-slate-400 hover:text-slate-700 bg-white p-1 rounded-full border border-slate-200 cursor-pointer">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 space-y-6 flex-1">
+        <!-- Quick Stats Banner -->
+        <div class="grid grid-cols-3 gap-3 bg-indigo-50/70 border border-indigo-100 p-3.5 rounded-xl text-center">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block">Avg Monthly Wage</span>
+            <span id="modal-wage" class="text-sm font-extrabold text-primary">₹14,000</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block">Course Duration</span>
+            <span id="modal-duration" class="text-sm font-extrabold text-slate-800">350 Hours (3 Mo)</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block">Local Demand</span>
+            <span id="modal-demand" class="text-sm font-extrabold text-india-green">9/10 (Very High)</span>
+          </div>
+        </div>
+
+        <!-- Personalized Fit Explanation (if beneficiary profile active) -->
+        <div id="modal-fit-container" class="bg-amber-50/80 border border-amber-200 rounded-xl p-4">
+          <div class="flex items-start gap-2.5">
+            <span class="material-symbols-outlined text-amber-700 text-xl">psychology</span>
+            <div>
+              <h4 class="font-bold text-xs text-amber-900">Why this fits your profile (Sahayak Analysis)</h4>
+              <p id="modal-fit-text" class="text-xs text-amber-800 mt-1 leading-relaxed"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- What will I learn? (Modules) -->
+        <div>
+          <h4 class="text-sm font-bold text-slate-900 flex items-center gap-1.5 mb-2.5">
+            <span class="material-symbols-outlined text-primary text-[18px]">menu_book</span>
+            <span>What Will You Learn (Core Modules)</span>
+          </h4>
+          <ul id="modal-modules-list" class="space-y-2 text-xs text-slate-700 pl-2">
+            <!-- Injected via JS -->
+          </ul>
+        </div>
+
+        <!-- Eligibility & Career Opportunities -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl">
+            <h5 class="font-bold text-xs text-slate-800 mb-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px] text-primary">fact_check</span> Minimum Eligibility
+            </h5>
+            <p id="modal-eligibility" class="text-xs text-slate-600">8th / 10th Pass</p>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-xl">
+            <h5 class="font-bold text-xs text-slate-800 mb-1 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px] text-primary">work</span> Career Opportunities
+            </h5>
+            <p id="modal-career" class="text-xs text-slate-600">DISCOM Contractor, Industrial Electrician, Maintenance Specialist, Independent Electrical Shop</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="bg-slate-50 border-t border-slate-200 p-4 flex justify-between items-center sticky bottom-0">
+        <button onclick="askAboutCurrentModalCourse()" class="text-xs font-bold text-primary flex items-center gap-1.5 hover:underline cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">chat</span> Ask Sahayak about this course
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeCourseModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 cursor-pointer">Close</button>
+          <button onclick="enrollCourseAction()" class="px-4 py-2 text-xs font-bold text-white bg-primary rounded-lg hover:bg-indigo-900 shadow-sm cursor-pointer flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">how_to_reg</span> Register Interest
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Persistent "Ask Sahayak" Voice/Chat Drawer & Floating Trigger -->
+  <div id="ask-sahayak-widget" class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    <!-- Floating Trigger Pill / Button -->
+    <div id="sahayak-trigger-btn" onclick="toggleSahayakDrawer()" class="bg-primary hover:bg-indigo-950 text-white rounded-full px-4 py-3 flex items-center gap-3 shadow-2xl cursor-pointer hover:scale-105 transition-all duration-200 border-2 border-white">
+      <div class="relative flex items-center justify-center w-6 h-6">
+        <span class="absolute inset-0 border-2 border-saffron rounded-full animate-ping-slow opacity-80"></span>
+        <span class="material-symbols-outlined text-saffron text-2xl" style="font-variation-settings: 'FILL' 1;">mic</span>
+      </div>
+      <div class="flex flex-col text-left">
+        <span class="text-xs font-extrabold tracking-wide uppercase text-saffron leading-none">Ask Sahayak</span>
+        <span class="text-[11px] text-slate-200 leading-tight">Voice &amp; Chat Advisor</span>
+      </div>
+    </div>
+
+    <!-- Interactive Drawer Card (Collapsible) -->
+    <div id="sahayak-drawer" class="hidden bg-white border border-slate-200 rounded-2xl w-[360px] sm:w-[400px] shadow-2xl flex flex-col overflow-hidden mb-3 animate-fade-in max-h-[550px] border-t-4 border-t-primary">
+      <!-- Drawer Header -->
+      <div class="bg-primary text-white p-3.5 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-saffron flex items-center justify-center text-slate-950">
+            <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs text-white leading-none">Sahayak Conversational Advisor</h4>
+            <span class="text-[10px] text-indigo-200">Multilingual Career &amp; Course Guidance</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button onclick="toggleAudioMute()" id="btn-audio-mute" title="Toggle audio response" class="text-indigo-200 hover:text-white p-1 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]" id="icon-audio-mute">volume_up</span>
+          </button>
+          <button onclick="toggleSahayakDrawer()" class="text-indigo-200 hover:text-white p-1 cursor-pointer">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Prompt Chips -->
+      <div class="bg-slate-50 border-b border-slate-200 p-2.5 flex flex-wrap gap-1.5 overflow-x-auto">
+        <button onclick="sendUserMessage('What is this course?')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+          💡 What is this course?
+        </button>
+        <button onclick="sendUserMessage('Is this suitable for me?')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+          🎯 Is this suitable for me?
+        </button>
+        <button onclick="sendUserMessage('What will I learn?')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+          📚 What will I learn?
+        </button>
+        <button onclick="sendUserMessage('Show me other courses')" class="text-[11px] bg-white border border-slate-200 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1 rounded-full font-medium shadow-2xs transition-all cursor-pointer">
+          🔍 Show other courses
+        </button>
+      </div>
+
+      <!-- Message History Stream -->
+      <div id="chat-messages" class="flex-1 p-3.5 space-y-3 overflow-y-auto custom-scrollbar max-h-[300px] min-h-[220px] bg-[#f9fafb]">
+        <!-- Initial Bot Greeting -->
+        <div class="flex gap-2 items-start">
+          <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5">
+            🤖
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl rounded-tl-none p-2.5 text-xs text-slate-800 shadow-2xs">
+            <p id="chat-initial-greeting">नमस्ते! मैं सहायक हूँ। आप किसी भी कोर्स के बारे में पूछ सकते हैं — जैसे 'What will I learn?' या 'Is this suitable for me?'.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Area with Mic & Send Button -->
+      <div class="p-2.5 bg-white border-t border-slate-200 flex flex-col gap-1.5">
+        <div id="voice-listening-indicator" class="hidden items-center justify-between bg-red-50 border border-red-200 px-2.5 py-1 rounded-md text-[11px] text-red-700 font-semibold animate-pulse">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+            <span id="voice-transcript-interim">Listening... Speak now</span>
+          </div>
+          <button onclick="stopVoiceRecording()" class="text-[10px] bg-red-600 text-white px-1.5 py-0.5 rounded cursor-pointer">Stop</button>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <!-- Voice Button -->
+          <button id="btn-chat-mic" onclick="toggleVoiceRecording()" title="Speak in Hindi/English" class="w-9 h-9 bg-saffron hover:bg-amber-400 text-slate-950 rounded-xl flex items-center justify-center shrink-0 shadow-xs cursor-pointer transition-all">
+            <span class="material-symbols-outlined text-[20px]" id="chat-mic-icon">mic</span>
+          </button>
+          <!-- Text Input -->
+          <input type="text" id="chat-input" placeholder="Ask in English or Hindi..." onkeydown="if(event.key==='Enter') submitChatMessage()" class="flex-1 text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:outline-none focus:border-primary focus:bg-white">
+          <!-- Send Button -->
+          <button onclick="submitChatMessage()" class="w-9 h-9 bg-primary hover:bg-indigo-900 text-white rounded-xl flex items-center justify-center shrink-0 shadow-xs cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-6 px-4 border-t border-slate-800 text-xs mt-auto">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-white">Sahayak Skill Portal Prototype</span>
+        <span>· Connected with Voice for Livelihood AI Engine</span>
+      </div>
+      <div class="flex gap-4 text-slate-400">
+        <span>NSQF Aligned</span>
+        <span>NCVET Standards</span>
+        <span>Local Demand Mapping</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Complete Interactive Client Logic -->
+  <script>
+    // 1. Comprehensive NSQF Course Dataset (Matching nsqf_trades.csv & rich curriculum)
+    const COURSES_DATA = [
+      {
+        id: "electrician-domestic",
+        title: "Electrician (Domestic)",
+        nsqf_level: 4,
+        sector: "Power",
+        council: "Power Sector Skill Council (PSSC)",
+        duration_hours: 350,
+        duration_display: "350 Hours (Approx. 3 Months)",
+        avg_monthly_wage: 14000,
+        demand_score: 9,
+        demand_rating: "Very High",
+        demand_district: "Nagpur & Surrounding Industrial Belt",
+        keywords: ["electrician", "electric", "bijli", "wiring", "meter", "switch", "vidyut"],
+        eligibility: "10th Pass (or 8th Pass with prior electrical helper experience)",
+        description: "Comprehensive training in domestic electrical wiring, power distribution, circuit protection (MCB/ELCB), earthing systems, and smart home electrical appliances repair.",
+        modules: [
+          "Single-phase and three-phase house wiring, conduit laying, and junction box installation",
+          "Distribution boards, MCBs, ELCBs, and residual current circuit breakers fitting",
+          "Inverter, UPS, and battery backup wiring and routine maintenance",
+          "Testing, fault detection, multimeters usage, and pipe/plate earthing installation",
+          "Industrial electrical safety protocols, PPE usage, and electric shock prevention"
+        ],
+        career: "DISCOM Electrical Contractor, Industrial Maintenance Electrician, Home Repair Technician, Self-Employed Electrical Workshop Owner."
+      },
+      {
+        id: "solar-panel-installer",
+        title: "Solar Panel Installer (Suryamitra)",
+        nsqf_level: 4,
+        sector: "Green Energy",
+        council: "Skill Council for Green Jobs (SCGJ)",
+        duration_hours: 300,
+        duration_display: "300 Hours (Approx. 2.5 Months)",
+        avg_monthly_wage: 15000,
+        demand_score: 8,
+        demand_rating: "High Demand (Green Initiative)",
+        demand_district: "High in Nagpur (Solar Rooftop Schemes)",
+        keywords: ["solar", "surya", "panel", "renewable", "installation", "dhoop"],
+        eligibility: "10th Pass / ITI or 12th Pass preferred",
+        description: "Hands-on certification for installing rooftop and commercial solar photovoltaic (PV) power systems under the PM Surya Ghar Muft Bijli Yojana.",
+        modules: [
+          "Solar PV module structure assembly and roof-mounting safety",
+          "Solar inverter, charge controller, and DC/AC junction box cabling",
+          "Net-metering connection and grid-tie system commissioning",
+          "Solar panel cleaning, power output measurement, and efficiency testing",
+          "Workplace safety at heights, fall arrest harnesses, and electrical hazard safety"
+        ],
+        career: "Solar EPC Project Installer, Solar Maintenance Executive, Renewable Energy Franchise Technician."
+      },
+      {
+        id: "welder-fabrication",
+        title: "Welder (Fabrication)",
+        nsqf_level: 4,
+        sector: "Manufacturing",
+        council: "Capital Goods Skill Council (CGSC)",
+        duration_hours: 400,
+        duration_display: "400 Hours (Approx. 3.5 Months)",
+        avg_monthly_wage: 15500,
+        demand_score: 7,
+        demand_rating: "High Industrial Demand",
+        demand_district: "High across MIDC Nagpur & Butibori",
+        keywords: ["welding", "jodna", "metal", "fabrication", "weld", "lohar"],
+        eligibility: "8th / 10th Pass",
+        description: "Industrial grade training in Shielded Metal Arc Welding (SMAW), Gas Metal Arc Welding (MIG/MAG), metal fabrication, and blueprint interpretation.",
+        modules: [
+          "Shielded Metal Arc Welding (SMAW) in 1G, 2G, 3G positions",
+          "Gas Metal Arc Welding (MIG/MAG) and plasma cutting techniques",
+          "Reading engineering fabrication drawings and dimensional layout marking",
+          "Grinding, edge preparation, joint fit-up, and weld bead inspection",
+          "Workshop safety, oxy-acetylene cylinder handling, and eye protection protocols"
+        ],
+        career: "Automotive Fabrication Welder, Structural Steel Fabricator, Factory Maintenance Welder, Independent Metal Workshop Owner."
+      },
+      {
+        id: "mobile-repair-technician",
+        title: "Mobile Repair Technician",
+        nsqf_level: 3,
+        sector: "Electronics",
+        council: "Telecom Sector Skill Council (TSSC)",
+        duration_hours: 240,
+        duration_display: "240 Hours (Approx. 2 Months)",
+        avg_monthly_wage: 12000,
+        demand_score: 7,
+        demand_rating: "Steady Local Demand",
+        demand_district: "Nagpur Urban & Rural Tehsil Centers",
+        keywords: ["mobile", "phone", "repair", "thik karna", "screen", "battery"],
+        eligibility: "8th / 10th Pass",
+        description: "Practical troubleshooting of smartphones, hardware component replacements, SMD soldering, screen replacement, and firmware flashing.",
+        modules: [
+          "Smartphone disassembly, assembly, and ESD safety precautions",
+          "Touchscreen, digitizer, camera, speaker, and charging port replacements",
+          "SMD hot air rework, soldering micro-components, and PCB cleaning",
+          "Android/iOS flashing, OS upgrades, bootloop fixing, and data backup",
+          "Customer diagnostic estimation and mobile repair shop business setup"
+        ],
+        career: "Brand Authorized Service Center Technician (Samsung, Xiaomi, Vivo), Independent Mobile Repair Shop Entrepreneur."
+      },
+      {
+        id: "retail-sales-associate",
+        title: "Retail Sales Associate",
+        nsqf_level: 3,
+        sector: "Retail",
+        council: "Retailers Association's Skill Council of India (RASCI)",
+        duration_hours: 200,
+        duration_display: "200 Hours (Approx. 1.5 Months)",
+        avg_monthly_wage: 10500,
+        demand_score: 8,
+        demand_rating: "High Urban Demand",
+        demand_district: "Malls, Supermarkets & Retail Outlets",
+        keywords: ["dukan", "shop", "sales", "bikri", "retail", "customer"],
+        eligibility: "10th Pass with basic communication skills",
+        description: "Fast-track training for customer service, retail merchandising, point-of-sale (POS) billing, and product upselling in retail stores and malls.",
+        modules: [
+          "Effective customer greeting, needs assessment, and product demonstration",
+          "Point of Sale (POS) computerized billing and cash/digital payment handling",
+          "Visual merchandising, shelf replenishment, and stock inventory counting",
+          "Handling customer complaints and product return workflows",
+          "Professional grooming, retail etiquette, and teamwork in high-traffic stores"
+        ],
+        career: "Retail Store Associate (Reliance, DMart, Big Bazaar), Brand Showroom Sales Executive, Cashier."
+      },
+      {
+        id: "tailoring-fashion-design",
+        title: "Tailoring & Fashion Design",
+        nsqf_level: 4,
+        sector: "Apparel",
+        council: "Apparel Made-Ups & Home Furnishing SSC",
+        duration_hours: 340,
+        duration_display: "340 Hours (Approx. 3 Months)",
+        avg_monthly_wage: 11000,
+        demand_score: 6,
+        demand_rating: "High Self-Employment Demand",
+        demand_district: "Nagpur, Wardha & Rural Clusters",
+        keywords: ["tailor", "silai", "kapde", "stitching", "darzi", "fashion"],
+        eligibility: "8th Pass",
+        description: "Specialized training in garment pattern making, precision fabric cutting, motorized sewing machine operation, and boutique entrepreneurship.",
+        modules: [
+          "Taking accurate body measurements and pattern drafting on master charts",
+          "Motorized and pedal sewing machine operation, threading, and maintenance",
+          "Stitching blouses, kurtis, salwars, trousers, and customized garments",
+          "Decorative piping, zip installation, buttonhole making, and designer finishing",
+          "Micro-enterprise setup, boutique pricing, and Mudra loan application guidance"
+        ],
+        career: "Boutique Owner, Home-Based Custom Tailor, Garment Factory Sample Tailor, Alteration Specialist."
+      }
+    ];
+
+    // 2. Beneficiary Context State Management
+    let beneficiaryContext = {
+      id: "BEN-2026-001",
+      name: "Ramesh Kumar",
+      age: 26,
+      district: "Nagpur",
+      language: "Hindi",
+      current_livelihood: "Bijli wiring ka kaam (3 years experience)",
+      skills: "Wiring aur switch fitting",
+      employment_preference: "Wage Employment (Job)",
+      recommended_trade: "Electrician (Domestic)"
+    };
+
+    let selectedCourse = COURSES_DATA[0];
+    let isAudioMuted = false;
+    let isVoiceListening = false;
+    let speechRecognitionInstance = null;
+
+    // 3. Initialize Context from URL query parameters (sent from Portal)
+    function initContextFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has("beneficiary_id")) beneficiaryContext.id = params.get("beneficiary_id");
+      if (params.has("name")) beneficiaryContext.name = params.get("name");
+      if (params.has("age")) beneficiaryContext.age = parseInt(params.get("age"));
+      if (params.has("district")) beneficiaryContext.district = params.get("district");
+      if (params.has("lang")) beneficiaryContext.language = params.get("lang");
+      if (params.has("trade")) beneficiaryContext.recommended_trade = params.get("trade");
+      if (params.has("work")) beneficiaryContext.current_livelihood = params.get("work");
+      if (params.has("skills")) beneficiaryContext.skills = params.get("skills");
+      if (params.has("pref")) beneficiaryContext.employment_preference = params.get("pref");
+
+      // Update UI Pills
+      document.getElementById("beneficiary-name-display").innerText = beneficiaryContext.name || "Guest";
+      document.getElementById("beneficiary-district-display").innerText = beneficiaryContext.district || "Nagpur";
+      document.getElementById("beneficiary-lang-display").innerText = beneficiaryContext.language || "Hindi";
+
+      // Update Header Banner
+      if (beneficiaryContext.name && beneficiaryContext.name !== "Guest") {
+        document.getElementById("banner-greeting").innerText = `Namaste, ${beneficiaryContext.name}!`;
+        document.getElementById("banner-subtext").innerText = `We have pre-matched your background (${beneficiaryContext.skills || 'skills'}) with certified NSQF pathways in ${beneficiaryContext.district}. Explore your options or ask Sahayak for guidance.`;
+      }
+
+      // Check if a specific trade was highlighted
+      const matched = COURSES_DATA.find(c => c.title.toLowerCase().includes((beneficiaryContext.recommended_trade || "").toLowerCase()));
+      if (matched) {
+        selectedCourse = matched;
+      }
+    }
+
+    // 4. Render Course Cards Grid
+    function renderCoursesGrid(coursesToRender = COURSES_DATA) {
+      const grid = document.getElementById("courses-grid");
+      document.getElementById("course-count").innerText = coursesToRender.length;
+
+      if (coursesToRender.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-slate-500">
+            <span class="material-symbols-outlined text-4xl text-slate-300">search_off</span>
+            <p class="mt-2 text-sm font-semibold">No courses match your filter.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = coursesToRender.map(course => {
+        const isTopMatch = beneficiaryContext.recommended_trade && course.title.toLowerCase().includes(beneficiaryContext.recommended_trade.toLowerCase());
+
+        return `
+          <div class="bg-white rounded-2xl border ${isTopMatch ? 'border-primary ring-2 ring-primary/20 shadow-md' : 'border-slate-200 shadow-xs'} hover:shadow-lg transition-all duration-200 flex flex-col overflow-hidden relative">
+            ${isTopMatch ? `
+              <div class="bg-primary text-white text-[11px] font-bold px-3 py-1 flex items-center justify-between">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px] text-saffron">recommend</span>
+                  Top Match for You (Sahayak AI)
+                </span>
+                <span class="bg-saffron text-slate-950 px-1.5 py-0.2 rounded text-[10px]">98% Fit</span>
+              </div>
+            ` : ''}
+
+            <div class="p-5 flex-1 flex flex-col">
+              <div class="flex justify-between items-start gap-2 mb-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full">${course.sector}</span>
+                <span class="text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded">NSQF Level ${course.nsqf_level}</span>
+              </div>
+
+              <h4 class="text-base font-bold text-slate-900 leading-snug hover:text-primary transition-colors cursor-pointer" onclick="openCourseModal('${course.id}')">
+                ${course.title}
+              </h4>
+              <p class="text-xs text-slate-500 mt-0.5">${course.council}</p>
+
+              <p class="text-xs text-slate-600 mt-3 line-clamp-2 leading-relaxed">
+                ${course.description}
+              </p>
+
+              <!-- Metrics -->
+              <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-slate-100 text-xs">
+                <div class="bg-slate-50 p-2 rounded-lg">
+                  <span class="text-[10px] text-slate-400 font-bold block uppercase">Avg Wage</span>
+                  <span class="font-extrabold text-slate-800">₹${course.avg_monthly_wage.toLocaleString()}/mo</span>
+                </div>
+                <div class="bg-slate-50 p-2 rounded-lg">
+                  <span class="text-[10px] text-slate-400 font-bold block uppercase">Duration</span>
+                  <span class="font-bold text-slate-800">${course.duration_hours} Hours</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Action Footer -->
+            <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex justify-between items-center gap-2">
+              <button onclick="openCourseModal('${course.id}')" class="text-xs font-bold text-primary hover:text-indigo-800 flex items-center gap-1 cursor-pointer">
+                <span>View Details</span>
+                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </button>
+              <button onclick="askAboutSpecificCourse('${course.id}')" class="text-xs font-semibold bg-white border border-slate-300 hover:border-primary text-slate-700 hover:text-primary px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-2xs cursor-pointer">
+                <span class="material-symbols-outlined text-[15px] text-saffron">chat</span>
+                Ask Sahayak
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 5. Filter & Search Functions
+    function filterBySector(sector) {
+      document.querySelectorAll('.sector-btn').forEach(btn => {
+        if (btn.dataset.sector === sector) {
+          btn.classList.remove('bg-slate-100', 'text-slate-700');
+          btn.classList.add('bg-primary', 'text-white');
+        } else {
+          btn.classList.remove('bg-primary', 'text-white');
+          btn.classList.add('bg-slate-100', 'text-slate-700');
+        }
+      });
+
+      if (sector === 'all') {
+        renderCoursesGrid(COURSES_DATA);
+      } else {
+        const filtered = COURSES_DATA.filter(c => c.sector.toLowerCase() === sector.toLowerCase());
+        renderCoursesGrid(filtered);
+      }
+    }
+
+    function searchCourses(query) {
+      const q = query.toLowerCase().trim();
+      if (!q) {
+        renderCoursesGrid(COURSES_DATA);
+        return;
+      }
+      const filtered = COURSES_DATA.filter(c => 
+        c.title.toLowerCase().includes(q) ||
+        c.sector.toLowerCase().includes(q) ||
+        c.keywords.some(k => k.toLowerCase().includes(q)) ||
+        c.description.toLowerCase().includes(q)
+      );
+      renderCoursesGrid(filtered);
+    }
+
+    // 6. Course Detail Modal Logic
+    function openCourseModal(courseId) {
+      const course = COURSES_DATA.find(c => c.id === courseId);
+      if (!course) return;
+      selectedCourse = course;
+
+      document.getElementById('modal-sector-badge').innerText = course.sector;
+      document.getElementById('modal-nsqf-badge').innerText = `NSQF Level ${course.nsqf_level}`;
+      document.getElementById('modal-title').innerText = course.title;
+      document.getElementById('modal-council').innerText = course.council;
+      document.getElementById('modal-wage').innerText = `₹${course.avg_monthly_wage.toLocaleString()}/mo`;
+      document.getElementById('modal-duration').innerText = course.duration_display;
+      document.getElementById('modal-demand').innerText = `${course.demand_score}/10 (${course.demand_rating})`;
+      document.getElementById('modal-eligibility').innerText = course.eligibility;
+      document.getElementById('modal-career').innerText = course.career;
+
+      // Personalized Fit text
+      const fitEl = document.getElementById('modal-fit-text');
+      const name = beneficiaryContext.name || "candidate";
+      if (course.title.toLowerCase().includes("electrician")) {
+        fitEl.innerText = `Great match for ${name}! Given your stated experience with electrical wiring & switch fitting in ${beneficiaryContext.district}, this Level 4 certification gives you formal NCVET credentials for higher wages (₹14,000+).`;
+      } else if (course.title.toLowerCase().includes("solar")) {
+        fitEl.innerText = `High demand opportunity in ${beneficiaryContext.district}. Your technical background allows quick mastery of rooftop solar wiring, matching high wage jobs (₹15,000+).`;
+      } else {
+        fitEl.innerText = `Certified under NSQF Level ${course.nsqf_level}. Aligns with ${course.demand_rating} in ${beneficiaryContext.district} with direct placement support.`;
+      }
+
+      // Modules List
+      const modulesList = document.getElementById('modal-modules-list');
+      modulesList.innerHTML = course.modules.map((m, i) => `
+        <li class="flex items-start gap-2">
+          <span class="text-primary font-bold text-xs mt-0.5">•</span>
+          <span>${m}</span>
+        </li>
+      `).join('');
+
+      document.getElementById('course-modal').classList.remove('hidden');
+    }
+
+    function closeCourseModal() {
+      document.getElementById('course-modal').classList.add('hidden');
+    }
+
+    function enrollCourseAction() {
+      alert(`Registration confirmed for ${selectedCourse.title}!\nYour Beneficiary ID (${beneficiaryContext.id}) has been submitted to the District Skill Center in ${beneficiaryContext.district}.`);
+      closeCourseModal();
+    }
+
+    function askAboutCurrentModalCourse() {
+      closeCourseModal();
+      openAskSahayak(`Tell me more about the ${selectedCourse.title} course`);
+    }
+
+    function askAboutSpecificCourse(courseId) {
+      const course = COURSES_DATA.find(c => c.id === courseId);
+      if (course) selectedCourse = course;
+      openAskSahayak(`What is the ${selectedCourse.title} course?`);
+    }
+
+    // 7. Persistent "Ask Sahayak" Conversational AI Engine
+    function toggleSahayakDrawer() {
+      const drawer = document.getElementById('sahayak-drawer');
+      const isHidden = drawer.classList.contains('hidden');
+      if (isHidden) {
+        drawer.classList.remove('hidden');
+      } else {
+        drawer.classList.add('hidden');
+      }
+    }
+
+    function openAskSahayak(initialPrompt) {
+      const drawer = document.getElementById('sahayak-drawer');
+      drawer.classList.remove('hidden');
+      if (initialPrompt) {
+        sendUserMessage(initialPrompt);
+      }
+    }
+
+    function submitChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendUserMessage(text);
+    }
+
+    function appendChatMessage(sender, text) {
+      const container = document.getElementById('chat-messages');
+      const isUser = sender === 'user';
+
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `flex gap-2 items-start ${isUser ? 'justify-end' : ''}`;
+
+      if (isUser) {
+        msgDiv.innerHTML = `
+          <div class="bg-primary text-white rounded-xl rounded-tr-none p-2.5 text-xs max-w-[85%] shadow-2xs">
+            <p>${text}</p>
+          </div>
+          <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5">
+            👤
+          </div>
+        `;
+      } else {
+        msgDiv.innerHTML = `
+          <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-[10px] shrink-0 mt-0.5">
+            🤖
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl rounded-tl-none p-2.5 text-xs text-slate-800 max-w-[85%] shadow-2xs">
+            <p class="leading-relaxed">${text}</p>
+          </div>
+        `;
+      }
+
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Conversational Intent Engine
+    function generateSahayakResponse(userText) {
+      const text = userText.toLowerCase();
+      const course = selectedCourse || COURSES_DATA[0];
+      const name = beneficiaryContext.name || "मित्र";
+      const district = beneficiaryContext.district || "Nagpur";
+
+      // 1. "What is this course?" / "इस कोर्स में क्या है?"
+      if (text.includes("what is this course") || text.includes("what is the course") || text.includes("kya hai") || text.includes("course details") || text.includes("about the course")) {
+        return `${course.title} ${course.sector} क्षेत्र में NSQF Level ${course.nsqf_level} का सरकारी मान्यता प्राप्त कोर्स है। यह ${course.duration_display} का कोर्स है, जिसमें आपको ${course.description} सिखाया जाएगा। ${district} में इसका औसत वेतन ₹${course.avg_monthly_wage.toLocaleString()}/माह है।`;
+      }
+
+      // 2. "Is this suitable for me?" / "क्या यह मेरे लिए सही है?"
+      if (text.includes("suitable") || text.includes("fit") || text.includes("sahi hai") || text.includes("for me") || text.includes("mere liye")) {
+        return `हाँ ${name} जी! यह कोर्स आपके लिए बहुत अनुकूल है। आपके पास पहले से ${beneficiaryContext.skills || 'हुनर'} का अनुभव है और आपकी प्राथमिकता ${beneficiaryContext.employment_preference || 'नौकरी'} है। यह कोर्स पूरा करने पर आपको सरकारी NCVET सर्टिफिकेट मिलेगा, जिससे ${district} में अच्छी कंपनियों में ₹${course.avg_monthly_wage.toLocaleString()}+ की जॉब मिलने की संभावना बढ़ जाएगी।`;
+      }
+
+      // 3. "What will I learn?" / "मैं क्या सीखूंगा?"
+      if (text.includes("learn") || text.includes("seekh") || text.includes("kya sikhunga") || text.includes("syllabus") || text.includes("modules")) {
+        const topModules = course.modules.slice(0, 3).join("; ");
+        return `${course.title} कोर्स में मुख्य रूप से आप सीखेंगे: 1) ${topModules}। इसमें 70% प्रैक्टिकल हैंड-ऑन ट्रेनिंग और 30% थ्योरी और सुरक्षा नियम शामिल हैं।`;
+      }
+
+      // 4. "Show me other courses" / "अन्य कोर्स दिखाएं"
+      if (text.includes("other course") || text.includes("another course") || text.includes("dusra") || text.includes("all courses") || text.includes("options")) {
+        const others = COURSES_DATA.filter(c => c.id !== course.id).map(c => `${c.title} (₹${c.avg_monthly_wage.toLocaleString()}/mo)`).join(", ");
+        return `${district} में आपके लिए अन्य बेहतरीन विकल्प हैं: ${others}। आप किसी भी कोर्स पर क्लिक करके उसकी पूरी जानकारी देख सकते हैं।`;
+      }
+
+      // 5. "Salary / Wage / Fees" / "वेतन / फीस"
+      if (text.includes("salary") || text.includes("wage") || text.includes("tankhah") || text.includes("paise") || text.includes("fees") || text.includes("kamai")) {
+        return `${course.title} कोर्स पूरा करने के बाद शुरुआती औसत वेतन ₹${course.avg_monthly_wage.toLocaleString()} प्रति माह है। अनुभवी होने पर यह ₹20,000+ तक बढ़ सकता है। यह सरकारी योजना (PMKVY / DDU-GKY) के तहत पूर्णतः निःशुल्क (Free) है।`;
+      }
+
+      // Default contextual response
+      return `${name} जी, ${course.title} के बारे में आपके प्रश्न के लिए धन्यवाद। यह कोर्स ${course.duration_display} का है और इसमें ${district} में बहुत अच्छी मांग है। आप 'What will I learn?' या 'Is this suitable for me?' पूछ सकते हैं।`;
+    }
+
+    function sendUserMessage(text) {
+      appendChatMessage('user', text);
+
+      setTimeout(() => {
+        const botResponse = generateSahayakResponse(text);
+        appendChatMessage('assistant', botResponse);
+        speakResponseAudio(botResponse);
+      }, 300);
+    }
+
+    // 8. Voice Interaction (Web Speech API)
+    function toggleVoiceRecording() {
+      if (isVoiceListening) {
+        stopVoiceRecording();
+      } else {
+        startVoiceRecording();
+      }
+    }
+
+    function startVoiceRecording() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Speech recognition is not supported in this browser. Please type your message.");
+        return;
+      }
+
+      try {
+        speechRecognitionInstance = new SpeechRecognition();
+        speechRecognitionInstance.lang = beneficiaryContext.language === "Hindi" ? "hi-IN" : (beneficiaryContext.language === "Marathi" ? "mr-IN" : "hi-IN");
+        speechRecognitionInstance.interimResults = true;
+        speechRecognitionInstance.maxAlternatives = 1;
+
+        speechRecognitionInstance.onstart = () => {
+          isVoiceListening = true;
+          document.getElementById('voice-listening-indicator').classList.remove('hidden');
+          document.getElementById('voice-listening-indicator').classList.add('flex');
+          document.getElementById('chat-mic-icon').innerText = 'stop';
+          document.getElementById('btn-chat-mic').classList.add('bg-red-600', 'text-white');
+        };
+
+        speechRecognitionInstance.onresult = (event) => {
+          let transcript = "";
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            transcript += event.results[i][0].transcript;
+          }
+          document.getElementById('voice-transcript-interim').innerText = `"${transcript}"`;
+          if (event.results[0].isFinal) {
+            stopVoiceRecording();
+            sendUserMessage(transcript.trim());
+          }
+        };
+
+        speechRecognitionInstance.onerror = (err) => {
+          console.log("Speech recognition error:", err);
+          stopVoiceRecording();
+        };
+
+        speechRecognitionInstance.onend = () => {
+          stopVoiceRecording();
+        };
+
+        speechRecognitionInstance.start();
+      } catch (e) {
+        console.error("Speech start error:", e);
+        stopVoiceRecording();
+      }
+    }
+
+    function stopVoiceRecording() {
+      if (speechRecognitionInstance) {
+        try { speechRecognitionInstance.stop(); } catch(e){}
+        speechRecognitionInstance = null;
+      }
+      isVoiceListening = false;
+      document.getElementById('voice-listening-indicator').classList.add('hidden');
+      document.getElementById('voice-listening-indicator').classList.remove('flex');
+      document.getElementById('chat-mic-icon').innerText = 'mic';
+      document.getElementById('btn-chat-mic').classList.remove('bg-red-600', 'text-white');
+    }
+
+    // 9. Text-to-Speech Output
+    function speakResponseAudio(text) {
+      if (isAudioMuted) return;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = beneficiaryContext.language === "Hindi" ? "hi-IN" : "hi-IN";
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function toggleAudioMute() {
+      isAudioMuted = !isAudioMuted;
+      document.getElementById('icon-audio-mute').innerText = isAudioMuted ? 'volume_off' : 'volume_up';
+      if (isAudioMuted && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    // Initialize Page on Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initContextFromURL();
+      renderCoursesGrid();
+    });
+  </script>
+</body>
+</html>
