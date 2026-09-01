@@ -296,22 +296,31 @@ class ConversationSession:
     def __init__(
         self,
         beneficiary_id: Optional[str] = None,
-        language: str = "Hindi",
-        district: str = "Nagpur",
+        language: Optional[str] = None,
+        district: Optional[str] = None,
         existing_profile: Optional[Dict[str, Any]] = None,
     ):
         self.beneficiary_id = beneficiary_id or generate_beneficiary_id()
-        self.language = language if language in QUESTIONS else "Hindi"
-        self.district = district
         self.history: List[Dict[str, str]] = []
 
         # Check if profile already exists in storage or was provided
         saved = existing_profile or get_profile(self.beneficiary_id)
         if saved:
+            # If explicit language was passed and is valid, use it; otherwise use saved language
+            if language and language in QUESTIONS:
+                self.language = language
+            else:
+                self.language = saved.get("language") or "Hindi"
+
+            if district:
+                self.district = district
+            else:
+                self.district = saved.get("district") or "Nagpur"
+
             self.slots: Dict[str, Any] = {
                 "beneficiary_id": self.beneficiary_id,
-                "language": saved.get("language", self.language),
-                "district": saved.get("district", self.district),
+                "language": self.language,
+                "district": self.district,
                 "name": saved.get("name", ""),
                 "age": saved.get("age", ""),
                 "current_livelihood": saved.get("current_livelihood", ""),
@@ -322,9 +331,9 @@ class ConversationSession:
                 "education_level": saved.get("education_level", "10th Pass"),
                 "mobility_constraints": saved.get("mobility_constraints", "Local only (within district)"),
             }
-            self.language = self.slots["language"] if self.slots["language"] in QUESTIONS else "Hindi"
-            self.district = self.slots["district"]
         else:
+            self.language = language if (language and language in QUESTIONS) else "Hindi"
+            self.district = district or "Nagpur"
             self.slots = {
                 "beneficiary_id": self.beneficiary_id,
                 "language": self.language,

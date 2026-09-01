@@ -572,10 +572,27 @@
       document.getElementById("beneficiary-district-display").innerText = beneficiaryContext.district || "Nagpur";
       document.getElementById("beneficiary-lang-display").innerText = beneficiaryContext.language || "Hindi";
 
+      const cfg = getActiveLanguageConfig();
+
       // Update Header Banner
       if (beneficiaryContext.name && beneficiaryContext.name !== "Guest") {
-        document.getElementById("banner-greeting").innerText = `Namaste, ${beneficiaryContext.name}!`;
-        document.getElementById("banner-subtext").innerText = `We have pre-matched your background (${beneficiaryContext.skills || 'skills'}) with certified NSQF pathways in ${beneficiaryContext.district}. Explore your options or ask Sahayak for guidance.`;
+        if (beneficiaryContext.language === "Marathi") {
+          document.getElementById("banner-greeting").innerText = `नमस्कार, ${beneficiaryContext.name}!`;
+          document.getElementById("banner-subtext").innerText = `तुमच्या पार्श्वभूमीनुसार (${beneficiaryContext.skills || 'कौशल्ये'}) ${beneficiaryContext.district} मधील प्रमाणित NSQF अभ्यासक्रम उपलब्ध आहेत. अधिक माहितीसाठी सहायकाशी बोला.`;
+        } else {
+          document.getElementById("banner-greeting").innerText = `Namaste, ${beneficiaryContext.name}!`;
+          document.getElementById("banner-subtext").innerText = `We have pre-matched your background (${beneficiaryContext.skills || 'skills'}) with certified NSQF pathways in ${beneficiaryContext.district}. Explore your options or ask Sahayak for guidance.`;
+        }
+      }
+
+      // Update Chat Initial Greeting and Placeholder
+      const chatGreeting = document.getElementById("chat-initial-greeting");
+      if (chatGreeting) {
+        chatGreeting.innerText = cfg.greeting(beneficiaryContext.name || "मित्र");
+      }
+      const chatInput = document.getElementById("chat-input");
+      if (chatInput) {
+        chatInput.placeholder = cfg.placeholder;
       }
 
       // Check if a specific trade was highlighted
@@ -811,42 +828,162 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    // Conversational Intent Engine
+    // Conversational Intent Engine (Full Multilingual Support: Marathi, Hindi, Telugu, Tamil, Bengali, Gujarati, English)
+    const MULTILINGUAL_SAHAYAK = {
+      "Marathi": {
+        lang_code: "mr-IN",
+        placeholder: "मराठी किंवा इंग्रजीत विचारा...",
+        greeting: (name) => `नमस्कार ${name}! मी सहायक आहे. आपण कोणत्याही अभ्यासक्रमाबद्दल विचारू शकता — जसे 'मी यात काय शिकेन?' किंवा 'हा कोर्स माझ्यासाठी योग्य आहे का?'.`,
+        overview: (course, district) => `${course.title} हा ${course.sector} क्षेत्रातील NSQF Level ${course.nsqf_level} चा शासनमान्य अभ्यासक्रम आहे. हा ${course.duration_display} चा कोर्स असून यात प्रात्यक्षिक कौशल्ये शिकवली जातात. ${district} मध्ये याचे सरासरी मासिक वेतन सुमारे ₹${course.avg_monthly_wage.toLocaleString()} आहे.`,
+        suitability: (course, name, district, skills, pref) => `होय ${name} जी! हा कोर्स तुमच्यासाठी अतिशय योग्य आहे. तुमच्याकडे आधीच ${skills || 'कौशल्याचा'} अनुभव आहे आणि तुमची पसंती ${pref || 'रोजगार'} आहे. हा कोर्स पूर्ण केल्यावर तुम्हाला अधिकृत NCVET प्रमाणपत्र मिळेल आणि ${district} मध्ये ₹${course.avg_monthly_wage.toLocaleString()}+ ची नोकरी मिळण्याची उत्तम संधी उपलब्ध होईल.`,
+        learn: (course) => `${course.title} अभ्यासक्रमात तुम्ही प्रामुख्याने शिकाल: 1) ${course.modules.slice(0, 3).join("; ")}। यात 70% हँड्स-ऑन प्रॅक्टिकल आणि 30% तांत्रिक ज्ञान व सुरक्षा नियम समाविष्ट आहेत.`,
+        others: (others, district) => `${district} मध्ये तुमच्यासाठी इतर उत्तम पर्याय आहेत: ${others}। आपण कोणत्याही कोर्सवर क्लिक करून सविस्तर माहिती पाहू शकता.`,
+        salary: (course) => `${course.title} कोर्स पूर्ण केल्यानंतर सुरुवातीचे सरासरी वेतन ₹${course.avg_monthly_wage.toLocaleString()} प्रति महिना आहे. हा कोर्स सरकारी कौशल्य विकास योजनेअंतर्गत पूर्णपणे मोफत (Free) आहे.`,
+        fallback: (course, name, district) => `${name} जी, ${course.title} बद्दल विचारल्याबद्दल धन्यवाद. हा कोर्स ${course.duration_display} चा असून ${district} मध्ये याला मोठी मागणी आहे. आपण 'मी यात काय शिकेन?' किंवा 'हा कोर्स माझ्यासाठी योग्य आहे का?' विचारू शकता.`
+      },
+      "Hindi": {
+        lang_code: "hi-IN",
+        placeholder: "हिंदी या अंग्रेजी में पूछें...",
+        greeting: (name) => `नमस्ते ${name}! मैं सहायक हूँ। आप किसी भी कोर्स के बारे में पूछ सकते हैं — जैसे 'मैं इसमें क्या सीखूंगा?' या 'क्या यह मेरे लिए सही है?'.`,
+        overview: (course, district) => `${course.title} ${course.sector} क्षेत्र में NSQF Level ${course.nsqf_level} का सरकारी मान्यता प्राप्त कोर्स है। यह ${course.duration_display} का कोर्स है, जिसमें व्यावहारिक कौशल सिखाया जाता है। ${district} में इसका औसत मासिक वेतन लगभग ₹${course.avg_monthly_wage.toLocaleString()} है।`,
+        suitability: (course, name, district, skills, pref) => `हाँ ${name} जी! यह कोर्स आपके लिए बहुत उपयुक्त है। आपके पास पहले से ${skills || 'हुनर'} का अनुभव है और आपकी प्राथमिकता ${pref || 'रोजगार'} है। यह कोर्स पूरा करने पर आपको सरकारी NCVET सर्टिफिकेट मिलेगा और ${district} में ₹${course.avg_monthly_wage.toLocaleString()}+ की नौकरी मिलने की बेहतरीन संभावना है।`,
+        learn: (course) => `${course.title} कोर्स में मुख्य रूप से आप सीखेंगे: 1) ${course.modules.slice(0, 3).join("; ")}। इसमें 70% प्रैक्टिकल ट्रेनिंग और 30% थ्योरी व सुरक्षा नियम शामिल हैं।`,
+        others: (others, district) => `${district} में आपके लिए अन्य अच्छे विकल्प हैं: ${others}। आप किसी भी कोर्स पर क्लिक करके उसकी पूरी जानकारी देख सकते हैं।`,
+        salary: (course) => `${course.title} कोर्स पूरा करने के बाद शुरुआती औसत वेतन ₹${course.avg_monthly_wage.toLocaleString()} प्रति माह है। यह सरकारी योजना (PMKVY) के तहत पूर्णतः निःशुल्क (Free) है।`,
+        fallback: (course, name, district) => `${name} जी, ${course.title} के बारे में पूछने के लिए धन्यवाद। यह कोर्स ${course.duration_display} का है और इसमें ${district} में बहुत अच्छी मांग है। आप 'मैं इसमें क्या सीखूंगा?' या 'क्या यह मेरे लिए सही है?' पूछ सकते हैं।`
+      },
+      "Telugu": {
+        lang_code: "te-IN",
+        placeholder: "తెలుగు లేదా ఇంగ్లీషులో అడగండి...",
+        greeting: (name) => `నమస్కారం ${name}! నేను సహాయక్. మీరు ఏ కోర్సు గురించైనా అడగవచ్చు.`,
+        overview: (course, district) => `${course.title} అనేది ${course.sector} రంగంలో NSQF లెవెల్ ${course.nsqf_level} గుర్తింపు పొందిన కోర్సు. ఇది ${course.duration_display} కోర్సు. ${district}లో సగటు వేతనం సుమారు ₹${course.avg_monthly_wage.toLocaleString()}.`,
+        suitability: (course, name, district, skills, pref) => `అవును ${name} గారు! మీ ${skills || 'నైపుణ్యాలు'} అనుభవానికి ఈ కోర్సు చాలా అనుకూలం. పూర్తయిన తర్వాత ${district}లో ₹${course.avg_monthly_wage.toLocaleString()}+ ఉద్యోగ అవకాశాలు లభిస్తాయి.`,
+        learn: (course) => `${course.title} కోర్సులో మీరు నేర్చుకునేవి: ${course.modules.slice(0, 2).join("; ")}. ఇందులో 70% ప్రాక్టికల్ ట్రైనింగ్ ఉంటుంది.`,
+        others: (others, district) => `${district}లో ఇతర అందుబాటులో ఉన్న కోర్సులు: ${others}.`,
+        salary: (course) => `${course.title} కోర్సు తర్వాత ప్రారంభ వేతనం నెలకు సుమారు ₹${course.avg_monthly_wage.toLocaleString()}. ఇది ప్రభుత్వ పథకం కింద ఉచితం.`,
+        fallback: (course, name, district) => `${name} గారు, ${course.title} గురించి అడిగినందుకు ధన్యవాదాలు.`
+      },
+      "Tamil": {
+        lang_code: "ta-IN",
+        placeholder: "தமிழ் அல்லது ஆங்கிலத்தில் கேளுங்கள்...",
+        greeting: (name) => `வணக்கம் ${name}! நான் சகாயக். எந்தவொரு பயிற்சி பற்றியும் நீங்கள் கேட்கலாம்.`,
+        overview: (course, district) => `${course.title} என்பது ${course.sector} துறையில் NSQF நிலை ${course.nsqf_level} அரசு அங்கீகாரம் பெற்ற பயிற்சி. ${district}இல் சராசரி மாத ஊதியம் சுமார் ₹${course.avg_monthly_wage.toLocaleString()}.`,
+        suitability: (course, name, district, skills, pref) => `ஆம் ${name}! உங்கள் ${skills || 'திறன்'} அனுபவத்திற்கு இந்த பயிற்சி மிகவும் பொருத்தமானது. முடித்தவுடன் ${district}இல் ₹${course.avg_monthly_wage.toLocaleString()}+ வேலைவாய்ப்புகள் கிடைக்கும்.`,
+        learn: (course) => `${course.title} பயிற்சியில் நீங்கள் கற்பவை: ${course.modules.slice(0, 2).join("; ")}.`,
+        others: (others, district) => `${district}இல் பிற பயிற்சிகள்: ${others}.`,
+        salary: (course) => `${course.title} பயிற்சிக்கு பின் சராசரி தொடக்க ஊதியம் ₹${course.avg_monthly_wage.toLocaleString()}/மாதம். இது இலவச அரசு பயிற்சி.`,
+        fallback: (course, name, district) => `${name}, ${course.title} பற்றிய உங்கள் கேள்விக்கு நன்றி.`
+      },
+      "Bengali": {
+        lang_code: "bn-IN",
+        placeholder: "বাংলা বা ইংরেজিতে জিজ্ঞাসা করুন...",
+        greeting: (name) => `নমস্কার ${name}! আমি সহায়ক। আপনি যেকোনো কোর্স সম্পর্কে জিজ্ঞাসা করতে পারেন।`,
+        overview: (course, district) => `${course.title} হলো ${course.sector} ক্ষেত্রে NSQF লেভেল ${course.nsqf_level} সরকারি কোর্স। ${district}-এ গড় মাসিক বেতন প্রায় ₹${course.avg_monthly_wage.toLocaleString()}।`,
+        suitability: (course, name, district, skills, pref) => `হ্যাঁ ${name}! এই কোর্সটি আপনার জন্য উপযুক্ত। আপনার ${skills || 'দক্ষতা'} অভিজ্ঞতা অনুযায়ী ${district}-এ ₹${course.avg_monthly_wage.toLocaleString()}+ বেতনের সুযোগ রয়েছে।`,
+        learn: (course) => `${course.title} কোর্সে আপনি শিখবেন: ${course.modules.slice(0, 2).join("; ")}।`,
+        others: (others, district) => `${district}-এ অন্যান্য বিকল্প: ${others}।`,
+        salary: (course) => `${course.title} কোর্সের পর প্রারম্ভিক বেতন প্রায় ₹${course.avg_monthly_wage.toLocaleString()} প্রতি মাসে। এটি সম্পূর্ণ বিনামূল্যে সরকারি কোর্স।`,
+        fallback: (course, name, district) => `${name}, ${course.title} সম্পর্কে জিজ্ঞাসা করার জন্য ধন্যবাদ।`
+      },
+      "Gujarati": {
+        lang_code: "gu-IN",
+        placeholder: "ગુજરાતી અથવા અંગ્રેજીમાં પૂછો...",
+        greeting: (name) => `નમસ્તે ${name}! હું સહાયક છું. તમે કોઈપણ કોર્સ વિશે પૂછી શકો છો.`,
+        overview: (course, district) => `${course.title} એ ${course.sector} ક્ષેત્રમાં NSQF લેવલ ${course.nsqf_level} સરકારી માન્યતા પ્રાપ્ત કોર્સ છે. ${district}માં સરેરાશ માસિક પગાર આશરે ₹${course.avg_monthly_wage.toLocaleString()} છે.`,
+        suitability: (course, name, district, skills, pref) => `હા ${name}! આ કોર્સ તમારા માટે ખૂબ જ અનુકૂળ છે. તમારા ${skills || 'આવડત'} અનુભવ મુજબ ${district}માં ₹${course.avg_monthly_wage.toLocaleString()}+ નોકરીની તકો મળશે.`,
+        learn: (course) => `${course.title} કોર્સમાં તમે શીખશો: ${course.modules.slice(0, 2).join("; ")}.`,
+        others: (others, district) => `${district}માં અન્ય વિકલ્પો: ${others}.`,
+        salary: (course) => `${course.title} કોર્સ પછી પ્રારંભિક પગાર આશરે ₹${course.avg_monthly_wage.toLocaleString()} દર મહિને છે. આ કોર્સ સંપૂર્ણ મફત છે.`,
+        fallback: (course, name, district) => `${name}, ${course.title} વિશે પૂછવા બદલ આભાર.`
+      },
+      "English": {
+        lang_code: "en-IN",
+        placeholder: "Ask in English...",
+        greeting: (name) => `Hello ${name}! I am Sahayak. Feel free to ask anything about courses — such as 'What will I learn?' or 'Is this suitable for me?'.`,
+        overview: (course, district) => `${course.title} is a government-certified NSQF Level ${course.nsqf_level} course in the ${course.sector} sector. It is a ${course.duration_display} program with practical training. Average monthly wage in ${district} is approx ₹${course.avg_monthly_wage.toLocaleString()}.`,
+        suitability: (course, name, district, skills, pref) => `Yes ${name}! This course is well-suited for you. You have prior background in ${skills || 'relevant skills'} and prefer ${pref || 'wage employment'}. Completing this gives you an official NCVET certification and strong placement opportunities (₹${course.avg_monthly_wage.toLocaleString()}+/mo) in ${district}.`,
+        learn: (course) => `In the ${course.title} course, you will learn: 1) ${course.modules.slice(0, 3).join("; ")}. It includes 70% practical hands-on training and 30% safety & technical theory.`,
+        others: (others, district) => `Other great options available in ${district} include: ${others}. Click on any course card to view full details.`,
+        salary: (course) => `The entry-level salary after completing ${course.title} is around ₹${course.avg_monthly_wage.toLocaleString()} per month. The training is fully subsidized and free under Skill India schemes.`,
+        fallback: (course, name, district) => `Hello ${name}, thank you for asking about ${course.title}. It is a ${course.duration_display} course with high local demand in ${district}. Feel free to ask 'What will I learn?' or 'Is this suitable for me?'.`
+      }
+    };
+
+    function getActiveLanguageConfig() {
+      const l = beneficiaryContext.language || "Hindi";
+      if (MULTILINGUAL_SAHAYAK[l]) return MULTILINGUAL_SAHAYAK[l];
+      for (const key of Object.keys(MULTILINGUAL_SAHAYAK)) {
+        if (key.toLowerCase() === l.toLowerCase()) return MULTILINGUAL_SAHAYAK[key];
+      }
+      return MULTILINGUAL_SAHAYAK["Hindi"];
+    }
+
     function generateSahayakResponse(userText) {
       const text = userText.toLowerCase();
       const course = selectedCourse || COURSES_DATA[0];
       const name = beneficiaryContext.name || "मित्र";
       const district = beneficiaryContext.district || "Nagpur";
+      const skills = beneficiaryContext.skills || "";
+      const pref = beneficiaryContext.employment_preference || "";
+      const cfg = getActiveLanguageConfig();
 
-      // 1. "What is this course?" / "इस कोर्स में क्या है?"
-      if (text.includes("what is this course") || text.includes("what is the course") || text.includes("kya hai") || text.includes("course details") || text.includes("about the course")) {
-        return `${course.title} ${course.sector} क्षेत्र में NSQF Level ${course.nsqf_level} का सरकारी मान्यता प्राप्त कोर्स है। यह ${course.duration_display} का कोर्स है, जिसमें आपको ${course.description} सिखाया जाएगा। ${district} में इसका औसत वेतन ₹${course.avg_monthly_wage.toLocaleString()}/माह है।`;
+      // Detect Intent across Marathi, Hindi, English, and other regional keywords
+
+      // 1. "What is this course?" / "हा कोर्स काय आहे?" / "ये कोर्स क्या है?"
+      const isOverview = text.includes("what is this course") || text.includes("what is the course") ||
+                         text.includes("kya hai") || text.includes("kay ahe") || text.includes("काय आहे") ||
+                         text.includes("माहिती") || text.includes("course details") || text.includes("about the course") ||
+                         text.includes("కోర్సు ఏమిటి") || text.includes("என்ன பயிற்சி");
+
+      if (isOverview) {
+        return cfg.overview(course, district);
       }
 
-      // 2. "Is this suitable for me?" / "क्या यह मेरे लिए सही है?"
-      if (text.includes("suitable") || text.includes("fit") || text.includes("sahi hai") || text.includes("for me") || text.includes("mere liye")) {
-        return `हाँ ${name} जी! यह कोर्स आपके लिए बहुत अनुकूल है। आपके पास पहले से ${beneficiaryContext.skills || 'हुनर'} का अनुभव है और आपकी प्राथमिकता ${beneficiaryContext.employment_preference || 'नौकरी'} है। यह कोर्स पूरा करने पर आपको सरकारी NCVET सर्टिफिकेट मिलेगा, जिससे ${district} में अच्छी कंपनियों में ₹${course.avg_monthly_wage.toLocaleString()}+ की जॉब मिलने की संभावना बढ़ जाएगी।`;
+      // 2. "Is this suitable for me?" / "हा कोर्स माझ्यासाठी योग्य आहे का?" / "क्या यह मेरे लिए सही है?"
+      const isSuitability = text.includes("suitable") || text.includes("fit") || text.includes("sahi hai") ||
+                            text.includes("योग्य आहे") || text.includes("माझ्यासाठी") || text.includes("mere liye") ||
+                            text.includes("for me") || text.includes("उपयुक्त") || text.includes("సరిపోతుందా") ||
+                            text.includes("பொருத்தமானதா");
+
+      if (isSuitability) {
+        return cfg.suitability(course, name, district, skills, pref);
       }
 
-      // 3. "What will I learn?" / "मैं क्या सीखूंगा?"
-      if (text.includes("learn") || text.includes("seekh") || text.includes("kya sikhunga") || text.includes("syllabus") || text.includes("modules")) {
-        const topModules = course.modules.slice(0, 3).join("; ");
-        return `${course.title} कोर्स में मुख्य रूप से आप सीखेंगे: 1) ${topModules}। इसमें 70% प्रैक्टिकल हैंड-ऑन ट्रेनिंग और 30% थ्योरी और सुरक्षा नियम शामिल हैं।`;
+      // 3. "What will I learn?" / "मी यात काय शिकेन?" / "मैं क्या सीखूंगा?"
+      const isLearn = text.includes("learn") || text.includes("seekh") || text.includes("shiken") ||
+                      text.includes("शिकेन") || text.includes("काय शिकणार") || text.includes("kya sikhunga") ||
+                      text.includes("syllabus") || text.includes("modules") || text.includes("ನೇర్చుకుంటాను") ||
+                      text.includes("கற்பேன்");
+
+      if (isLearn) {
+        return cfg.learn(course);
       }
 
-      // 4. "Show me other courses" / "अन्य कोर्स दिखाएं"
-      if (text.includes("other course") || text.includes("another course") || text.includes("dusra") || text.includes("all courses") || text.includes("options")) {
-        const others = COURSES_DATA.filter(c => c.id !== course.id).map(c => `${c.title} (₹${c.avg_monthly_wage.toLocaleString()}/mo)`).join(", ");
-        return `${district} में आपके लिए अन्य बेहतरीन विकल्प हैं: ${others}। आप किसी भी कोर्स पर क्लिक करके उसकी पूरी जानकारी देख सकते हैं।`;
+      // 4. "Show me other courses" / "दुसरे कोर्स दाखवा" / "अन्य कोर्स दिखाएं"
+      const isOthers = text.includes("other course") || text.includes("another course") || text.includes("dusra") ||
+                       text.includes("dusre") || text.includes("दुसरे") || text.includes("इतर") || text.includes("अन्य") ||
+                       text.includes("options") || text.includes("all courses") || text.includes("వేరే కోర్సులు") ||
+                       text.includes("மற்ற பயிற்சிகள்");
+
+      if (isOthers) {
+        const othersList = COURSES_DATA.filter(c => c.id !== course.id)
+          .map(c => `${c.title} (₹${c.avg_monthly_wage.toLocaleString()}/mo)`)
+          .join(", ");
+        return cfg.others(othersList, district);
       }
 
-      // 5. "Salary / Wage / Fees" / "वेतन / फीस"
-      if (text.includes("salary") || text.includes("wage") || text.includes("tankhah") || text.includes("paise") || text.includes("fees") || text.includes("kamai")) {
-        return `${course.title} कोर्स पूरा करने के बाद शुरुआती औसत वेतन ₹${course.avg_monthly_wage.toLocaleString()} प्रति माह है। अनुभवी होने पर यह ₹20,000+ तक बढ़ सकता है। यह सरकारी योजना (PMKVY / DDU-GKY) के तहत पूर्णतः निःशुल्क (Free) है।`;
+      // 5. "Salary / Wage / Fees" / "पगार किती मिळेल?" / "वेतन कितना मिलेगा?"
+      const isSalary = text.includes("salary") || text.includes("wage") || text.includes("pagar") ||
+                       text.includes("पगार") || text.includes("वेतन") || text.includes("tankhah") ||
+                       text.includes("fees") || text.includes("पैसा") || text.includes("సంపాదన") ||
+                       text.includes("சம்பளம்");
+
+      if (isSalary) {
+        return cfg.salary(course);
       }
 
-      // Default contextual response
-      return `${name} जी, ${course.title} के बारे में आपके प्रश्न के लिए धन्यवाद। यह कोर्स ${course.duration_display} का है और इसमें ${district} में बहुत अच्छी मांग है। आप 'What will I learn?' या 'Is this suitable for me?' पूछ सकते हैं।`;
+      // Default contextual fallback in the selected language
+      return cfg.fallback(course, name, district);
     }
 
     function sendUserMessage(text) {
@@ -876,8 +1013,9 @@
       }
 
       try {
+        const cfg = getActiveLanguageConfig();
         speechRecognitionInstance = new SpeechRecognition();
-        speechRecognitionInstance.lang = beneficiaryContext.language === "Hindi" ? "hi-IN" : (beneficiaryContext.language === "Marathi" ? "mr-IN" : "hi-IN");
+        speechRecognitionInstance.lang = cfg.lang_code || "hi-IN";
         speechRecognitionInstance.interimResults = true;
         speechRecognitionInstance.maxAlternatives = 1;
 
@@ -934,8 +1072,9 @@
       if (isAudioMuted) return;
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+        const cfg = getActiveLanguageConfig();
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = beneficiaryContext.language === "Hindi" ? "hi-IN" : "hi-IN";
+        utterance.lang = cfg.lang_code || "hi-IN";
         utterance.rate = 1.0;
         window.speechSynthesis.speak(utterance);
       }

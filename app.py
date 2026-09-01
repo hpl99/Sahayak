@@ -149,6 +149,16 @@ def get_trades_df():
     )
 
 
+# Initialize global active beneficiary and language state
+if "active_beneficiary_id" not in st.session_state:
+    all_init_profs = load_profiles()
+    st.session_state.active_beneficiary_id = all_init_profs[0].get("beneficiary_id") if all_init_profs else None
+
+if "selected_language" not in st.session_state:
+    init_prof = get_profile(st.session_state.active_beneficiary_id) if st.session_state.active_beneficiary_id else None
+    st.session_state.selected_language = (init_prof.get("language") if init_prof else None) or "Hindi"
+
+
 # ---------------------------------------------------------------------------
 # NAVIGATION (STITCH SIDEBAR DESIGN)
 # ---------------------------------------------------------------------------
@@ -156,7 +166,7 @@ def get_trades_df():
 with st.sidebar:
     st.markdown(
         """
-        <div style="margin-bottom: 20px; padding: 0 4px;">
+        <div style="margin-bottom: 16px; padding: 0 4px;">
             <div style="display: flex; align-items: center; gap: 8px; color: #000666;">
                 <span style="font-size: 22px;">🎙️</span>
                 <span style="font-size: 19px; font-weight: 700; color: #000666;">Voice for Livelihood</span>
@@ -170,6 +180,44 @@ with st.sidebar:
     if st.button("🎙️ Start Voice Assistant", type="primary", use_container_width=True):
         st.session_state.selected_nav_page = "Voice Assistant"
         st.rerun()
+
+    # Global Active Beneficiary Selector in Sidebar
+    all_side_profiles = load_profiles()
+    if all_side_profiles:
+        st.markdown("<p style='font-size: 11px; font-weight: 700; color: #454652; text-transform: uppercase; margin: 12px 0 4px 0;'>Active Beneficiary</p>", unsafe_allow_html=True)
+        side_prof_map = {
+            f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
+            for p in all_side_profiles
+        }
+        current_side_id = st.session_state.get("active_beneficiary_id")
+        side_idx = 0
+        side_labels = list(side_prof_map.keys())
+        for idx, lbl in enumerate(side_labels):
+            if side_prof_map[lbl] == current_side_id:
+                side_idx = idx
+                break
+        
+        selected_side_label = st.selectbox(
+            "Active Beneficiary",
+            side_labels,
+            index=side_idx,
+            key="sidebar_active_ben_select",
+            label_visibility="collapsed",
+        )
+        new_side_id = side_prof_map[selected_side_label]
+        if new_side_id != st.session_state.get("active_beneficiary_id"):
+            st.session_state.active_beneficiary_id = new_side_id
+            b_info = get_profile(new_side_id)
+            if b_info and b_info.get("language"):
+                st.session_state.selected_language = b_info.get("language")
+            st.session_state.conv_session = ConversationSession(
+                beneficiary_id=new_side_id,
+                language=st.session_state.get("selected_language", "Hindi"),
+                district=b_info.get("district", "Nagpur") if b_info else "Nagpur"
+            )
+            st.rerun()
+
+    st.markdown("<p style='font-size: 11px; font-weight: 700; color: #454652; text-transform: uppercase; margin: 12px 0 4px 0;'>Navigation</p>", unsafe_allow_html=True)
 
     NAV_PAGES = [
         "Dashboard",
@@ -228,11 +276,17 @@ if page == "Voice Assistant":
         unsafe_allow_html=True,
     )
 
-    # Initialize session state if missing
-    if "conv_session" not in st.session_state:
+    active_b_id = st.session_state.get("active_beneficiary_id")
+    active_prof = get_profile(active_b_id) if active_b_id else None
+    active_lang = st.session_state.get("selected_language") or (active_prof.get("language") if active_prof else "Hindi")
+    active_dist = active_prof.get("district", "Nagpur") if active_prof else "Nagpur"
+
+    # Initialize or synchronize session state with active beneficiary
+    if "conv_session" not in st.session_state or (active_b_id and st.session_state.conv_session.beneficiary_id != active_b_id):
         st.session_state.conv_session = ConversationSession(
-            language="Hindi",
-            district="Nagpur",
+            beneficiary_id=active_b_id,
+            language=active_lang,
+            district=active_dist,
         )
     if "last_processed_event_id" not in st.session_state:
         st.session_state.last_processed_event_id = None
@@ -255,7 +309,7 @@ if page == "Voice Assistant":
         rec_spoken_text = build_recommendation_text(recommendations, session.language)
 
         # Synthesize recommendation audio if not yet cached
-        rec_cache_key = f"rec_audio_{session.beneficiary_id}"
+        rec_cache_key = f"rec_audio_{session.beneficiary_id}_{session.language}"
         if rec_cache_key not in st.session_state:
             st.session_state[rec_cache_key] = ""
             try:
@@ -280,7 +334,7 @@ if page == "Voice Assistant":
     tts_audio_base64 = None
 
     if not session.is_complete:
-        q_cache_key = f"q_tts_{session.beneficiary_id}_{session.current_step_idx}"
+        q_cache_key = f"q_tts_{session.beneficiary_id}_{session.current_step_idx}_{session.language}"
         if q_cache_key not in st.session_state:
             st.session_state[q_cache_key] = ""
             try:
@@ -361,6 +415,7 @@ if page == "Voice Assistant":
 
                     if transcript and transcript.strip():
                         session.process_turn(transcript.strip())
+                        st.session_state.active_beneficiary_id = session.beneficiary_id
                         st.rerun()
                 except Exception as e:
                     print("Audio transcription error:", e)
@@ -369,6 +424,7 @@ if page == "Voice Assistant":
                 text = event["text"].strip()
                 if text:
                     session.process_turn(text)
+                    st.session_state.active_beneficiary_id = session.beneficiary_id
                     st.rerun()
 
             elif action == "navigate" and event.get("page"):
@@ -376,9 +432,13 @@ if page == "Voice Assistant":
                 st.rerun()
 
             elif action == "change_language" and event.get("language"):
-                session.language = event["language"]
-                session.slots["language"] = event["language"]
+                new_lang = event["language"]
+                st.session_state.selected_language = new_lang
+                session.language = new_lang
+                session.slots["language"] = new_lang
                 session.save_profile()
+                # Clear question TTS cache
+                st.session_state.pop(f"q_tts_{session.beneficiary_id}_{session.current_step_idx}_{session.language}", None)
                 st.rerun()
 
             elif action == "change_district" and event.get("district"):
@@ -391,24 +451,30 @@ if page == "Voice Assistant":
                 b_id = event["beneficiary_id"]
                 if b_id == "NEW":
                     new_id = generate_beneficiary_id()
+                    st.session_state.active_beneficiary_id = new_id
                     st.session_state.conv_session = ConversationSession(
                         beneficiary_id=new_id,
-                        language=session.language,
+                        language=st.session_state.get("selected_language", session.language),
                         district=session.district,
                     )
                 else:
+                    st.session_state.active_beneficiary_id = b_id
+                    b_prof = get_profile(b_id)
+                    b_lang = (b_prof.get("language") if b_prof else None) or st.session_state.get("selected_language", "Hindi")
+                    st.session_state.selected_language = b_lang
                     st.session_state.conv_session = ConversationSession(
                         beneficiary_id=b_id,
-                        language=session.language,
-                        district=session.district,
+                        language=b_lang,
+                        district=b_prof.get("district", "Nagpur") if b_prof else session.district,
                     )
                 st.rerun()
 
             elif action == "reset":
                 new_id = generate_beneficiary_id()
+                st.session_state.active_beneficiary_id = new_id
                 st.session_state.conv_session = ConversationSession(
                     beneficiary_id=new_id,
-                    language=session.language,
+                    language=st.session_state.get("selected_language", session.language),
                     district=session.district,
                 )
                 st.rerun()
@@ -476,11 +542,72 @@ elif page in ["Skill Pathways", "🎙️ Voice Recommendation"]:
             "ai4bharat/indic-parler-tts (TTS)"
         )
 
+    active_b_id = st.session_state.get("active_beneficiary_id")
+    active_profile = get_profile(active_b_id) if active_b_id else None
+    trades_df = get_trades_df()
+
+    if active_profile:
+        st.markdown(
+            f"""
+            <div style="background-color: #f0eded; border: 1px solid #c6c5d4; border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-weight: 700; color: #000666; font-size: 15px;">Active Beneficiary: {active_profile.get('name', 'Unnamed')} ({active_profile.get('beneficiary_id', '')})</span>
+                    <span style="background-color: #1a237e; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">{active_profile.get('district', district)}</span>
+                </div>
+                <div style="font-size: 12px; color: #454652; line-height: 1.5;">
+                    <b>Work Experience:</b> {active_profile.get('current_livelihood') or 'None listed'} &nbsp;|&nbsp; 
+                    <b>Skills:</b> {active_profile.get('skills') or 'None listed'} &nbsp;|&nbsp; 
+                    <b>Preference:</b> {active_profile.get('employment_preference') or 'Wage Employment'}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        # Compute and display recommendations for the active beneficiary!
+        act_matches = match_profile(
+            active_profile,
+            district=active_profile.get("district", district_key),
+            trades_df=trades_df,
+            top_n=3,
+        )
+        st.subheader("🎯 Recommended Pathways for Active Beneficiary")
+        for i, m in enumerate(act_matches, start=1):
+            with st.container(border=True):
+                st.markdown(
+                    f"**{i}. {m['trade_name']}** · NSQF Level {m['nsqf_level']} · {m['sector']}"
+                )
+                cols = st.columns(3)
+                cols[0].metric("Local demand score", f"{m['demand_score']:.0f}/10")
+                cols[1].metric("Avg monthly wage", f"₹{m['avg_monthly_wage_inr']:,}")
+                cols[2].metric("Match score", f"{m['score']:.1f}")
+                if m.get("explanations"):
+                    st.caption(" · ".join(m["explanations"][:2]))
+
+                import urllib.parse
+                portal_query = urllib.parse.urlencode({
+                    "beneficiary_id": active_profile.get("beneficiary_id", ""),
+                    "name": active_profile.get("name", ""),
+                    "district": active_profile.get("district", district),
+                    "lang": active_profile.get("language", language_label),
+                    "trade": m["trade_name"],
+                    "skills": active_profile.get("skills", ""),
+                    "work": active_profile.get("current_livelihood", ""),
+                    "pref": active_profile.get("employment_preference", ""),
+                })
+                st.markdown(
+                    f'<a href="/app/static/skill-portal/index.html?{portal_query}" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #000666; text-decoration: none; padding: 4px 0;"><span>Explore {m["trade_name"]} on Skill Portal ↗</span></a>',
+                    unsafe_allow_html=True,
+                )
+
+        st.divider()
+        st.subheader("🎙️ Re-match or Explore via Voice Input")
+    else:
+        st.info("No active beneficiary selected. You can record a voice response below to discover pathways.")
+
     # -----------------------------------------------------------------------
     # RECORDING
     # -----------------------------------------------------------------------
-
-    st.subheader("1. Speak or upload your response")
 
     st.write(
         f'Try answering in **{language_label}**: '
@@ -746,8 +873,18 @@ elif page in ["Beneficiary Profile", "👤 Beneficiary Profile"]:
                 f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
                 for p in profiles
             }
-            selected_label = st.selectbox("Select Beneficiary to View/Edit", list(profile_options.keys()))
+            labels = list(profile_options.keys())
+            cur_act_id = st.session_state.get("active_beneficiary_id")
+            cur_idx = 0
+            for idx, l in enumerate(labels):
+                if profile_options[l] == cur_act_id:
+                    cur_idx = idx
+                    break
+            selected_label = st.selectbox("Select Beneficiary to View/Edit", labels, index=cur_idx)
             selected_id = profile_options[selected_label]
+            if selected_id != st.session_state.get("active_beneficiary_id"):
+                st.session_state.active_beneficiary_id = selected_id
+                st.session_state.conv_session = ConversationSession(beneficiary_id=selected_id)
             selected_profile = get_profile(selected_id)
 
     # Determine default values
@@ -1025,8 +1162,18 @@ elif page in ["Resume", "📄 Resume"]:
             f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
             for p in profiles
         }
-        selected_label = st.selectbox("Select Beneficiary for Resume", list(profile_options.keys()))
+        labels = list(profile_options.keys())
+        cur_act_id = st.session_state.get("active_beneficiary_id")
+        cur_idx = 0
+        for idx, l in enumerate(labels):
+            if profile_options[l] == cur_act_id:
+                cur_idx = idx
+                break
+        selected_label = st.selectbox("Select Beneficiary for Resume", labels, index=cur_idx)
         selected_id = profile_options[selected_label]
+        if selected_id != st.session_state.get("active_beneficiary_id"):
+            st.session_state.active_beneficiary_id = selected_id
+            st.session_state.conv_session = ConversationSession(beneficiary_id=selected_id)
         profile = get_profile(selected_id)
 
         if profile:
@@ -1129,8 +1276,18 @@ elif page in ["Follow-up", "📅 Training Follow-up"]:
             f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
             for p in profiles
         }
-        selected_label = st.selectbox("Select Beneficiary to Monitor", list(profile_options.keys()))
+        labels = list(profile_options.keys())
+        cur_act_id = st.session_state.get("active_beneficiary_id")
+        cur_idx = 0
+        for idx, l in enumerate(labels):
+            if profile_options[l] == cur_act_id:
+                cur_idx = idx
+                break
+        selected_label = st.selectbox("Select Beneficiary to Monitor", labels, index=cur_idx)
         selected_id = profile_options[selected_label]
+        if selected_id != st.session_state.get("active_beneficiary_id"):
+            st.session_state.active_beneficiary_id = selected_id
+            st.session_state.conv_session = ConversationSession(beneficiary_id=selected_id)
         profile = get_profile(selected_id)
 
         if profile:
@@ -1298,8 +1455,18 @@ elif page == "Attendance":
             f"{p.get('beneficiary_id', '')} - {p.get('name', 'Unnamed')} ({p.get('district', '')})": p.get("beneficiary_id")
             for p in profiles
         }
-        selected_label = st.selectbox("Select Trainee for Check-in", list(profile_options.keys()))
+        labels = list(profile_options.keys())
+        cur_act_id = st.session_state.get("active_beneficiary_id")
+        cur_idx = 0
+        for idx, l in enumerate(labels):
+            if profile_options[l] == cur_act_id:
+                cur_idx = idx
+                break
+        selected_label = st.selectbox("Select Trainee for Check-in", labels, index=cur_idx)
         selected_id = profile_options[selected_label]
+        if selected_id != st.session_state.get("active_beneficiary_id"):
+            st.session_state.active_beneficiary_id = selected_id
+            st.session_state.conv_session = ConversationSession(beneficiary_id=selected_id)
         profile = get_profile(selected_id)
 
         # Initialize session state for challenge phrase if needed
@@ -1639,6 +1806,21 @@ elif page == "Training":
         "Explore accredited training modules and regional skill development courses.",
         demo_mode=True,
     )
+
+    active_b_id = st.session_state.get("active_beneficiary_id")
+    active_prof = get_profile(active_b_id) if active_b_id else None
+    if active_prof:
+        st.markdown(
+            f"""
+            <div style="background-color: #f0eded; border: 1px solid #c6c5d4; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px;">
+                <span style="font-weight: 700; color: #000666;">Active Trainee: {active_prof.get('name', 'Unnamed')} ({active_prof.get('beneficiary_id')})</span> &nbsp;|&nbsp;
+                <span><b>Assigned Trade:</b> {active_prof.get('recommended_trade') or 'Not Assigned'}</span> &nbsp;|&nbsp;
+                <span><b>District:</b> {active_prof.get('district', 'Nagpur')}</span> &nbsp;|&nbsp;
+                <span><b>Status:</b> {active_prof.get('training_status', 'Not Started')}</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     trades_df = get_trades_df()
     st.subheader("Accredited NSQF Training Modules")
