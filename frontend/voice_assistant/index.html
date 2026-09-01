@@ -611,8 +611,9 @@
       if (args.is_complete) {
         document.getElementById("step-counter").innerText = "Completed (5 of 5)";
       } else {
-        const stepNum = Math.min(5, (args.step_idx || 0) + 1);
-        document.getElementById("step-counter").innerText = `Step ${stepNum} of 5: ${args.step_label || ''}`;
+        const filled = Math.min(5, args.step_idx || 0);
+        const remaining = 5 - filled;
+        document.getElementById("step-counter").innerText = `${filled} of 5 collected · Next: ${args.step_label || ''}`;
       }
 
       if (args.question) {
@@ -657,10 +658,10 @@
       if (args.slots) {
         const items = [];
         if (args.slots.name) items.push({ key: "name", val: args.slots.name });
-        if (args.slots.age && args.step_idx >= 2) items.push({ key: "age", val: `${args.slots.age} yrs` });
-        if (args.slots.current_livelihood && args.step_idx >= 3) items.push({ key: "current_livelihood", val: args.slots.current_livelihood });
-        if (args.slots.skills && args.step_idx >= 4) items.push({ key: "skills", val: args.slots.skills });
-        if (args.slots.employment_preference && args.is_complete) items.push({ key: "employment_preference", val: args.slots.employment_preference });
+        if (args.slots.age && args.slots.age !== "" && args.slots.age !== 0) items.push({ key: "age", val: `${args.slots.age} yrs` });
+        if (args.slots.current_livelihood) items.push({ key: "current_livelihood", val: args.slots.current_livelihood });
+        if (args.slots.skills) items.push({ key: "skills", val: args.slots.skills });
+        if (args.slots.employment_preference) items.push({ key: "employment_preference", val: args.slots.employment_preference });
 
         if (items.length > 0) {
           chipsContainer.innerHTML = items.map(item => {

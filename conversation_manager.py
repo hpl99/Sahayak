@@ -98,34 +98,52 @@ AGE_WORDS = {
 }
 
 
-def _extract_name(transcript: str) -> str:
-    """Extract name entity from spoken transcript."""
-    text = transcript.strip()
-    # Remove common conversational prefixes
-    patterns = [
-        r"^mera naam (.*?) hai$",
-        r"^mera naam (.*?)$",
-        r"^naam (.*?) hai$",
-        r"^majhe naav (.*?) aahe$",
-        r"^majhe naav (.*?)$",
-        r"^my name is (.*?)$",
-        r"^i am (.*?)$",
-        r"^main (.*?) hoon$",
-        r"^naa peru (.*?)$",
-        r"^en peyar (.*?)$",
-        r"^aamar naam (.*?)$",
-        r"^maru naam (.*?)$",
-    ]
-    for pat in patterns:
+# ---------------------------------------------------------------------------
+# NAME PATTERNS (shared by both extract and try_extract)
+# ---------------------------------------------------------------------------
+
+_NAME_PATTERNS = [
+    r"(?:mera|mara|hamara)\s+naam\s+(.*?)\s+hai",
+    r"(?:mera|mara|hamara)\s+naam\s+(.*?)$",
+    r"naam\s+(.*?)\s+hai",
+    r"majhe\s+naav\s+(.*?)\s+aahe",
+    r"majhe\s+naav\s+(.*?)$",
+    r"my\s+name\s+is\s+(.*?)$",
+    r"i\s+am\s+(.*?)$",
+    r"main\s+([A-Za-z\u0900-\u097F]+(?:\s+[A-Za-z\u0900-\u097F]+)*)\s+hoon$",
+    r"naa\s+peru\s+(.*?)$",
+    r"en\s+peyar\s+(.*?)$",
+    r"aamar\s+naam\s+(.*?)$",
+    r"maru\s+naam\s+(.*?)$",
+]
+
+
+def _match_name_pattern(text: str):
+    """Try to match an explicit name pattern. Returns cleaned name or None."""
+    for pat in _NAME_PATTERNS:
         m = re.search(pat, text, re.IGNORECASE)
         if m and m.group(1).strip():
             candidate = m.group(1).strip()
-            # Clean punctuation
             candidate = re.sub(r"[^\w\s]", "", candidate, flags=re.UNICODE).strip()
+            # Remove trailing noise words that are clearly not part of a name
+            noise_tail = re.compile(
+                r"\s+(?:aur|or|hai|hoon|hun|ka|ki|ke|se|mein|main|meri|mera|umar|saal|years?)\b.*$",
+                re.IGNORECASE,
+            )
+            candidate = noise_tail.sub("", candidate).strip()
             if candidate:
                 return candidate.title()
+    return None
 
-    # If no prefix matched, use the cleaned transcript as the name (up to 3 words)
+
+def _extract_name(transcript: str) -> str:
+    """Extract name entity from spoken transcript (always returns a value)."""
+    text = transcript.strip()
+    result = _match_name_pattern(text)
+    if result:
+        return result
+
+    # Fallback: use cleaned transcript as the name (up to 3 words)
     clean = re.sub(r"[^\w\s]", "", text, flags=re.UNICODE).strip()
     words = clean.split()
     if words:
@@ -134,25 +152,21 @@ def _extract_name(transcript: str) -> str:
 
 
 def _extract_age(transcript: str) -> int:
-    """Extract age integer from spoken transcript."""
+    """Extract age integer from spoken transcript (always returns a value)."""
     text = transcript.lower()
-    # Check for direct digits
     digits = re.findall(r"\b\d{1,2}\b", text)
     if digits:
         val = int(digits[0])
         if 14 <= val <= 85:
             return val
-
-    # Check for word numbers
     for word, val in AGE_WORDS.items():
         if word in text:
             return val
-
     return 25  # Sensible default
 
 
 def _extract_preference(transcript: str) -> str:
-    """Extract wage vs self-employment preference from spoken transcript."""
+    """Extract wage vs self-employment preference (always returns a value)."""
     text = transcript.lower()
     self_keywords = [
         "apna", "khud", "dukan", "dukaan", "business", "vyavsay", "dhandha",
@@ -161,14 +175,123 @@ def _extract_preference(transcript: str) -> str:
     for kw in self_keywords:
         if kw in text:
             return "Self Employment (Entrepreneurship / Micro-enterprise)"
-
     return "Wage Employment (Job)"
+
+
+# ---------------------------------------------------------------------------
+# TENTATIVE (confidence-gated) extractors for multi-slot extraction.
+# These return None when not confident, so they never produce false positives.
+# ---------------------------------------------------------------------------
+
+def _try_extract_name(transcript: str):
+    """Return name only if an explicit pattern matches. None otherwise."""
+    return _match_name_pattern(transcript.strip())
+
+
+def _try_extract_age(transcript: str):
+    """Return age only if an explicit number is found. None otherwise."""
+    text = transcript.lower()
+    digits = re.findall(r"\b\d{1,2}\b", text)
+    if digits:
+        val = int(digits[0])
+        if 14 <= val <= 85:
+            return val
+    for word, val in AGE_WORDS.items():
+        if word in text:
+            return val
+    return None
+
+
+# Keyword signals for work / livelihood detection
+_WORK_KEYWORDS = {
+    "kaam", "karta", "karti", "karte", "kam", "kaamgaar",
+    "wiring", "driving", "farming", "kheti", "mazdoori", "labour",
+    "mechanic", "plumbing", "welding", "electrician", "mason",
+    "painting", "carpenter", "carpentry", "construction", "factory",
+    "hotel", "delivery", "rickshaw", "auto", "truck", "tempo",
+    "dukaan", "shop", "selling", "vendor", "hawker",
+    "experience", "anubhav",
+    "bijli", "solar", "tailoring", "silai", "bunai",
+    "salon", "barber", "cooking", "helper",
+    "work", "working", "job", "employed",
+}
+
+
+def _try_extract_work(transcript: str):
+    """Return transcript as work description if work-related keywords found. None otherwise."""
+    text = transcript.strip()
+    tokens = set(re.sub(r"[^\w\s]", " ", text.lower(), flags=re.UNICODE).split())
+    if tokens & _WORK_KEYWORDS:
+        return text
+    return None
+
+
+# Keyword signals for skills / learning interest detection
+_SKILL_KEYWORDS = {
+    "aati", "aata", "seekhna", "sikhna", "learn", "learning",
+    "fitting", "sewing", "stitching", "embroidery", "design",
+    "repair", "maintenance", "training", "course", "certification",
+    "computer", "digital", "mobile", "phone",
+    "beautician", "beauty", "parlour", "makeup",
+    "skill", "skills", "hunar", "hath",
+    "cooking", "baking", "food", "processing",
+    "wiring", "plumbing", "welding", "carpentry",
+    "interest", "interested", "pasand", "chahta", "chahti",
+    "electrical", "solar", "panel", "installation",
+}
+
+
+def _try_extract_skills(transcript: str):
+    """Return transcript as skills description if skill-related keywords found. None otherwise."""
+    text = transcript.strip()
+    tokens = set(re.sub(r"[^\w\s]", " ", text.lower(), flags=re.UNICODE).split())
+    if tokens & _SKILL_KEYWORDS:
+        return text
+    return None
+
+
+# Keyword signals for employment preference detection
+_SELF_EMP_KEYWORDS = {
+    "apna", "khud", "dukan", "dukaan", "business", "vyavsay", "dhandha",
+    "self", "entrepreneur", "boutique", "parlour", "shop", "own", "svatah",
+    "udyog", "startup",
+}
+_WAGE_EMP_KEYWORDS = {
+    "naukri", "job", "company", "factory", "employ", "office",
+    "salary", "tankhah", "mazdoori", "wages", "wage",
+    "sarkari", "private", "government",
+}
+
+
+def _try_extract_preference(transcript: str):
+    """Return preference only if explicit keywords are found. None otherwise."""
+    text = transcript.lower()
+    tokens = set(re.sub(r"[^\w\s]", " ", text, flags=re.UNICODE).split())
+    if tokens & _SELF_EMP_KEYWORDS:
+        return "Self Employment (Entrepreneurship / Micro-enterprise)"
+    if tokens & _WAGE_EMP_KEYWORDS:
+        return "Wage Employment (Job)"
+    return None
 
 
 class ConversationSession:
     """
     State machine session tracking the progressive voice onboarding conversation.
+
+    Supports multi-slot extraction: each utterance may fill multiple profile
+    fields at once.  The next question is dynamically chosen from whichever
+    slot is still missing, rather than blindly following a fixed sequence.
+    Profile is persisted after every turn.
     """
+
+    # The five onboarding slot keys in default question order
+    _SLOT_MAP = {
+        "name": "name",
+        "age": "age",
+        "work": "current_livelihood",
+        "skills": "skills",
+        "preference": "employment_preference",
+    }
 
     def __init__(
         self,
@@ -190,64 +313,82 @@ class ConversationSession:
                 "language": saved.get("language", self.language),
                 "district": saved.get("district", self.district),
                 "name": saved.get("name", ""),
-                "age": saved.get("age", 25),
+                "age": saved.get("age", ""),
                 "current_livelihood": saved.get("current_livelihood", ""),
                 "previous_work_experience": saved.get("previous_work_experience", ""),
                 "skills": saved.get("skills", ""),
                 "interests": saved.get("interests", ""),
-                "employment_preference": saved.get("employment_preference", "Wage Employment (Job)"),
+                "employment_preference": saved.get("employment_preference", ""),
                 "education_level": saved.get("education_level", "10th Pass"),
                 "mobility_constraints": saved.get("mobility_constraints", "Local only (within district)"),
             }
             self.language = self.slots["language"] if self.slots["language"] in QUESTIONS else "Hindi"
             self.district = self.slots["district"]
-
-            # If all key onboarding slots are filled, mark complete
-            has_name = bool(self.slots.get("name"))
-            has_work = bool(self.slots.get("current_livelihood") or self.slots.get("previous_work_experience"))
-            has_skills = bool(self.slots.get("skills") or self.slots.get("interests"))
-
-            if has_name and has_work and has_skills:
-                self.current_step_idx = len(STEPS)
-                self.is_complete = True
-            elif not has_name:
-                self.current_step_idx = 0
-                self.is_complete = False
-            elif not has_work:
-                self.current_step_idx = 2
-                self.is_complete = False
-            elif not has_skills:
-                self.current_step_idx = 3
-                self.is_complete = False
-            else:
-                self.current_step_idx = 4
-                self.is_complete = False
         else:
-            self.current_step_idx = 0
             self.slots = {
                 "beneficiary_id": self.beneficiary_id,
                 "language": self.language,
                 "district": self.district,
                 "name": "",
-                "age": 25,
+                "age": "",
                 "current_livelihood": "",
                 "previous_work_experience": "",
                 "skills": "",
                 "interests": "",
-                "employment_preference": "Wage Employment (Job)",
+                "employment_preference": "",
                 "education_level": "10th Pass",
                 "mobility_constraints": "Local only (within district)",
             }
-            self.is_complete = False
+
+        # Derive dynamic state from actual slot contents
+        self._recompute_state()
+
+    # ------------------------------------------------------------------
+    # Slot-filled checks
+    # ------------------------------------------------------------------
+
+    def _slot_filled(self, step_key: str) -> bool:
+        """Check whether a specific onboarding slot is meaningfully filled."""
+        if step_key == "name":
+            return bool(self.slots.get("name"))
+        elif step_key == "age":
+            val = self.slots.get("age")
+            return val is not None and val != "" and val != 0
+        elif step_key == "work":
+            return bool(self.slots.get("current_livelihood"))
+        elif step_key == "skills":
+            return bool(self.slots.get("skills"))
+        elif step_key == "preference":
+            return bool(self.slots.get("employment_preference"))
+        return False
+
+    def _filled_count(self) -> int:
+        """Count how many of the 5 onboarding slots are filled."""
+        return sum(1 for s in STEPS if self._slot_filled(s))
+
+    def _first_missing_step(self) -> Optional[str]:
+        """Return the first STEPS entry whose slot is not yet filled, or None."""
+        for s in STEPS:
+            if not self._slot_filled(s):
+                return s
+        return None
+
+    def _recompute_state(self):
+        """Recompute current_step_idx and is_complete from slot contents."""
+        self.current_step_idx = self._filled_count()
+        self.is_complete = self.current_step_idx >= len(STEPS)
+
+    # ------------------------------------------------------------------
+    # Dynamic step / question
+    # ------------------------------------------------------------------
 
     @property
     def current_step(self) -> str:
-        if self.current_step_idx < len(STEPS):
-            return STEPS[self.current_step_idx]
-        return "complete"
+        missing = self._first_missing_step()
+        return missing if missing else "complete"
 
     def get_current_question(self) -> str:
-        """Get the localized question text for the current step."""
+        """Get the localized question text for the current (next missing) step."""
         q_dict = QUESTIONS.get(self.language, QUESTIONS["Hindi"])
         step = self.current_step
         if step == "complete":
@@ -259,10 +400,20 @@ class ConversationSession:
         else:
             return q_dict.get(step, q_dict["name"])
 
+    # ------------------------------------------------------------------
+    # Multi-slot turn processing
+    # ------------------------------------------------------------------
+
     def process_turn(self, transcript: str) -> Tuple[str, bool]:
         """
-        Process a user spoken utterance for the current step, update slots,
-        and advance the state machine.
+        Process a user spoken utterance with multi-slot extraction.
+
+        1. The slot corresponding to the *asked* question gets the
+           "guaranteed" (fallback-inclusive) extractor.
+        2. All *other* unfilled slots get tentative (confidence-gated)
+           extraction attempted on the same utterance.
+        3. Profile is persisted immediately after extraction.
+        4. The next question is dynamically chosen from remaining missing slots.
 
         Returns:
             (next_question_text, is_conversation_completed)
@@ -270,74 +421,119 @@ class ConversationSession:
         if not transcript or not transcript.strip():
             return self.get_current_question(), self.is_complete
 
-        step = self.current_step
+        asked_step = self.current_step
         text = transcript.strip()
 
         # Log turn to history
         self.history.append({
-            "step": step,
+            "step": asked_step,
             "question": self.get_current_question(),
             "transcript": text,
         })
 
-        if step == "name":
-            extracted_name = _extract_name(text)
-            self.slots["name"] = extracted_name
-            self.current_step_idx += 1
+        if self.is_complete:
+            return self.get_current_question(), True
 
-        elif step == "age":
-            extracted_age = _extract_age(text)
-            self.slots["age"] = extracted_age
-            self.current_step_idx += 1
-
-        elif step == "work":
+        # --- Guaranteed extraction for the asked step ---
+        if asked_step == "name" and not self._slot_filled("name"):
+            self.slots["name"] = _extract_name(text)
+        elif asked_step == "age" and not self._slot_filled("age"):
+            self.slots["age"] = _extract_age(text)
+        elif asked_step == "work" and not self._slot_filled("work"):
             self.slots["current_livelihood"] = text
             self.slots["previous_work_experience"] = text
-            self.current_step_idx += 1
-
-        elif step == "skills":
+        elif asked_step == "skills" and not self._slot_filled("skills"):
             self.slots["skills"] = text
             self.slots["interests"] = text
-            self.current_step_idx += 1
+        elif asked_step == "preference" and not self._slot_filled("preference"):
+            self.slots["employment_preference"] = _extract_preference(text)
 
-        elif step == "preference":
-            extracted_pref = _extract_preference(text)
-            self.slots["employment_preference"] = extracted_pref
-            self.current_step_idx += 1
+        # --- Tentative multi-slot extraction for OTHER unfilled slots ---
+        # Note: work and skills share vocabulary (wiring, fitting, etc.) so we
+        # never tentatively extract one when the asked question was the other,
+        # to avoid cross-contamination.
+        if not self._slot_filled("name") and asked_step != "name":
+            name = _try_extract_name(text)
+            if name:
+                self.slots["name"] = name
 
-        # Check completion
-        if self.current_step_idx >= len(STEPS):
-            self.is_complete = True
-            # Persist to profile store
-            self.save_profile()
+        if not self._slot_filled("age") and asked_step != "age":
+            age = _try_extract_age(text)
+            if age is not None:
+                self.slots["age"] = age
+
+        # Work and skills share vocabulary (wiring, fitting, etc.).
+        # When answering work/skills, only tentatively fill the counterpart
+        # if the utterance contains keywords unique to that counterpart.
+        _SKILL_ONLY = _SKILL_KEYWORDS - _WORK_KEYWORDS  # e.g. seekhna, aati, learn
+        _WORK_ONLY = _WORK_KEYWORDS - _SKILL_KEYWORDS   # e.g. kaam, karta, factory
+
+        if not self._slot_filled("work") and asked_step != "work":
+            if asked_step == "skills":
+                # Only tentatively fill work if work-unique keywords are present
+                tokens = set(re.sub(r"[^\w\s]", " ", text.lower(), flags=re.UNICODE).split())
+                if tokens & _WORK_ONLY:
+                    self.slots["current_livelihood"] = text
+                    self.slots["previous_work_experience"] = text
+            else:
+                work = _try_extract_work(text)
+                if work:
+                    self.slots["current_livelihood"] = work
+                    self.slots["previous_work_experience"] = work
+
+        if not self._slot_filled("skills") and asked_step != "skills":
+            if asked_step == "work":
+                # Only tentatively fill skills if skill-unique keywords are present
+                tokens = set(re.sub(r"[^\w\s]", " ", text.lower(), flags=re.UNICODE).split())
+                if tokens & _SKILL_ONLY:
+                    self.slots["skills"] = text
+                    self.slots["interests"] = text
+            else:
+                skills = _try_extract_skills(text)
+                if skills:
+                    self.slots["skills"] = skills
+                    self.slots["interests"] = skills
+
+        if not self._slot_filled("preference") and asked_step != "preference":
+            pref = _try_extract_preference(text)
+            if pref:
+                self.slots["employment_preference"] = pref
+
+        # --- Recompute state and persist ---
+        self._recompute_state()
+        self.save_profile()
 
         return self.get_current_question(), self.is_complete
 
+    # ------------------------------------------------------------------
+    # Progress & checklist
+    # ------------------------------------------------------------------
+
     def get_progress(self) -> float:
-        """Returns progress ratio between 0.0 and 1.0."""
-        return min(1.0, self.current_step_idx / len(STEPS))
+        """Returns progress ratio between 0.0 and 1.0 based on filled slots."""
+        return min(1.0, self._filled_count() / len(STEPS))
 
     def get_checklist(self) -> List[Tuple[str, bool, str]]:
         """
         Returns checklist of collected slots with label, completion bool, and current value.
         """
         checklist = []
-        for i, step_key in enumerate(STEPS):
+        for step_key in STEPS:
             label = STEP_LABELS.get(step_key, step_key)
-            is_filled = i < self.current_step_idx
+            filled = self._slot_filled(step_key)
             val = ""
             if step_key == "name":
                 val = self.slots.get("name", "")
             elif step_key == "age":
-                val = str(self.slots.get("age", "")) if is_filled else ""
+                val = str(self.slots.get("age", "")) if filled else ""
             elif step_key == "work":
-                val = self.slots.get("current_livelihood", "")[:35]
+                val = (self.slots.get("current_livelihood", "") or "")[:35]
             elif step_key == "skills":
-                val = self.slots.get("skills", "")[:35]
+                val = (self.slots.get("skills", "") or "")[:35]
             elif step_key == "preference":
-                val = "Self-Emp" if "Self" in self.slots.get("employment_preference", "") else "Wage-Emp" if is_filled else ""
-
-            checklist.append((label, is_filled, val))
+                ep = self.slots.get("employment_preference", "")
+                val = ("Self-Emp" if "Self" in ep else "Wage-Emp") if filled else ""
+            checklist.append((label, filled, val))
         return checklist
 
     def save_profile(self) -> Dict[str, Any]:
